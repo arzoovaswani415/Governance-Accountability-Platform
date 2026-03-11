@@ -42,67 +42,7 @@ interface GraphData {
   links: GraphLink[]
 }
 
-// Graph dataset representing governance relationships
-const graphData: GraphData = {
-  nodes: [
-    // Promises
-    { id: 'promise1', name: 'Expand Renewable Energy', type: 'promise', description: 'Expand renewable energy capacity to 175 GW by 2022 and create sustainable energy infrastructure.', year: 2019, status: 'In Progress', sector: 'Energy' },
-    { id: 'promise2', name: 'Universal Healthcare Access', type: 'promise', description: 'Ensure affordable healthcare access to all citizens through expanded insurance coverage.', year: 2019, status: 'In Progress', sector: 'Healthcare' },
-    { id: 'promise3', name: 'Agricultural Reform', type: 'promise', description: 'Implement agricultural reforms and provide loan waivers to support farmers.', year: 2019, status: 'Partial', sector: 'Agriculture' },
-    { id: 'promise4', name: 'Digital Infrastructure', type: 'promise', description: 'Build digital infrastructure to connect rural areas and enable digital services.', year: 2019, status: 'In Progress', sector: 'Technology' },
-    { id: 'promise5', name: 'Education Access', type: 'promise', description: 'Improve education quality and access across all regions.', year: 2019, status: 'In Progress', sector: 'Education' },
-    
-    // Policies
-    { id: 'policy1', name: 'Renewable Energy Infrastructure Act', type: 'policy', description: 'Policy framework to support renewable energy expansion and infrastructure development.', year: 2021, status: 'Proposed', sector: 'Energy' },
-    { id: 'policy2', name: 'Solar Park Expansion Program', type: 'policy', description: 'Program to expand solar parks across the country.', year: 2022, status: 'Implemented', sector: 'Energy' },
-    { id: 'policy3', name: 'Ayushman Bharat Scheme', type: 'policy', description: 'National health protection scheme providing coverage for secondary and tertiary care hospitalization.', year: 2020, status: 'Implemented', sector: 'Healthcare' },
-    { id: 'policy4', name: 'PM Kisan Samman Nidhi', type: 'policy', description: 'Direct income support to small and marginal farmers.', year: 2019, status: 'Implemented', sector: 'Agriculture' },
-    { id: 'policy5', name: 'Digital India Initiative', type: 'policy', description: 'Umbrella program to transform India into a digitally empowered society.', year: 2020, status: 'Implemented', sector: 'Technology' },
-    { id: 'policy6', name: 'National Education Policy', type: 'policy', description: 'Comprehensive framework for education reform and modernization.', year: 2020, status: 'Implemented', sector: 'Education' },
-    
-    // Budgets
-    { id: 'budget1', name: 'Energy Sector Budget 2024', type: 'budget', description: 'Annual budget allocation for energy sector initiatives.', year: 2024, amount: '28,000 Cr', sector: 'Energy' },
-    { id: 'budget2', name: 'Healthcare Budget 2024', type: 'budget', description: 'Annual budget allocation for healthcare programs.', year: 2024, amount: '20,000 Cr', sector: 'Healthcare' },
-    { id: 'budget3', name: 'Agriculture Budget 2024', type: 'budget', description: 'Annual budget allocation for agricultural support programs.', year: 2024, amount: '15,000 Cr', sector: 'Agriculture' },
-    { id: 'budget4', name: 'Digital Infrastructure Budget', type: 'budget', description: 'Budget for digital connectivity and infrastructure.', year: 2024, amount: '12,000 Cr', sector: 'Technology' },
-    { id: 'budget5', name: 'Education Budget 2024', type: 'budget', description: 'Annual budget allocation for education initiatives.', year: 2024, amount: '18,000 Cr', sector: 'Education' },
-    
-    // Programs
-    { id: 'program1', name: 'Solar Park Expansion', type: 'program', description: 'Program to develop solar parks with combined capacity of 40 GW.', year: 2022, status: 'Active', sector: 'Energy' },
-    { id: 'program2', name: 'Rural Health Centers', type: 'program', description: 'Establishment of primary health centers in rural areas.', year: 2021, status: 'Active', sector: 'Healthcare' },
-    { id: 'program3', name: 'Farmer Direct Payment', type: 'program', description: 'Direct benefit transfer to farmers bank accounts.', year: 2019, status: 'Active', sector: 'Agriculture' },
-    { id: 'program4', name: 'BharatNet Expansion', type: 'program', description: 'High-speed broadband connectivity to gram panchayats.', year: 2021, status: 'Active', sector: 'Technology' },
-    { id: 'program5', name: 'Digital Schools Initiative', type: 'program', description: 'Equipping schools with digital learning infrastructure.', year: 2022, status: 'Active', sector: 'Education' },
-  ],
-  links: [
-    // Energy chain
-    { source: 'promise1', target: 'policy1' },
-    { source: 'promise1', target: 'policy2' },
-    { source: 'policy1', target: 'budget1' },
-    { source: 'policy2', target: 'budget1' },
-    { source: 'budget1', target: 'program1' },
-    
-    // Healthcare chain
-    { source: 'promise2', target: 'policy3' },
-    { source: 'policy3', target: 'budget2' },
-    { source: 'budget2', target: 'program2' },
-    
-    // Agriculture chain
-    { source: 'promise3', target: 'policy4' },
-    { source: 'policy4', target: 'budget3' },
-    { source: 'budget3', target: 'program3' },
-    
-    // Technology chain
-    { source: 'promise4', target: 'policy5' },
-    { source: 'policy5', target: 'budget4' },
-    { source: 'budget4', target: 'program4' },
-    
-    // Education chain
-    { source: 'promise5', target: 'policy6' },
-    { source: 'policy6', target: 'budget5' },
-    { source: 'budget5', target: 'program5' },
-  ],
-}
+import { getGovernanceMapData } from '@/lib/api'
 
 // Node color mapping
 const nodeColors: Record<string, string> = {
@@ -132,6 +72,19 @@ export default function GovernanceMapPage() {
   const fgRef = useRef<any>(null)
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
   const containerRef = useRef<HTMLDivElement>(null)
+  const [graphData, setGraphData] = useState<GraphData | null>(null)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await getGovernanceMapData()
+        setGraphData(data as unknown as GraphData)
+      } catch (error) {
+        console.error("Failed to load map data:", error)
+      }
+    }
+    loadData()
+  }, [])
 
   // Update dimensions on mount and resize
   useEffect(() => {
@@ -287,30 +240,36 @@ export default function GovernanceMapPage() {
 
               {/* Graph Container */}
               <div ref={containerRef} className="h-[600px] w-full">
-                <ForceGraph3D
-                  ref={fgRef}
-                  graphData={graphData}
-                  width={dimensions.width}
-                  height={dimensions.height}
-                  backgroundColor="#000000"
-                  nodeLabel={(node: GraphNode) => `${nodeLabels[node.type]}: ${node.name}`}
-                  nodeColor={(node: GraphNode) => nodeColors[node.type]}
-                  nodeRelSize={8}
-                  nodeOpacity={0.9}
-                  linkColor={() => 'rgba(255, 255, 255, 0.2)'}
-                  linkWidth={2}
-                  linkOpacity={0.6}
-                  linkDirectionalParticles={2}
-                  linkDirectionalParticleSpeed={0.005}
-                  linkDirectionalParticleWidth={2}
-                  linkDirectionalParticleColor={() => 'rgba(255, 255, 255, 0.8)'}
-                  onNodeClick={handleNodeClick}
-                  onNodeHover={handleNodeHover}
-                  cooldownTicks={100}
-                  enableNodeDrag={true}
-                  enableNavigationControls={true}
-                  showNavInfo={false}
-                />
+                {graphData ? (
+                  <ForceGraph3D
+                    ref={fgRef}
+                    graphData={graphData}
+                    width={dimensions.width}
+                    height={dimensions.height}
+                    backgroundColor="#000000"
+                    nodeLabel={(node: GraphNode) => `${nodeLabels[node.type]}: ${node.name}`}
+                    nodeColor={(node: GraphNode) => nodeColors[node.type]}
+                    nodeRelSize={8}
+                    nodeOpacity={0.9}
+                    linkColor={() => 'rgba(255, 255, 255, 0.2)'}
+                    linkWidth={2}
+                    linkOpacity={0.6}
+                    linkDirectionalParticles={2}
+                    linkDirectionalParticleSpeed={0.005}
+                    linkDirectionalParticleWidth={2}
+                    linkDirectionalParticleColor={() => 'rgba(255, 255, 255, 0.8)'}
+                    onNodeClick={handleNodeClick}
+                    onNodeHover={handleNodeHover}
+                    cooldownTicks={100}
+                    enableNodeDrag={true}
+                    enableNavigationControls={true}
+                    showNavInfo={false}
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-white/50">
+                    Loading graph data...
+                  </div>
+                )}
               </div>
             </Card>
           </div>
@@ -401,10 +360,15 @@ export default function GovernanceMapPage() {
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-3">Connected Nodes</h3>
                     <div className="space-y-2">
-                      {graphData.links
-                        .filter(link => link.source === selectedNode.id || link.target === selectedNode.id)
-                        .map((link, idx) => {
-                          const connectedId = link.source === selectedNode.id ? link.target : link.source
+                      {graphData && graphData.links
+                        .filter((link: any) => 
+                          (link.source.id || link.source) === selectedNode.id || 
+                          (link.target.id || link.target) === selectedNode.id
+                        )
+                        .map((link: any, idx) => {
+                          const srcId = typeof link.source === 'object' ? link.source.id : link.source;
+                          const tgtId = typeof link.target === 'object' ? link.target.id : link.target;
+                          const connectedId = srcId === selectedNode.id ? tgtId : srcId;
                           const connectedNode = graphData.nodes.find(n => n.id === connectedId)
                           if (!connectedNode) return null
                           return (

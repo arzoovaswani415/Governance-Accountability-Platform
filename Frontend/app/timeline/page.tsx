@@ -17,111 +17,97 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-const timelineData = [
-  {
-    id: 1,
-    promise: 'Expand renewable energy capacity',
-    policy: 'Renewable Energy Infrastructure Bill',
-    sector: 'Energy',
-    electionCycle: '2019–2024',
-    stage: 'Program Launched',
-    events: [
-      { year: 2019, event: 'Promise announced', status: 'announced' },
-      { year: 2020, event: 'Bill introduced in parliament', status: 'proposed' },
-      { year: 2021, event: 'Committee review completed', status: 'review' },
-      { year: 2022, event: 'Amendment added for solar incentives', status: 'review' },
-      { year: 2023, event: 'Bill passed both houses', status: 'passed' },
-      { year: 2024, event: 'Program launched with ₹25K Cr fund', status: 'implemented' },
-    ],
-  },
-  {
-    id: 2,
-    promise: 'Universal healthcare access',
-    policy: 'Ayushman Bharat Enhancement Act',
-    sector: 'Healthcare',
-    electionCycle: '2019–2024',
-    stage: 'Policy Passed',
-    events: [
-      { year: 2019, event: 'Promise announced', status: 'announced' },
-      { year: 2020, event: 'Healthcare bill drafted', status: 'proposed' },
-      { year: 2021, event: 'Parliamentary committee review', status: 'review' },
-      { year: 2023, event: 'Amendment for rural coverage', status: 'review' },
-      { year: 2024, event: 'Policy passed and implementing', status: 'passed' },
-    ],
-  },
-  {
-    id: 3,
-    promise: 'Agricultural reform initiative',
-    policy: 'Farmer Support and Fair Price Act',
-    sector: 'Agriculture',
-    electionCycle: '2019–2024',
-    stage: 'Committee Review',
-    events: [
-      { year: 2019, event: 'Manifesto promise announced', status: 'announced' },
-      { year: 2021, event: 'Agricultural reform bill introduced', status: 'proposed' },
-      { year: 2023, event: 'Committee reviewing fair price mechanisms', status: 'review' },
-    ],
-  },
-  {
-    id: 4,
-    promise: 'Digital education transformation',
-    policy: 'Digital Learning Infrastructure Act',
-    sector: 'Education',
-    electionCycle: '2019–2024',
-    stage: 'Bill Introduced',
-    events: [
-      { year: 2019, event: 'Promise announced', status: 'announced' },
-      { year: 2022, event: 'Digital education bill introduced', status: 'proposed' },
-      { year: 2023, event: 'Preliminary committee discussions', status: 'review' },
-    ],
-  },
-  {
-    id: 5,
-    promise: 'Infrastructure development',
-    policy: 'National Infrastructure Development Act',
-    sector: 'Infrastructure',
-    electionCycle: '2019–2024',
-    stage: 'Program Launched',
-    events: [
-      { year: 2019, event: 'Promise announced', status: 'announced' },
-      { year: 2020, event: 'Infrastructure bill introduced', status: 'proposed' },
-      { year: 2021, event: 'Committee review completed', status: 'review' },
-      { year: 2022, event: 'Amendment for smart cities', status: 'review' },
-      { year: 2023, event: 'Act passed in parliament', status: 'passed' },
-      { year: 2024, event: 'Implementation with ₹10L Cr fund', status: 'implemented' },
-    ],
-  },
-  {
-    id: 6,
-    promise: 'Environmental protection enhancement',
-    policy: 'Clean Environment and Green Growth Act',
-    sector: 'Environment',
-    electionCycle: '2019–2024',
-    stage: 'Policy Passed',
-    events: [
-      { year: 2019, event: 'Promise announced', status: 'announced' },
-      { year: 2021, event: 'Environmental protection bill introduced', status: 'proposed' },
-      { year: 2022, event: 'Parliamentary committee review', status: 'review' },
-      { year: 2023, event: 'Amendment for carbon credits', status: 'review' },
-      { year: 2024, event: 'Policy passed and being implemented', status: 'passed' },
-    ],
-  },
-]
-
-const activityChartData = [
-  { year: 2019, bills: 3, passed: 0 },
-  { year: 2020, bills: 5, passed: 1 },
-  { year: 2021, bills: 6, passed: 2 },
-  { year: 2022, bills: 7, passed: 3 },
-  { year: 2023, bills: 8, passed: 5 },
-  { year: 2024, bills: 6, passed: 4 },
-]
+import { getTimelineEvents, TimelineEvent } from '@/lib/api'
+import { useEffect } from 'react'
 
 const sectors = ['Healthcare', 'Energy', 'Agriculture', 'Education', 'Infrastructure', 'Technology', 'Environment']
 
 export default function TimelinePage() {
   const filters = useLocalFilters()
-  const [selectedTimelineId, setSelectedTimelineId] = useState(1)
+  const [selectedTimelineId, setSelectedTimelineId] = useState<string | null>(null)
+  const [timelineData, setTimelineData] = useState<any[]>([])
+  const [activityChartData, setActivityChartData] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true)
+      try {
+        const events = await getTimelineEvents()
+        
+        const grouped = new Map<string, any>()
+        events.forEach(event => {
+          const key = `${event.promise_text || 'General'}-${event.policy_name || 'General'}`
+          if (!grouped.has(key)) {
+            grouped.set(key, {
+              id: key,
+              promise: event.promise_text || 'General Promise',
+              policy: event.policy_name || 'General Policy',
+              sector: event.sector || 'Various',
+              stage: 'In Progress',
+              events: []
+            })
+          }
+          
+          const group = grouped.get(key)
+          group.events.push({
+            year: event.year,
+            event: event.description ? `${event.event_type}: ${event.description}` : event.event_type,
+            status: getStatusFromEventType(event.event_type)
+          })
+        })
+
+        const timelineArray = Array.from(grouped.values()).map(g => {
+          g.events.sort((a: any, b: any) => a.year - b.year)
+          if (g.events.length > 0) {
+             const latestEvent = g.events[g.events.length - 1]
+             g.stage = latestEvent.status
+          }
+          return g
+        })
+        
+        setTimelineData(timelineArray)
+        if (timelineArray.length > 0) {
+          setSelectedTimelineId(timelineArray[0].id)
+        }
+
+        const activityMap = new Map<number, any>()
+        events.forEach(event => {
+          if (!activityMap.has(event.year)) {
+             activityMap.set(event.year, { year: event.year, bills: 0, passed: 0 })
+          }
+          const yearData = activityMap.get(event.year)
+          if (event.event_type.toLowerCase().includes('introduc') || event.event_type.toLowerCase().includes('propos') || event.event_type.toLowerCase().includes('bill')) {
+             yearData.bills++
+          } else if (event.event_type.toLowerCase().includes('pass') || event.event_type.toLowerCase().includes('implement') || event.event_type.toLowerCase().includes('assent')) {
+             yearData.passed++
+          } else {
+             // treat review/discussion as bills activity for visualization
+             yearData.bills++
+          }
+        })
+        
+        const activityArray = Array.from(activityMap.values()).sort((a: any, b: any) => a.year - b.year)
+        setActivityChartData(activityArray)
+        
+      } catch(err) {
+        console.error(err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  function getStatusFromEventType(eventType: string) {
+    const type = eventType.toLowerCase()
+    if (type.includes('promis') || type.includes('announc')) return 'announced'
+    if (type.includes('bill') || type.includes('propos') || type.includes('introduc')) return 'proposed'
+    if (type.includes('review') || type.includes('committe') || type.includes('amend')) return 'review'
+    if (type.includes('pass') || type.includes('assent')) return 'passed'
+    if (type.includes('launch') || type.includes('implement')) return 'implemented'
+    return 'review'
+  }
 
   const filtered = timelineData.filter((item) => {
     const matchesSearch =
@@ -136,7 +122,7 @@ export default function TimelinePage() {
   const selectedTimeline = timelineData.find((t) => t.id === selectedTimelineId) || timelineData[0]
 
   const getStageColor = (stage: string) => {
-    const stageObj = policyStages.find((s) => s.key === stage)
+    const stageObj = policyStages.find((s) => s.key.toLowerCase() === stage.toLowerCase())
     return stageObj?.color || 'bg-muted text-muted-foreground'
   }
 
@@ -212,36 +198,44 @@ export default function TimelinePage() {
 
         {/* Right Panel - Timeline Details */}
         <div className="lg:col-span-2 space-y-5">
-          {/* Section 1: Promise to Policy Mapping */}
-          <Card className="p-7 border border-border shadow-sm">
-            <h2 className="text-xl font-bold mb-5">Promise to Policy Mapping</h2>
-            <div className="space-y-4">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Manifesto Promise</p>
-                <p className="text-base font-semibold text-foreground">{selectedTimeline.promise}</p>
-              </div>
-              <div className="flex justify-center py-2">
-                <GitBranch className="h-6 w-6 text-primary rotate-90" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Related Policy</p>
-                <p className="text-base font-semibold text-foreground">{selectedTimeline.policy}</p>
-              </div>
-            </div>
-          </Card>
+          {isLoading || !selectedTimeline ? (
+             <Card className="p-8 border border-border shadow-sm flex justify-center text-muted-foreground">
+               Loading timeline...
+             </Card>
+          ) : (
+             <>
+                {/* Section 1: Promise to Policy Mapping */}
+                <Card className="p-7 border border-border shadow-sm">
+                  <h2 className="text-xl font-bold mb-5">Promise to Policy Mapping</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Manifesto Promise</p>
+                      <p className="text-base font-semibold text-foreground">{selectedTimeline.promise}</p>
+                    </div>
+                    <div className="flex justify-center py-2">
+                      <GitBranch className="h-6 w-6 text-primary rotate-90" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Related Policy</p>
+                      <p className="text-base font-semibold text-foreground">{selectedTimeline.policy}</p>
+                    </div>
+                  </div>
+                </Card>
 
-          {/* Section 2: Policy Evolution Timeline */}
-          <Card className="p-7 border border-border shadow-sm">
-            <PolicyLifecycleTimeline 
-              events={selectedTimeline.events}
-              title="Policy Evolution Timeline"
-              showProgressBar={true}
-              variant="vertical"
-            />
-          </Card>
-          
-          {/* Timeline Legend */}
-          <TimelineLegend />
+                {/* Section 2: Policy Evolution Timeline */}
+                <Card className="p-7 border border-border shadow-sm">
+                  <PolicyLifecycleTimeline 
+                    events={selectedTimeline.events}
+                    title="Policy Evolution Timeline"
+                    showProgressBar={true}
+                    variant="vertical"
+                  />
+                </Card>
+                
+                {/* Timeline Legend */}
+                <TimelineLegend />
+             </>
+          )}
         </div>
       </div>
 
@@ -291,28 +285,32 @@ export default function TimelinePage() {
         </Card>
 
         {/* Section 5: Horizontal Timeline View */}
-        <Card className="p-7 border border-border shadow-sm">
-          <h2 className="text-xl font-bold mb-6">Timeline Across Years</h2>
-          <PolicyLifecycleTimeline 
-            events={selectedTimeline.events}
-            title=""
-            showProgressBar={false}
-            variant="horizontal"
-          />
-        </Card>
+        {selectedTimeline && (
+          <Card className="p-7 border border-border shadow-sm">
+            <h2 className="text-xl font-bold mb-6">Timeline Across Years</h2>
+            <PolicyLifecycleTimeline 
+              events={selectedTimeline.events}
+              title=""
+              showProgressBar={false}
+              variant="horizontal"
+            />
+          </Card>
+        )}
 
         {/* Section 6: AI Legislative Insight */}
-        <Card className="p-7 border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
-          <div className="flex items-start gap-4">
-            <MessageSquare className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
-            <div className="flex-1">
-              <h3 className="font-bold text-lg mb-3">AI Legislative Insight</h3>
-              <p className="text-base text-foreground leading-relaxed">
-                The {selectedTimeline.policy} shows significant legislative momentum between 2020 and 2024. It progressed from initial bill introduction through committee review, amendment processes, and final passage. The policy received {selectedTimeline.events.length - 1} major legislative milestones, indicating strong parliamentary engagement. Current implementation status shows this policy is in the {selectedTimeline.stage.toLowerCase()} phase, with active fund allocation and program rollout underway.
-              </p>
+        {selectedTimeline && (
+          <Card className="p-7 border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
+            <div className="flex items-start gap-4">
+              <MessageSquare className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
+              <div className="flex-1">
+                <h3 className="font-bold text-lg mb-3">AI Legislative Insight</h3>
+                <p className="text-base text-foreground leading-relaxed">
+                  The {selectedTimeline.policy} shows significant legislative momentum over the period. It progressed from initial bill introduction through committee review, amendment processes, and final passage. The policy contains {selectedTimeline.events.length} major legislative milestones, indicating strong parliamentary engagement. Current implementation status shows this policy is in the {selectedTimeline.stage} phase.
+                </p>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        )}
       </div>
     </div>
   )

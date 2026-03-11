@@ -29,120 +29,103 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-// Budget data for trends
-const budgetTrendsData = [
-  { year: 2004, Healthcare: 8000, Energy: 5000, Agriculture: 4000, Education: 3000, Infrastructure: 6000 },
-  { year: 2008, Healthcare: 12000, Energy: 8000, Agriculture: 6000, Education: 5000, Infrastructure: 9000 },
-  { year: 2012, Healthcare: 18000, Energy: 12000, Agriculture: 9000, Education: 7000, Infrastructure: 13000 },
-  { year: 2016, Healthcare: 35000, Energy: 18000, Agriculture: 12000, Education: 10000, Infrastructure: 20000 },
-  { year: 2020, Healthcare: 65000, Energy: 28000, Agriculture: 15000, Education: 15000, Infrastructure: 35000 },
-  { year: 2024, Healthcare: 86000, Energy: 30000, Agriculture: 17000, Education: 20000, Infrastructure: 45000 },
-]
+import { getBudgetsTrends, getBudgetPromiseAlignment, BudgetPromiseAlignment } from '@/lib/api'
 
-// Sector funding distribution
-const sectorDistribution = [
-  { name: 'Healthcare', value: 86000, color: 'var(--chart-1)' },
-  { name: 'Infrastructure', value: 45000, color: 'var(--chart-2)' },
-  { name: 'Energy', value: 30000, color: 'var(--chart-3)' },
-  { name: 'Education', value: 20000, color: 'var(--chart-4)' },
-  { name: 'Agriculture', value: 17000, color: 'var(--chart-5)' },
-]
-
-// Budget vs Promises data
-const budgetVsPromises = [
-  {
-    id: 1,
-    promise: 'Expand renewable energy capacity',
-    sector: 'Energy',
-    policy: 'Renewable Energy Infrastructure Act',
-    budget: 'High',
-    status: 'In Progress',
-    budgetAmount: 28000,
-    allocationPercentage: 85,
-  },
-  {
-    id: 2,
-    promise: 'Universal healthcare coverage',
-    sector: 'Healthcare',
-    policy: 'Ayushman Bharat Scheme',
-    budget: 'High',
-    status: 'In Progress',
-    budgetAmount: 65000,
-    allocationPercentage: 95,
-  },
-  {
-    id: 3,
-    promise: 'Agricultural reforms',
-    sector: 'Agriculture',
-    policy: 'Pradhan Mantri Kisan Samman Nidhi',
-    budget: 'Moderate',
-    status: 'Partial',
-    budgetAmount: 12000,
-    allocationPercentage: 60,
-  },
-  {
-    id: 4,
-    promise: 'Infrastructure development',
-    sector: 'Infrastructure',
-    policy: 'Bharatmala Project Phase 2',
-    budget: 'High',
-    status: 'In Progress',
-    budgetAmount: 40000,
-    allocationPercentage: 90,
-  },
-  {
-    id: 5,
-    promise: 'Education quality improvement',
-    sector: 'Education',
-    policy: 'Digital Learning Platform Act',
-    budget: 'Low',
-    status: 'No Progress',
-    budgetAmount: 5000,
-    allocationPercentage: 25,
-  },
-]
-
-// Funding gaps
-const fundingGaps = [
-  {
-    id: 1,
-    promise: 'Improve public education infrastructure',
-    sector: 'Education',
-    budget: 'Low',
-    insight: 'Budget growth of 6% does not match manifesto commitment. Education sector requires increased allocation.',
-    expectedBudget: 35000,
-    currentBudget: 20000,
-  },
-  {
-    id: 2,
-    promise: 'Environmental protection and pollution control',
-    sector: 'Environment',
-    budget: 'Low',
-    insight: 'Environmental sector funding remains significantly below promised targets. Only 2% of total budget allocated.',
-    expectedBudget: 25000,
-    currentBudget: 8000,
-  },
-  {
-    id: 3,
-    promise: 'Rural development and poverty alleviation',
-    sector: 'Social',
-    budget: 'Low',
-    insight: 'Despite high priority in manifesto, rural development receives minimal dedicated funding.',
-    expectedBudget: 30000,
-    currentBudget: 12000,
-  },
-]
+import { useEffect } from 'react'
 
 export default function BudgetAnalysisPage() {
   const filters = useLocalFilters()
 
-  const getBudgetColor = (budget: string) => {
-    switch (budget) {
-      case 'High':
+  const [isLoading, setIsLoading] = useState(true)
+  const [trendData, setTrendData] = useState<any[]>([])
+  const [distributionData, setDistributionData] = useState<any[]>([])
+  const [alignmentData, setAlignmentData] = useState<BudgetPromiseAlignment[]>([])
+  const [fundingGaps, setFundingGaps] = useState<BudgetPromiseAlignment[]>([])
+
+  const [totalBudget, setTotalBudget] = useState(0)
+  const [healthcareBudget, setHealthcareBudget] = useState(0)
+  const [energyBudget, setEnergyBudget] = useState(0)
+  const [agricultureBudget, setAgricultureBudget] = useState(0)
+
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true)
+      try {
+        const [trends, alignments] = await Promise.all([
+          getBudgetsTrends(),
+          getBudgetPromiseAlignment()
+        ])
+
+        const yearMap = new Map<number, any>()
+        const sectorColors = [
+          'var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)', '#8884d8', '#82ca9d'
+        ]
+        let distData: any[] = []
+        let total = 0
+        let health = 0
+        let energy = 0
+        let agri = 0
+
+        trends.forEach((trend, idx) => {
+          let latestAmount = 0
+          trend.yearly_data.forEach(yd => {
+            if (!yearMap.has(yd.year)) {
+              yearMap.set(yd.year, { year: yd.year })
+            }
+            const yearObj = yearMap.get(yd.year)
+            yearObj[trend.sector] = yd.amount_crores
+            latestAmount = yd.amount_crores
+          })
+          
+          distData.push({
+            name: trend.sector,
+            value: latestAmount,
+            color: sectorColors[idx % sectorColors.length]
+          })
+          
+          total += latestAmount
+          if (trend.sector === 'Healthcare') health = latestAmount
+          if (trend.sector === 'Energy') energy = latestAmount
+          if (trend.sector === 'Agriculture') agri = latestAmount
+        })
+
+        const chartData = Array.from(yearMap.values()).sort((a: any, b: any) => a.year - b.year)
+        setTrendData(chartData)
+        setDistributionData(distData)
+        setTotalBudget(total)
+        setHealthcareBudget(health)
+        setEnergyBudget(energy)
+        setAgricultureBudget(agri)
+
+        setAlignmentData(alignments)
+        
+        const gaps = alignments.filter(a => 
+          a.funding_status === 'Low' || 
+          a.funding_status === 'Critical' || 
+          (a.insight && a.insight.toLowerCase().includes('gap')) || 
+          (a.insight && a.insight.toLowerCase().includes('requires'))
+        )
+        setFundingGaps(gaps)
+        
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  const getBudgetColor = (budget?: string | null) => {
+    if (!budget) return 'bg-muted text-muted-foreground'
+    switch (budget.toLowerCase()) {
+      case 'high':
+      case 'adequate':
         return 'bg-secondary text-secondary-foreground'
-      case 'Moderate':
+      case 'moderate':
         return 'bg-accent text-accent-foreground'
-      case 'Low':
+      case 'low':
+      case 'critical':
         return 'bg-destructive text-destructive-foreground'
       default:
         return 'bg-muted text-muted-foreground'
@@ -150,12 +133,6 @@ export default function BudgetAnalysisPage() {
   }
 
   const sectors = ['Healthcare', 'Energy', 'Agriculture', 'Education', 'Infrastructure', 'Technology', 'Environment']
-
-  // Calculate totals
-  const totalBudget = 125000
-  const healthcareBudget = 86000
-  const energyBudget = 30000
-  const agricultureBudget = 17000
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-background">
@@ -200,32 +177,32 @@ export default function BudgetAnalysisPage() {
           <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
             Total Budget Analyzed
           </p>
-          <p className="text-3xl font-bold">₹12.5L Cr</p>
-          <p className="text-xs text-muted-foreground mt-2">2004–2024 Total</p>
+          <p className="text-3xl font-bold">₹{(totalBudget / 1000).toFixed(1)}K Cr</p>
+          <p className="text-xs text-muted-foreground mt-2">Latest Year Total</p>
         </Card>
 
         <Card className="p-6 border border-border">
           <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
             Healthcare Budget
           </p>
-          <p className="text-3xl font-bold text-secondary">₹86,000 Cr</p>
-          <p className="text-xs text-muted-foreground mt-2">+38% growth 2019–2024</p>
+          <p className="text-3xl font-bold text-secondary">₹{(healthcareBudget / 1000).toFixed(1)}K Cr</p>
+          <p className="text-xs text-muted-foreground mt-2">Latest Year Allocation</p>
         </Card>
 
         <Card className="p-6 border border-border">
           <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
             Energy Budget
           </p>
-          <p className="text-3xl font-bold text-accent">₹30,000 Cr</p>
-          <p className="text-xs text-muted-foreground mt-2">+7% growth 2019–2024</p>
+          <p className="text-3xl font-bold text-accent">₹{(energyBudget / 1000).toFixed(1)}K Cr</p>
+          <p className="text-xs text-muted-foreground mt-2">Latest Year Allocation</p>
         </Card>
 
         <Card className="p-6 border border-border">
           <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
             Agriculture Budget
           </p>
-          <p className="text-3xl font-bold">₹1.7L Cr</p>
-          <p className="text-xs text-muted-foreground mt-2">+3% growth 2019–2024</p>
+          <p className="text-3xl font-bold">₹{(agricultureBudget / 1000).toFixed(1)}K Cr</p>
+          <p className="text-xs text-muted-foreground mt-2">Latest Year Allocation</p>
         </Card>
       </div>
 
@@ -233,7 +210,7 @@ export default function BudgetAnalysisPage() {
       <Card className="p-8 border border-border shadow-sm mb-8">
         <h2 className="text-xl font-bold mb-6">Sector Budget Allocation Over Time</h2>
         <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={budgetTrendsData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+          <LineChart data={trendData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis dataKey="year" stroke="var(--muted-foreground)" />
             <YAxis stroke="var(--muted-foreground)" />
@@ -243,22 +220,22 @@ export default function BudgetAnalysisPage() {
                 border: '1px solid var(--border)',
                 borderRadius: '8px',
               }}
-              formatter={(value) => `₹${value} Cr`}
+              formatter={(value: number) => `₹${value.toLocaleString()} Cr`}
             />
             <Legend />
-            <Line type="monotone" dataKey="Healthcare" stroke="var(--chart-1)" strokeWidth={2.5} dot={false} />
-            <Line type="monotone" dataKey="Energy" stroke="var(--chart-3)" strokeWidth={2.5} dot={false} />
-            <Line type="monotone" dataKey="Agriculture" stroke="var(--chart-5)" strokeWidth={2.5} dot={false} />
+            {distributionData.map((d) => (
+              <Line key={d.name} type="monotone" dataKey={d.name} stroke={d.color} strokeWidth={2.5} dot={false} />
+            ))}
           </LineChart>
         </ResponsiveContainer>
       </Card>
 
       {/* SECTION 3: Budget vs Implementation Analysis */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {budgetVsPromises.slice(0, 3).map((item) => (
-          <Card key={item.id} className="p-6 border border-border">
+        {alignmentData.slice(0, 3).map((item, idx) => (
+          <Card key={item.promise_id || `align-card-${idx}`} className="p-6 border border-border">
             <div className="mb-4">
-              <h3 className="font-semibold text-sm leading-snug mb-3">{item.promise}</h3>
+              <h3 className="font-semibold text-sm leading-snug mb-3">{item.promise_text}</h3>
               <Badge variant="outline" className="text-xs font-medium">
                 {item.sector}
               </Badge>
@@ -269,28 +246,34 @@ export default function BudgetAnalysisPage() {
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                   Budget Allocated
                 </p>
-                <p className="text-lg font-bold mt-1">₹{(item.budgetAmount / 1000).toFixed(0)}K Cr</p>
+                <p className="text-lg font-bold mt-1">₹{(item.budget_allocated / 1000).toFixed(1)}K Cr</p>
               </div>
 
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                   Implementation Status
                 </p>
-                <Badge className="mt-1 font-semibold">{item.status}</Badge>
+                <Badge className="mt-1 font-semibold">{item.implementation_status || 'Unknown'}</Badge>
               </div>
 
               {/* Indicator Icons */}
               <div className="pt-3 border-t space-y-2">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-secondary" />
+                  <CheckCircle className={`h-4 w-4 ${item.budget_allocated > 0 ? 'text-secondary' : 'text-muted-foreground'}`} />
                   <span className="text-xs">Budget Allocated</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-secondary" />
+                  <CheckCircle className={`h-4 w-4 ${item.implementation_status && item.implementation_status !== 'Not Started' ? 'text-secondary' : 'text-muted-foreground'}`} />
                   <span className="text-xs">Program Started</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-accent" />
+                  {item.implementation_status === 'Completed' ? (
+                     <CheckCircle className="h-4 w-4 text-secondary" />
+                  ) : (item.implementation_status && item.implementation_status.includes('Progress')) ? (
+                     <TrendingUp className="h-4 w-4 text-accent" />
+                  ) : (
+                     <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                  )}
                   <span className="text-xs">Outcome Achieved</span>
                 </div>
               </div>
@@ -305,20 +288,20 @@ export default function BudgetAnalysisPage() {
         <ResponsiveContainer width="100%" height={320}>
           <PieChart>
             <Pie
-              data={sectorDistribution}
+              data={distributionData}
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, value }) => `${name}: ₹${value}Cr`}
+              label={({ name, value }) => `${name}: ₹${value.toLocaleString()}Cr`}
               outerRadius={100}
               fill="#8884d8"
               dataKey="value"
             >
-              {sectorDistribution.map((entry, index) => (
+              {distributionData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip formatter={(value) => `₹${value}Cr`} />
+            <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}Cr`} />
           </PieChart>
         </ResponsiveContainer>
       </Card>
@@ -354,18 +337,18 @@ export default function BudgetAnalysisPage() {
               </tr>
             </thead>
             <tbody>
-              {budgetVsPromises.map((item) => (
-                <tr key={item.id} className="border-b hover:bg-muted/30 transition-colors">
-                  <td className="py-3 px-4 font-medium">{item.promise}</td>
+              {alignmentData.map((item, idx) => (
+                <tr key={item.promise_id || `table-row-${idx}`} className="border-b hover:bg-muted/30 transition-colors">
+                  <td className="py-3 px-4 font-medium">{item.promise_text}</td>
                   <td className="py-3 px-4">
                     <Badge variant="outline">{item.sector}</Badge>
                   </td>
-                  <td className="py-3 px-4">{item.policy}</td>
+                  <td className="py-3 px-4">{(item.related_policies && item.related_policies.length > 0) ? item.related_policies.join(', ') : 'N/A'}</td>
                   <td className="py-3 px-4">
-                    <Badge className={getBudgetColor(item.budget)}>{item.budget}</Badge>
+                    <Badge className={getBudgetColor(item.funding_status)}>{item.funding_status}</Badge>
                   </td>
                   <td className="py-3 px-4">
-                    <Badge variant="outline">{item.status}</Badge>
+                    <Badge variant="outline">{item.implementation_status || 'Unknown'}</Badge>
                   </td>
                 </tr>
               ))}
@@ -378,14 +361,14 @@ export default function BudgetAnalysisPage() {
       <div>
         <h2 className="text-2xl font-bold mb-6">Funding Gap Detection</h2>
         <div className="space-y-4">
-          {fundingGaps.map((gap) => (
-            <Card key={gap.id} className="p-6 border-l-4 border-l-destructive bg-destructive/5">
+          {fundingGaps.map((gap, idx) => (
+            <Card key={gap.promise_id || `gap-${idx}`} className="p-6 border-l-4 border-l-destructive bg-destructive/5">
               <div className="flex items-start gap-4">
                 <AlertTriangle className="h-6 w-6 text-destructive mt-1 flex-shrink-0" />
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold">{gap.promise}</h3>
-                    <Badge className="bg-destructive text-destructive-foreground">{gap.budget} Support</Badge>
+                    <h3 className="font-semibold">{gap.promise_text}</h3>
+                    <Badge className="bg-destructive text-destructive-foreground">{gap.funding_status} Support</Badge>
                   </div>
                   <Badge variant="outline" className="mb-3">
                     {gap.sector}
@@ -393,12 +376,8 @@ export default function BudgetAnalysisPage() {
                   <p className="text-sm text-foreground mb-4">{gap.insight}</p>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Current Budget</p>
-                      <p className="font-semibold">₹{gap.currentBudget / 1000}K Cr</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Expected Budget</p>
-                      <p className="font-semibold text-secondary">₹{gap.expectedBudget / 1000}K Cr</p>
+                      <p className="text-muted-foreground">Budget Allocated</p>
+                      <p className="font-semibold">₹{(gap.budget_allocated / 1000).toFixed(1)}K Cr</p>
                     </div>
                   </div>
                 </div>
