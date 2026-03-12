@@ -4,3 +4,10 @@ psycopg2-binary
 python-dotenv
 schedule
 pymupdf
+pandas
+spacy
+scikit-learn
+nltk
+sentence-transformers
+faiss-cpu
+numpy

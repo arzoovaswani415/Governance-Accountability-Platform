@@ -17,40 +17,48 @@ def scrape_pib_policies():
     Note: Real-world scraping would use a date-range loop. 
     This implementation focuses on the latest announcements as a demonstration.
     """
-    url = "https://pib.gov.in/allRel.aspx"
+    # lang=1 is for English, reg=3 is a common region code for PIB
+    url = "https://pib.gov.in/allRel.aspx?reg=3&lang=1"
     headers = {"User-Agent": USER_AGENT}
     
     policies = []
     
     try:
+        logging.info(f"Scraping PIB from: {url}")
         response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
         
         soup = BeautifulSoup(response.content, "html.parser")
         
-        # PIB structure: Releases are usually in a <ul> with class 'release_list'
-        # This is a sample logic; PIB structure is known to be complex and use dynamic loading/ASP.NET.
-        release_items = soup.find_all("li")
+        # PIB structure: Releases are in <ul> with class 'release_list'
+        release_lists = soup.find_all("ul", class_="release_list")
         
-        for item in release_items:
-            link_tag = item.find("a")
-            if link_tag and "PressReleasePage.aspx" in link_tag.get("href", ""):
-                title = clean_text(link_tag.text)
-                link = "https://pib.gov.in/" + link_tag.get("href").lstrip("/")
-                
-                # Further extraction: Ministry and Date (often in the text or surrounding tags)
-                # Sample logic:
-                policy_data = {
-                    "policy_title": title,
-                    "ministry": "Various", # Extractable from the full page
-                    "policy_description": "", # Extractable by visiting the PRID page
-                    "announcement_date": datetime.now().strftime("%Y-%m-%d"),
-                    "source_url": link
-                }
-                policies.append(policy_data)
-                
-                if len(policies) >= 50: # Limit for demo
-                    break
+        for r_list in release_lists:
+            items = r_list.find_all("li")
+            for item in items:
+                link_tag = item.find("a")
+                if link_tag and "PressReleasePage.aspx" in link_tag.get("href", ""):
+                    title = clean_text(link_tag.text)
+                    href = link_tag.get("href")
+                    # Handle relative vs absolute URLs
+                    if href.startswith("http"):
+                        link = href
+                    else:
+                        link = "https://pib.gov.in/" + href.lstrip("/")
+                    
+                    policy_data = {
+                        "policy_title": title,
+                        "ministry": "Search for Ministry", # In a more complex scraper, we'd find the preceding h3/h4
+                        "policy_description": "",
+                        "announcement_date": datetime.now().strftime("%Y-%m-%d"),
+                        "source_url": link
+                    }
+                    policies.append(policy_data)
+                    
+                    if len(policies) >= 50:
+                        break
+            if len(policies) >= 50:
+                break
         
         # Save to JSON
         output_file = POLICIES_DIR / "policies.json"

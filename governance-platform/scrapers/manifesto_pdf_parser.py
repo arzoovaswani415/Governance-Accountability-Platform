@@ -18,7 +18,7 @@ def parse_manifestos():
         if year_dir.is_dir():
             year = year_dir.name
             for pdf_file in year_dir.glob("*.pdf"):
-                party_name = pdf_file.name.split("_")[0]
+                party_name = pdf_file.name.split("_")[0].split(".")[0]
                 
                 logging.info(f"Parsing {pdf_file}")
                 try:

@@ -40,8 +40,10 @@ venv.bak/
 .env.*.local
 
 # Scraped Data output
-/governance-platform/data/raw/
-/governance-platform/data/processed/
+/governance-platform/data/
+/governance-platform/logs/
+/tmp/
+!/governance-platform/data/.gitkeep
 
 # IDEs
 .idea/

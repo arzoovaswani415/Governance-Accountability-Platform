@@ -1,51 +1,87 @@
-# Governance Intelligence Platform - Module 1: Data Collection
+# 🇮🇳 Governance Intelligence Platform - Data Engine
 
-This module implements a robust data collection pipeline for analyzing the relationship between election manifestos, government policies, parliamentary bills, public datasets, and news coverage in India.
+This module is the "Brain" of the platform. It handles everything from collecting raw government data to understanding it using AI and storing it in a high-speed database.
 
-## Project Structure
+## 🚀 What has been implemented? (Easy Language)
 
-- `scrapers/`: Individual scrapers for manifestos, PIB, PRS India, Data.gov.in, and NewsAPI.
-- `pipelines/`: Data cleaning and normalization logic.
-- `scheduler/`: Orchestration logic to run the sequence.
-- `data/`: Local storage for raw and processed JSON data.
-- `config/`: Environment configuration and paths.
-- `logs/`: Scraper logs.
+1. **Smart Data Collectors (Scrapers)**: 
+   - We built "robots" that visit official websites (PIB, PRS India, NewsAPI) to collect records on government bills, news, and policies from 2004 to today.
+   - **No Duplicates**: The system is smart enough to skip records it has already seen.
 
-## Setup
+2. **Data Cleaning**: 
+   - Raw text is often messy. We have a "laundry" script that scrubs the data, removes HTML junk, and ensures everything is in a clean, readable format for the AI.
 
-1. **Environment Variables**:
-   Update the `.env` file with your API keys:
-   - `NEWS_API_KEY`: Get from [NewsAPI.org](https://newsapi.org/)
-   - `DATA_GOV_API_KEY`: Get from [Data.gov.in](https://data.gov.in/)
+3. **AI Understanding (Embeddings & Entities)**: 
+   - We don't just store text; we understand it. Using AI (Embeddings), we convert text into "math" that represents its meaning.
+   - We automatically identify important people, organizations, and places mentioned in the documents.
 
-2. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+4. **Connecting the Dots (Knowledge Graph)**: 
+   - The system automatically links different pieces of data. For example, if a "Manifesto" promised free health insurance and a "Bill" was later passed about it, the system creates a link between them.
+   - **Similarity Threshold**: We only create links when the AI is 75% sure they are related.
 
-## Usage
+5. **Direct Database Sync**:
+   - Everything we process is automatically uploaded to a **PostgreSQL (Supabase)** database.
+   - This keeps the backend and the website perfectly in sync with the latest data.
 
-Run the entire pipeline:
+6. **Automatic Quality Guard (Validator)**:
+   - We have a script that checks our progress. If we have fewer than 1000 records or missing years, it automatically triggers the scrapers to find more.
+
+---
+
+## 📂 Project Structure
+
+- `scrapers/`: The "robots" that collect data from the web.
+- `processing/`: The AI logic that cleans, understands, and links data.
+- `database/`: Scripts to create tables and sync data to your live database.
+- `scheduler/`: Orchestrates all scrapers to run at once.
+- `data/`: Local storage for the Knowledge Graph and processed files.
+
+## 🛠️ How to use it
+
+### 1. Initial Setup
+Install the necessary libraries:
 ```bash
-python main.py
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
 ```
 
-Or run individual scrapers:
+### 2. Run the Full Engine
+This will validate your data, scrape more if needed, process it with AI, and upload it to your database:
 ```bash
-python scrapers/manifesto_scraper.py
-python scrapers/manifesto_pdf_parser.py
+python processing/validate_dataset.py
 ```
 
-## Data Sources
+### 3. Check the Status
+Run this to see how much data you have in your live database:
+```bash
+python database/check_schema.py
+```
 
-1. **Election Manifestos**: Downloads PDFs for BJP and INC (2004, 2009, 2014, 2019, 2024) and parses them into structured JSON using PyMuPDF.
-2. **Government Policies**: Scrapes latest policy announcements from Press Information Bureau (PIB).
-3. **Parliamentary Bills**: Scrapes legislative bills from PRS India.
-4. **Government Open Data**: Fetches datasets related to economy, health, etc., from Data.gov.in API.
-5. **News Data**: Fetches recent news articles related to Indian government policies from NewsAPI.
+## 📊 Performance Tracking
+The system generates a `data/dataset_report.txt` after every run, showing:
+- Total nodes (records)
+- Total relationships (connections)
+- Year-by-year data distribution
 
-## Data Cleaning
-Scraped text is cleaned to remove extra whitespace, newlines, and HTML tags using the `pipelines/data_cleaner.py` utility.
+---
+**Status**: Data is currently being uploaded correctly to the PostgreSQL database.
 
-## Error Handling
-All scrapers include robust `try/except` blocks and log failures to `logs/scraper.log`.
+## 🤝 For Collaborators (Working with the DB)
+
+If you are joining this project, **you do not need to re-scrape the data**. Most governance records (bills, news, policies) are already stored in the shared Supabase database.
+
+### 1. Skip Scraping
+Instead of running `python main.py` or `run_scrapers.py`, you can directly query the PostgreSQL tables:
+- `bills`: Latest legislation.
+- `news`: Relevant media coverage.
+- `promises`: Manifesto items & progress.
+
+### 2. Required Setup
+Ensure your `.env` file has the shared database credentials (DB_HOST, DB_USER, etc.). If you don't have them, ask for the Supabase access keys.
+
+### 3. When SHOULD you scrape?
+Only run the scrapers if:
+- You need to update the data with newer 2025/2026 records.
+- You are adding a new source (e.g., a new government portal).
+- The `validate_dataset.py` report shows a coverage gap.
+

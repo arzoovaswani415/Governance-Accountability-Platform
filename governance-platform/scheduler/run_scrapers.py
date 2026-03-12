@@ -1,10 +1,16 @@
+import logging
+import sys
+from pathlib import Path
+
+# Add current directory to path
+sys.path.append(str(Path(__file__).parent.parent))
+
 from scrapers.manifesto_scraper import download_manifestos
 from scrapers.manifesto_pdf_parser import parse_manifestos
-from scrapers.policy_scraper import scrape_pib_policies
-from scrapers.bills_scraper import scrape_prs_bills
-from scrapers.opengov_scraper import fetch_gov_datasets
-from scrapers.news_api import fetch_news
-import logging
+from scrapers.bills_scraper import scrape_prs_bills_enriched
+from scrapers.opengov_scraper import fetch_gov_datasets_enriched
+from scrapers.news_api import fetch_news_enriched
+from scrapers.pib_scraper import scrape_pib_releases
 from config.settings import LOG_FILE
 
 # Setup logging
@@ -13,36 +19,36 @@ logging.basicConfig(filename=LOG_FILE, level=logging.INFO,
 
 def run_all_scrapers():
     """
-    Sequence:
-    1. scrape_manifestos() -> download_manifestos()
-    2. parse_manifestos()
-    3. scrape_policies() -> scrape_pib_policies()
-    4. scrape_bills() -> scrape_prs_bills()
-    5. scrape_datasets() -> fetch_gov_datasets()
-    6. fetch_news()
+    Orchestrate all scrapers to reach 1000+ records.
     """
-    logging.info("Starting Data Collection Pipeline...")
+    logging.info("Starting Expanded Data Collection Pipeline...")
+    print("--- Starting Data Collection (Goal: 1000+ Records) ---")
     
-    print("Step 1: Downloading Manifestos...")
-    download_manifestos()
+    # Step 1: Manifestos (usually pre-existing or slow)
+    print("Step 1: Parsing Manifestos...")
+    try:
+        parse_manifestos()
+    except Exception as e:
+        print(f"Manifesto parsing failed: {e}")
     
-    print("Step 2: Parsing Manifestos...")
-    parse_manifestos()
+    # Step 2: PRS Bills (PRS Legislative Research)
+    print("Step 2: Scraping Parliamentary Bills (PRS)...")
+    scrape_prs_bills_enriched(limit=1000)
     
-    print("Step 3: Scraping Government Policies...")
-    scrape_pib_policies()
+    # Step 3: PIB Press Releases
+    print("Step 3: Scraping Government Press Releases (PIB)...")
+    scrape_pib_releases(limit=500)
     
-    print("Step 4: Scraping Parliamentary Bills...")
-    scrape_prs_bills()
+    # Step 4: Government Datasets (Data.gov.in)
+    print("Step 4: Fetching Government Datasets (Data.gov.in)...")
+    fetch_gov_datasets_enriched()
     
-    print("Step 5: Fetching Government Datasets...")
-    fetch_gov_datasets()
+    # Step 5: News Articles (NewsAPI)
+    print("Step 5: Fetching News Articles...")
+    fetch_news_enriched(target_count=1000)
     
-    print("Step 6: Fetching Recent News...")
-    fetch_news()
-    
-    logging.info("Data Collection Pipeline Completed.")
-    print("Pipeline Execution Finished. Check logs/scraper.log for details.")
+    logging.info("Expanded Data Collection Pipeline Completed.")
+    print("--- Data Collection Finished ---")
 
 if __name__ == "__main__":
     run_all_scrapers()

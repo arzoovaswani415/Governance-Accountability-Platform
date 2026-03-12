@@ -20,9 +20,10 @@ POLICIES_DIR = DATA_DIR / "policies"
 BILLS_DIR = DATA_DIR / "bills"
 NEWS_DIR = DATA_DIR / "news"
 DATASETS_DIR = DATA_DIR / "datasets"
+PIB_DIR = DATA_DIR / "pib"
 
 # Ensure directories exist
-for path in [RAW_MANIFESTO_DIR, PROCESSED_MANIFESTO_DIR, POLICIES_DIR, BILLS_DIR, NEWS_DIR, DATASETS_DIR]:
+for path in [RAW_MANIFESTO_DIR, PROCESSED_MANIFESTO_DIR, POLICIES_DIR, BILLS_DIR, NEWS_DIR, DATASETS_DIR, PIB_DIR]:
     path.mkdir(parents=True, exist_ok=True)
 
 # Logs
