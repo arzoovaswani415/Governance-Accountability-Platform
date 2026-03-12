@@ -77,7 +77,12 @@ Instead of running `python main.py` or `run_scrapers.py`, you can directly query
 - `promises`: Manifesto items & progress.
 
 ### 2. Required Setup
-Ensure your `.env` file has the shared database credentials (DB_HOST, DB_USER, etc.). If you don't have them, ask for the Supabase access keys.
+Ensure your `.env` file has the following keys:
+- **Database**: `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (Supabase credentials)
+- **AI**: `GEMINI_API_KEY` (Required for building relationships and understanding text)
+- **Scraping**: `NEWS_API_KEY`, `DATA_GOV_API_KEY` (Required only if you want to run scrapers)
+
+If you don't have these, ask for the project's shared secret file.
 
 ### 3. When SHOULD you scrape?
 Only run the scrapers if:
