@@ -8,6 +8,7 @@ from app.models.timeline_event import TimelineEvent
 from app.models.mapping import PromisePolicyMapping
 from app.models.bill_timeline import BillTimeline
 from app.models.chat import ChatSession, ChatMessage, UploadedDocument, DocumentChunk
+from app.models.debate import BillDebate, DebateSentiment
 
 __all__ = [
     "ElectionCycle",
@@ -24,4 +25,6 @@ __all__ = [
     "ChatMessage",
     "UploadedDocument",
     "DocumentChunk",
+    "BillDebate",
+    "DebateSentiment"
 ]

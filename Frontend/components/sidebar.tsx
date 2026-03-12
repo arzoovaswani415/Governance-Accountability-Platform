@@ -19,6 +19,7 @@ const navItems = [
   { href: '/policies', icon: FileText, label: 'Policies' },
   { href: '/budget', icon: TrendingUp, label: 'Budget Analysis' },
   { href: '/timeline', icon: Clock, label: 'Timeline' },
+  { href: '/debates', icon: FileText, label: 'Parliamentary Debates' },
   { href: '/assistant', icon: MessageSquare, label: 'AI Assistant' },
   { href: '/governance-map', icon: Network, label: 'Governance Map' },
 ]

@@ -175,3 +175,5 @@ violations {
 2026-03-13 01:31:13,040 - Chat Query: what were the policies implemented in healthcare sector | Tools used: ['governance_database_query']
 2026-03-13 01:33:16,187 - Document uploaded: 3.Strategic Brand Management Process.pdf into session: a5434939-87e1-43f5-893c-1deb143caa83
 2026-03-13 01:33:24,120 - Chat Query: Summarize this manifesto | Tools used: ['document_summarization']
+2026-03-13 01:57:19,999 - Use pytorch device_name: cpu
+2026-03-13 01:57:20,000 - Load pretrained SentenceTransformer: all-MiniLM-L6-v2

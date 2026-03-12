@@ -408,6 +408,56 @@ export async function getBillTimeline(billId: number): Promise<BillTimelineRespo
   return apiFetch<BillTimelineResponse>(`/bills/${billId}/timeline`)
 }
 
+// ─── DEBATE INTELLIGENCE ──────────────────────────────────────────────────────
+
+export interface DebateAmendment {
+  stage: string
+  description: string
+  date: string
+}
+
+export interface DebateSummaryResponse {
+  bill_name: string
+  debate_summary: string
+  key_amendments: DebateAmendment[]
+}
+
+export interface DebateTimelineEvent {
+  stage: string
+  description: string
+  date: string
+}
+
+export interface DebateTimelineResponse {
+  bill_id: number
+  timeline: DebateTimelineEvent[]
+}
+
+export interface DebateSentimentResponse {
+  support: number
+  opposition: number
+  neutral: number
+  summary?: string
+  rationale?: string
+  feedback?: string
+  verdict?: string
+  themes?: string
+  concerns?: string
+}
+
+export async function getDebateSummary(billId: number): Promise<DebateSummaryResponse> {
+  return apiFetch<DebateSummaryResponse>(`/bills/${billId}/debate-summary`)
+}
+
+export async function getDebateTimeline(billId: number): Promise<DebateTimelineResponse> {
+  return apiFetch<DebateTimelineResponse>(`/bills/${billId}/debate-timeline`)
+}
+
+export async function getDebateSentiment(billId: number): Promise<DebateSentimentResponse> {
+  return apiFetch<DebateSentimentResponse>(`/bills/${billId}/debate-sentiment`)
+}
+
+
 // ─── BUDGET PIPELINE ──────────────────────────────────────────────────────────
 
 export interface BudgetSectorData {
