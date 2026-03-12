@@ -39,10 +39,15 @@ venv.bak/
 .env.local
 .env.*.local
 
-# Scraped Data output
-/governance-platform/data/
+# Scraped Data output (Ignore directories but allow specific processed files)
+/governance-platform/data/raw/
 /governance-platform/logs/
 /tmp/
+
+# Allow core knowledge graph files so collaborators have the results
+!/governance-platform/data/knowledge_graph.json
+!/governance-platform/data/relationships.json
+!/governance-platform/data/dataset_report.txt
 !/governance-platform/data/.gitkeep
 
 # IDEs

@@ -1,0 +1,42 @@
+
+Dataset Validation Report
+=========================
+Total records: 2213
+Minimum year: 1956
+Maximum year: 2026
+
+Records per year:
+1956: 1 (Historical)
+1992: 1 (Historical)
+1994: 1 (Historical)
+1996: 1 (Historical)
+1997: 1 (Historical)
+1998: 1 (Historical)
+1999: 2 (Historical)
+2000: 1 (Historical)
+2001: 2 (Historical)
+2004: 66 (Historical)
+2005: 53 (Historical)
+2006: 55 (Historical)
+2007: 66 (Historical)
+2008: 64 (Historical)
+2009: 58 (Historical)
+2010: 72 (Historical)
+2011: 63 (Historical)
+2012: 35 (Historical)
+2013: 59 (Historical)
+2014: 139
+2015: 112
+2016: 108
+2017: 126
+2018: 126
+2019: 133
+2020: 92
+2021: 84
+2022: 47
+2023: 68
+2024: 50
+2025: 63
+2026: 463
+
+Dataset satisfies requirements (1000+ total, >=40 per year from 2014): Yes
