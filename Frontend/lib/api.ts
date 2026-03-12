@@ -561,7 +561,7 @@ export interface AiChatResponse {
 // --- Chat & Assistant Endpoints ---
 
 export async function createChatSession(payload: { user_id?: string; session_title?: string }) {
-  return apiFetch<ChatSession>('/api/ai/chat/session', undefined, {
+  return apiFetch<ChatSession>('/ai/chat/session', undefined, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -569,11 +569,11 @@ export async function createChatSession(payload: { user_id?: string; session_tit
 }
 
 export async function getChatSessions() {
-  return apiFetch<ChatSession[]>('/api/ai/chat/sessions');
+  return apiFetch<ChatSession[]>('/ai/chat/sessions');
 }
 
 export async function getChatHistory(sessionId: string) {
-  return apiFetch<ChatSession>(`/api/ai/chat/history/${sessionId}`);
+  return apiFetch<ChatSession>(`/ai/chat/history/${sessionId}`);
 }
 
 export async function uploadDocument(sessionId: string, file: File) {
@@ -585,7 +585,7 @@ export async function uploadDocument(sessionId: string, file: File) {
   if (base.endsWith('/api')) {
     base = base.slice(0, -4);
   }
-  const url = `${base}/api/ai/chat/upload`.replace(/\/\//g, '/').replace(':/', '://');
+  const url = `${base}/ai/chat/upload`.replace(/\/\//g, '/').replace(':/', '://');
   
   const res = await fetch(url, {
     method: 'POST',
@@ -596,7 +596,7 @@ export async function uploadDocument(sessionId: string, file: File) {
 }
 
 export async function sendChatMessage(payload: { session_id: string; message: string }) {
-  return apiFetch<AiChatResponse>('/api/ai/chat/message', undefined, {
+  return apiFetch<AiChatResponse>('/ai/chat/message', undefined, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -604,7 +604,7 @@ export async function sendChatMessage(payload: { session_id: string; message: st
 }
 
 export async function deleteChatSession(sessionId: string) {
-  return apiFetch<{ status: string; message: string }>(`/api/ai/chat/session/${sessionId}`, undefined, {
+  return apiFetch<{ status: string; message: string }>(`/ai/chat/session/${sessionId}`, undefined, {
     method: 'DELETE'
   });
 }
