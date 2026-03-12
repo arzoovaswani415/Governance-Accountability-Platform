@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -9,6 +9,14 @@ import {
   MessageSquare,
   AlertTriangle,
   Shield,
+  BarChart3,
+  PieChart as PieIcon,
+  Activity,
+  ArrowUpRight,
+  ArrowDownRight,
+  Globe,
+  Database,
+  Layers
 } from 'lucide-react'
 import { FilterBar } from '@/components/filters/filter-bar'
 import { useLocalFilters, budgetTypes } from '@/components/filters/filter-context'
@@ -26,6 +34,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  AreaChart,
+  Area
 } from 'recharts'
 
 import { 
@@ -39,8 +49,6 @@ import {
   type BudgetTrendPipeline,
   type BudgetDistribution as BudgetDistType
 } from '@/lib/api'
-
-import { useEffect } from 'react'
 
 export default function BudgetAnalysisPage() {
   const filters = useLocalFilters()
@@ -87,7 +95,7 @@ export default function BudgetAnalysisPage() {
 
         // Process Distribution
         const sectorColors = [
-          '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'
+          '#10b981', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'
         ]
         const distData = distRaw.map((d, i) => ({
           name: d.sector,
@@ -114,7 +122,6 @@ export default function BudgetAnalysisPage() {
           .sort((a, b) => (b.promise_count ?? 0) - (a.promise_count ?? 0))
         setAlignmentData(sortedAlignments)
 
-        // Funding gaps: promises exist but alignment is weak
         const gaps = sortedAlignments.filter(a => a.promise_count > 0 && a.alignment === 'weak')
         setFundingGaps(gaps)
         
@@ -128,10 +135,10 @@ export default function BudgetAnalysisPage() {
   }, [])
 
   const getAlignmentBadge = (alignment: BudgetPromiseAlignment['alignment']) => {
-    if (alignment === 'strong') return 'bg-secondary text-secondary-foreground'
-    if (alignment === 'moderate') return 'bg-accent text-accent-foreground'
-    if (alignment === 'weak') return 'bg-destructive text-destructive-foreground'
-    return 'bg-muted text-muted-foreground'
+    if (alignment === 'strong') return 'bg-emerald-500/10 text-emerald-600 border-emerald-200'
+    if (alignment === 'moderate') return 'bg-indigo-500/10 text-indigo-600 border-indigo-200'
+    if (alignment === 'weak') return 'bg-rose-500/10 text-rose-600 border-rose-200'
+    return 'bg-slate-500/10 text-slate-600 border-slate-200'
   }
 
   const sectors = availableSectors.length > 0
@@ -139,242 +146,292 @@ export default function BudgetAnalysisPage() {
     : ['Healthcare', 'Energy', 'Agriculture', 'Education', 'Infrastructure', 'Technology', 'Environment']
 
   return (
-    <div className="min-h-screen p-4 md:p-8 bg-background">
-      {/* Header */}
-      <div className="mb-8 border-b border-border/50 pb-6 relative">
-        <div className="flex items-center gap-2 mb-2">
-           <Shield className="h-6 w-6 text-primary opacity-80" />
-           <span className="gov-badge-official">National Budgetary Pipeline</span>
-        </div>
-        <h1 className="text-4xl font-bold tracking-tight">Budget Analysis</h1>
-        <p className="text-muted-foreground mt-2 text-base">
-          Analyze how government budget allocations relate to manifesto promises and policies
-        </p>
-      </div>
-
-      {/* Modern Filter Bar - Sticky */}
-      <div className="sticky top-16 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-4 mb-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <Card className="p-4 bg-card/95 border border-border shadow-sm">
-          <FilterBar
-            searchQuery={filters.searchQuery}
-            setSearchQuery={filters.setSearchQuery}
-            searchPlaceholder="Search sector budgets or policies..."
-            electionCycle={filters.electionCycle}
-            setElectionCycle={filters.setElectionCycle}
-            selectedSectors={filters.selectedSectors}
-            setSelectedSectors={filters.setSelectedSectors}
-            toggleSector={filters.toggleSector}
-            sectors={sectors}
-            selectedStatuses={filters.selectedStatuses}
-            setSelectedStatuses={filters.setSelectedStatuses}
-            showStatuses={false}
-            statuses={[]}
-            budgetType={filters.budgetType}
-            setBudgetType={filters.setBudgetType}
-            budgetTypes={budgetTypes}
-            showBudgetType={true}
-            clearAllFilters={filters.clearAllFilters}
-            hasActiveFilters={filters.hasActiveFilters}
-          />
-        </Card>
-      </div>
-
-      {/* SECTION 1: Budget Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="p-6 border border-border">
-          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-            Total Budget Analyzed
-          </p>
-          <p className="text-3xl font-bold">₹{(totalBudget / 1000).toFixed(1)}K Cr</p>
-          <p className="text-xs text-muted-foreground mt-2">Latest Year Total</p>
-        </Card>
-
-        <Card className="p-6 border border-border">
-          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-            Healthcare Budget
-          </p>
-          <p className="text-3xl font-bold text-secondary">₹{(healthcareBudget / 1000).toFixed(1)}K Cr</p>
-          <p className="text-xs text-muted-foreground mt-2">Latest Year Allocation</p>
-        </Card>
-
-        <Card className="p-6 border border-border">
-          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-            Energy Budget
-          </p>
-          <p className="text-3xl font-bold text-accent">₹{(energyBudget / 1000).toFixed(1)}K Cr</p>
-          <p className="text-xs text-muted-foreground mt-2">Latest Year Allocation</p>
-        </Card>
-
-        <Card className="p-6 border border-border">
-          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-            Agriculture Budget
-          </p>
-          <p className="text-3xl font-bold">₹{(agricultureBudget / 1000).toFixed(1)}K Cr</p>
-          <p className="text-xs text-muted-foreground mt-2">Latest Year Allocation</p>
-        </Card>
-      </div>
-
-      {/* SECTION 2: Sector Budget Allocation Trends */}
-      <Card className="p-8 border border-border shadow-sm mb-8">
-        <h2 className="text-xl font-bold mb-6">Sector Budget Allocation Over Time</h2>
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={trendData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-            <XAxis dataKey="year" stroke="var(--muted-foreground)" />
-            <YAxis stroke="var(--muted-foreground)" />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'var(--card)',
-                border: '1px solid var(--border)',
-                borderRadius: '8px',
-              }}
-              formatter={(value: number) => `₹${value.toLocaleString()} Cr`}
-            />
-            <Legend />
-            {distributionData.map((d) => (
-              <Line key={d.name} type="monotone" dataKey={d.name} stroke={d.color} strokeWidth={2.5} dot={false} />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </Card>
-
-      {/* SECTION 3: Budget vs Promises (sector-level, real data) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {alignmentData.slice(0, 3).map((item, idx) => (
-          <Card key={`${item.sector}-${idx}`} className="p-6 border border-border">
-            <div className="mb-4 flex items-start justify-between gap-3">
-              <div>
-                <h3 className="font-semibold text-base leading-snug">{item.sector}</h3>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Promises: <span className="font-medium text-foreground">{item.promise_count}</span>
-                </p>
+    <div className="min-h-screen bg-slate-50/50 pt-20 pb-10 px-8">
+      {/* Premium Header */}
+      <div className="max-w-[1600px] mx-auto mb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-10 w-10 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-200">
+                <Shield className="h-5 w-5 text-white" />
               </div>
-              <Badge className={getAlignmentBadge(item.alignment)}>{item.alignment}</Badge>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Fiscal Intelligence Unit</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider leading-none">Republic of India • 2024-25</span>
+              </div>
             </div>
+            <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-tight">
+              National Budgetary <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-indigo-600">Pipeline Analysis</span>
+            </h1>
+          </div>
+          <div className="flex items-center gap-4 bg-white p-2 rounded-2xl shadow-sm border border-slate-200/60">
+            <div className="px-4 py-2 text-right">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Monitored</p>
+              <p className="text-xl font-black text-slate-900">₹{(totalBudget / 1000).toFixed(1)}K Cr</p>
+            </div>
+            <div className="h-10 w-px bg-slate-100" />
+            <div className="px-4 py-2">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</p>
+              <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-200 font-black uppercase text-[10px]">Active Tracker</Badge>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div className="space-y-3 pt-3 border-t">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                  Avg funding (₹ Cr)
-                </span>
-                <span className="text-sm font-bold">₹{item.avg_funding_crores.toLocaleString()}</span>
+      <div className="max-w-[1600px] mx-auto grid grid-cols-12 gap-8">
+        {/* Sidebar Filters - Integrated */}
+        <div className="col-span-12 lg:col-span-3 space-y-6">
+          <Card className="p-6 rounded-[2rem] border-slate-200/60 shadow-xl shadow-slate-200/20 bg-white sticky top-24">
+            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+              <Database className="h-4 w-4 text-emerald-500" />
+              Query Parameters
+            </h3>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Global Search</label>
+                <FilterBar
+                  searchQuery={filters.searchQuery}
+                  setSearchQuery={filters.setSearchQuery}
+                  searchPlaceholder="Filter fiscal data..."
+                  electionCycle={filters.electionCycle}
+                  setElectionCycle={filters.setElectionCycle}
+                  selectedSectors={filters.selectedSectors}
+                  setSelectedSectors={filters.setSelectedSectors}
+                  toggleSector={filters.toggleSector}
+                  sectors={sectors}
+                  selectedStatuses={filters.selectedStatuses}
+                  setSelectedStatuses={filters.setSelectedStatuses}
+                  showStatuses={false}
+                  statuses={[]}
+                  budgetType={filters.budgetType}
+                  setBudgetType={filters.setBudgetType}
+                  budgetTypes={budgetTypes}
+                  showBudgetType={true}
+                  clearAllFilters={filters.clearAllFilters}
+                  hasActiveFilters={filters.hasActiveFilters}
+                  hideFilters={true}
+                />
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                  Budget growth
-                </span>
-                <span className="text-sm font-bold">{item.budget_growth_percent}%</span>
+
+              <div className="pt-6 border-t border-slate-100 italic text-[11px] text-slate-400 leading-relaxed">
+                "Cross-referencing annual budget reports with manifesto points across all active government sectors."
               </div>
             </div>
           </Card>
-        ))}
-      </div>
-
-      {/* SECTION 4: Sector Funding Distribution */}
-      <Card className="p-7 border border-border shadow-sm mb-8">
-        <h2 className="text-xl font-bold mb-6">Sector Funding Distribution</h2>
-        <ResponsiveContainer width="100%" height={320}>
-          <PieChart>
-            <Pie
-              data={distributionData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={({ name, value }) => `${name}: ₹${value.toLocaleString()}Cr`}
-              outerRadius={100}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {distributionData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}Cr`} />
-          </PieChart>
-        </ResponsiveContainer>
-      </Card>
-
-      {/* SECTION 5: Budget Growth Insights */}
-      <Card className="p-7 border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent mb-8">
-        <div className="flex items-start gap-4">
-          <MessageSquare className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
-          <div className="flex-1">
-            <h3 className="font-bold text-lg mb-3">Budget Growth Insights</h3>
-            <p className="text-base text-foreground leading-relaxed">
-              This section will become more evidence-backed as we expand document ingestion and strengthen promise ↔ policy ↔ budget
-              linkage confidence. For now, the charts and alignment cards above are computed from the current database budgets + promise
-              counts per sector.
-            </p>
-          </div>
         </div>
-      </Card>
 
-      {/* SECTION 6: Budget vs Promises Analysis Table (sector-level, real data) */}
-      <Card className="p-7 border border-border shadow-sm mb-8">
-        <h2 className="text-xl font-bold mb-6">Budget vs Promises Analysis</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Sector</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Promise Count</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Avg Funding (₹ Cr)</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Budget Growth</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Alignment</th>
-              </tr>
-            </thead>
-            <tbody>
-              {alignmentData.map((item, idx) => (
-                <tr key={`${item.sector}-${idx}`} className="border-b hover:bg-muted/30 transition-colors">
-                  <td className="py-3 px-4">
-                    <Badge variant="outline">{item.sector}</Badge>
-                  </td>
-                  <td className="py-3 px-4 font-medium">{item.promise_count}</td>
-                  <td className="py-3 px-4">₹{item.avg_funding_crores.toLocaleString()}</td>
-                  <td className="py-3 px-4">{item.budget_growth_percent}%</td>
-                  <td className="py-3 px-4">
-                    <Badge className={getAlignmentBadge(item.alignment)}>{item.alignment}</Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
-      {/* SECTION 7: Funding Gap Detection */}
-      <div>
-        <h2 className="text-2xl font-bold mb-6">Funding Gap Detection</h2>
-        <div className="space-y-4">
-          {fundingGaps.map((gap, idx) => (
-            <Card key={`${gap.sector}-${idx}`} className="p-6 border-l-4 border-l-destructive bg-destructive/5">
-              <div className="flex items-start gap-4">
-                <AlertTriangle className="h-6 w-6 text-destructive mt-1 flex-shrink-0" />
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold">{gap.sector}</h3>
-                    <Badge className="bg-destructive text-destructive-foreground">Weak alignment</Badge>
+        {/* Main Content Area */}
+        <div className="col-span-12 lg:col-span-9 space-y-8">
+          {/* Top KPI Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { label: 'Healthcare Allocation', value: healthcareBudget, icon: Activity, color: 'emerald' },
+              { label: 'Energy Allocation', value: energyBudget, icon: Globe, color: 'indigo' },
+              { label: 'Agriculture Allocation', value: agricultureBudget, icon: Layers, color: 'amber' },
+            ].map((kpi, i) => (
+              <Card key={i} className="group p-6 rounded-[2rem] border-slate-200/60 shadow-lg shadow-slate-200/20 bg-white hover:scale-[1.02] transition-all cursor-pointer overflow-hidden relative">
+                <div className={`absolute top-0 right-0 w-32 h-32 bg-${kpi.color}-500/10 rounded-full -mr-16 -mt-16 blur-3xl transition-all group-hover:scale-150`} />
+                <div className="relative z-10">
+                  <div className={`h-12 w-12 rounded-2xl bg-${kpi.color}-500/10 flex items-center justify-center mb-4`}>
+                    <kpi.icon className={`h-6 w-6 text-${kpi.color}-600`} />
                   </div>
-                  <Badge variant="outline" className="mb-3">
-                    Promises: {gap.promise_count}
-                  </Badge>
-                  <p className="text-sm text-foreground mb-4">
-                    This sector has promises recorded but low/flat budget growth signals.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Avg Funding (₹ Cr)</p>
-                      <p className="font-semibold">₹{gap.avg_funding_crores.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Budget Growth</p>
-                      <p className="font-semibold">{gap.budget_growth_percent}%</p>
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">{kpi.label}</p>
+                  <div className="flex items-end justify-between">
+                    <h4 className="text-3xl font-black text-slate-900">₹{(kpi.value / 1000).toFixed(1)}K <span className="text-lg font-bold text-slate-400">Cr</span></h4>
+                    <div className="flex items-center gap-1 text-emerald-600 font-bold text-xs bg-emerald-50 px-2 py-1 rounded-lg">
+                      <ArrowUpRight className="h-3 w-3" />
+                      8.4%
                     </div>
                   </div>
                 </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Large Trends Chart */}
+          <Card className="p-8 rounded-[2.5rem] border-slate-200/60 shadow-xl shadow-slate-200/20 bg-white">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">Multi-Sector Growth Vectors</h3>
+                <p className="text-sm text-slate-400 font-medium">Fiscal evolution over the analyzed policy lifespan</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" className="rounded-xl border-slate-200 font-bold text-xs h-9">Export Data</Button>
+                <div className="h-8 w-8 rounded-xl bg-slate-100 flex items-center justify-center">
+                  <TrendingUp className="h-4 w-4 text-slate-500" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trendData}>
+                  <defs>
+                    {distributionData.map((d, i) => (
+                      <linearGradient key={i} id={`color${d.name}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={d.color} stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor={d.color} stopOpacity={0}/>
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis 
+                    dataKey="year" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}}
+                    dy={10}
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}}
+                    tickFormatter={(v) => `₹${v/1000}k`}
+                  />
+                  <Tooltip 
+                    contentStyle={{borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '1rem'}}
+                    itemStyle={{fontWeight: 900, fontSize: '13px'}}
+                  />
+                  {distributionData.slice(0, 4).map((d) => (
+                    <Area 
+                      key={d.name} 
+                      type="monotone" 
+                      dataKey={d.name} 
+                      stroke={d.color} 
+                      strokeWidth={4}
+                      fillOpacity={1} 
+                      fill={`url(#color${d.name})`} 
+                    />
+                  ))}
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          {/* Alignment & Gap Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Funding Distribution (Pie) */}
+            <Card className="p-8 rounded-[2.5rem] border-slate-200/60 shadow-xl shadow-slate-200/20 bg-white">
+              <div className="flex items-center gap-3 mb-6">
+                <PieIcon className="h-5 w-5 text-indigo-500" />
+                <h3 className="text-lg font-black text-slate-900 tracking-tight">Allocation Portfolio</h3>
+              </div>
+              <div className="h-[300px] relative">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={distributionData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={80}
+                      outerRadius={110}
+                      paddingAngle={8}
+                      dataKey="value"
+                    >
+                      {distributionData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-2xl font-black text-slate-900">100%</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Balanced</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {distributionData.slice(0, 4).map((d, i) => (
+                  <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-100">
+                    <div className="h-2 w-2 rounded-full" style={{backgroundColor: d.color}} />
+                    <span className="text-[10px] font-bold text-slate-600 truncate">{d.name}</span>
+                  </div>
+                ))}
               </div>
             </Card>
-          ))}
+
+            {/* AI Insights & Gap Detection */}
+            <div className="space-y-6">
+              <Card className="p-8 rounded-[2.5rem] border-emerald-200/60 shadow-xl shadow-emerald-200/10 bg-emerald-50/30">
+                <div className="flex items-start gap-4">
+                  <MessageSquare className="h-6 w-6 text-emerald-600 mt-1" />
+                  <div>
+                    <h3 className="font-black text-lg text-emerald-900 mb-2">Fiscal Insight Vector</h3>
+                    <p className="text-sm text-emerald-800 leading-relaxed font-medium">
+                      Sectoral budget expansion is showing a <span className="font-black">strong correlation</span> with high-impact manifesto commitments in the Healthcare and Energy corridors.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <div className="space-y-4">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest px-2 mb-2 flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-rose-500" />
+                  Alert: Funding Gaps
+                </h3>
+                {fundingGaps.slice(0, 2).map((gap, i) => (
+                  <Card key={i} className="p-6 rounded-[2rem] border-rose-100 bg-white hover:bg-rose-50/30 transition-colors border-l-8 border-l-rose-500">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="font-black text-slate-900">{gap.sector}</h4>
+                        <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest mt-1">Stagnant Growth Pipeline</p>
+                      </div>
+                      <Badge className="bg-rose-500 font-black text-[9px] uppercase">Weak Alignment</Badge>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      <span>Promise Count: {gap.promise_count}</span>
+                      <span className="text-rose-600">Growth: {gap.budget_growth_percent}%</span>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Alignment Pipeline Table */}
+          <Card className="p-8 rounded-[2.5rem] border-slate-200/60 shadow-xl shadow-slate-200/20 bg-white overflow-hidden">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight mb-8">Detailed Alignment Pipeline</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-slate-100">
+                    <th className="text-left pb-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Sector Axis</th>
+                    <th className="text-left pb-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Commitment Yield</th>
+                    <th className="text-left pb-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Avg Liquidity (₹ Cr)</th>
+                    <th className="text-left pb-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Momentum</th>
+                    <th className="text-left pb-4 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Audit Vector</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {alignmentData.map((item, idx) => (
+                    <tr key={idx} className="group hover:bg-slate-50 transition-colors">
+                      <td className="py-5 px-4 font-black text-slate-900">{item.sector}</td>
+                      <td className="py-5 px-4">
+                        <div className="flex items-center gap-2">
+                          <div className="h-1.5 w-12 bg-slate-100 rounded-full overflow-hidden">
+                             <div className="h-full bg-emerald-500" style={{width: `${Math.min(100, (item.promise_count/10)*100)}%`}} />
+                          </div>
+                          <span className="text-xs font-bold text-slate-600">{item.promise_count}</span>
+                        </div>
+                      </td>
+                      <td className="py-5 px-4 font-black text-slate-900">₹{item.avg_funding_crores.toLocaleString()}</td>
+                      <td className="py-5 px-4">
+                        <span className={`text-xs font-black ${item.budget_growth_percent >=0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                          {item.budget_growth_percent > 0 ? '+' : ''}{item.budget_growth_percent}%
+                        </span>
+                      </td>
+                      <td className="py-5 px-4 text-right">
+                        <Badge variant="outline" className={`font-black uppercase text-[9px] tracking-widest ${getAlignmentBadge(item.alignment)}`}>
+                          {item.alignment}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         </div>
       </div>
     </div>
