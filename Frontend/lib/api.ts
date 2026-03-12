@@ -110,13 +110,25 @@ export interface GovernanceMapData {
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
-async function apiFetch<T>(path: string, params?: Record<string, string | number | undefined>): Promise<T> {
+async function apiFetch<T>(
+  path: string, 
+  params?: Record<string, string | number | undefined>,
+  options?: RequestInit
+): Promise<T> {
   let url: URL;
   try {
-    const fullPath = `${API_BASE}${path}`.replace(/\/\//g, '/').replace(':/', '://');
+    let base = API_BASE;
+    if (path.startsWith('/api') && base.endsWith('/api')) {
+      base = base.slice(0, -4);
+    }
+    const fullPath = `${base}${path}`.replace(/\/\//g, '/').replace(':/', '://');
     url = new URL(fullPath, typeof window !== 'undefined' ? window.location.origin : undefined);
   } catch (e) {
-    url = new URL(`${API_BASE}${path}`, 'http://localhost:3000');
+    let base = API_BASE;
+    if (path.startsWith('/api') && base.endsWith('/api')) {
+      base = base.slice(0, -4);
+    }
+    url = new URL(`${base}${path}`, 'http://localhost:3000');
   }
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
@@ -126,7 +138,11 @@ async function apiFetch<T>(path: string, params?: Record<string, string | number
     })
   }
   const res = await fetch(url.toString(), {
-    headers: { 'ngrok-skip-browser-warning': 'true' },
+    ...options,
+    headers: { 
+      'ngrok-skip-browser-warning': 'true',
+      ...(options?.headers || {})
+    },
   })
   if (!res.ok) throw new Error(`API error ${res.status}: ${path}`)
   return res.json() as Promise<T>
@@ -160,7 +176,8 @@ export async function getPolicies(filters?: {
   skip?: number
   limit?: number
 }): Promise<PolicyBrief[]> {
-  return apiFetch<PolicyBrief[]>('/policies/', filters)
+  const mergedFilters = { limit: 1000, ...filters }
+  return apiFetch<PolicyBrief[]>('/policies/', mergedFilters)
 }
 
 export async function getPolicyDetail(id: number): Promise<PolicyDetail> {
@@ -458,4 +475,82 @@ export async function findSimilarBills(params: {
   top_k?: number
 }): Promise<SimilarBill[]> {
   return apiFetch<SimilarBill[]>('/similarity/bills/similar', params)
+}
+
+// --- Chat & Assistant Interfaces ---
+
+export interface ChatMessage {
+  id?: number;
+  session_id: string;
+  role: 'user' | 'assistant' | 'system';
+  message: string;
+  created_at?: string;
+}
+
+export interface ChatSession {
+  id: string;
+  user_id?: string;
+  session_title: string;
+  created_at: string;
+  updated_at: string;
+  messages: ChatMessage[];
+}
+
+export interface UploadedDocument {
+  id: number;
+  session_id: string;
+  file_name: string;
+  file_type: string;
+  uploaded_at: string;
+}
+
+export interface AiChatResponse {
+  answer: string;
+  reasoning?: string;
+  tools_used: string[];
+}
+
+// --- Chat & Assistant Endpoints ---
+
+export async function createChatSession(payload: { user_id?: string; session_title?: string }) {
+  return apiFetch<ChatSession>('/api/ai/chat/session', undefined, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function getChatSessions() {
+  return apiFetch<ChatSession[]>('/api/ai/chat/sessions');
+}
+
+export async function getChatHistory(sessionId: string) {
+  return apiFetch<ChatSession>(`/api/ai/chat/history/${sessionId}`);
+}
+
+export async function uploadDocument(sessionId: string, file: File) {
+  const formData = new FormData();
+  formData.append('session_id', sessionId);
+  formData.append('file', file);
+
+  let base = API_BASE;
+  if (base.endsWith('/api')) {
+    base = base.slice(0, -4);
+  }
+  const url = `${base}/api/ai/chat/upload`.replace(/\/\//g, '/').replace(':/', '://');
+  
+  const res = await fetch(url, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Failed to upload document');
+  return res.json() as Promise<UploadedDocument>;
+}
+
+export async function sendChatMessage(payload: { session_id: string; message: string }) {
+  return apiFetch<AiChatResponse>('/api/ai/chat/message', undefined, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
 }

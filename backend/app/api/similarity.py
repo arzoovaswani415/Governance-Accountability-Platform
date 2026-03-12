@@ -18,6 +18,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sentence_transformers import SentenceTransformer, util
 import torch
+import re
 
 from app.database import get_db
 from app.models import Policy, Bill
@@ -38,7 +39,7 @@ def _encode(texts: list[str]):
 # ── Helper: Build policy text corpus ─────────────────────────────────────
 def _build_policy_corpus(policies: list[Policy]) -> list[str]:
     return [
-        f"{p.name}. {p.description or ''} {p.ministry or ''}".strip()
+        f"{p.name}. {p.description or ''} {p.ministry or ''} {p.state_name or ''}".strip()
         for p in policies
     ]
 
@@ -81,7 +82,7 @@ def find_similar_policies(
         source = db.query(Policy).filter(Policy.id == policy_id).first()
         if not source:
             raise HTTPException(status_code=404, detail=f"Policy {policy_id} not found")
-        query_text = f"{source.name}. {source.description or ''} {source.ministry or ''}".strip()
+        query_text = f"{source.name}. {source.description or ''} {source.ministry or ''} {source.state_name or ''}".strip()
     else:
         query_text = query  # type: ignore[assignment]
 
@@ -94,11 +95,19 @@ def find_similar_policies(
     indexed_scores = sorted(enumerate(scores.tolist()), key=lambda x: x[1], reverse=True)
 
     results = []
+    seen_names = set()
     for idx, score in indexed_scores:
         pol = all_policies[idx]
         # Skip the source policy itself
         if policy_id and pol.id == policy_id:
             continue
+            
+        # Normalize name by removing years (e.g. ", 2013" or " 2011") and extra spaces
+        base_name = re.sub(r',?\s*\d{4}$', '', pol.name).strip().lower()
+        if base_name in seen_names:
+            continue
+        seen_names.add(base_name)
+        
         results.append({
             "id":             pol.id,
             "name":           pol.name,
@@ -108,6 +117,8 @@ def find_similar_policies(
             "ministry":       pol.ministry,
             "sector":         pol.sector.name if pol.sector else None,
             "similarity":     round(score, 4),
+            "policy_level":   pol.policy_level,
+            "state_name":     pol.state_name,
         })
         if len(results) >= top_k:
             break
@@ -159,10 +170,17 @@ def find_similar_bills(
     indexed_scores = sorted(enumerate(scores.tolist()), key=lambda x: x[1], reverse=True)
 
     results = []
+    seen_names = set()
     for idx, score in indexed_scores:
         b = all_bills[idx]
         if bill_id and b.id == bill_id:
             continue
+            
+        base_name = re.sub(r',?\s*\d{4}$', '', b.name).strip().lower()
+        if base_name in seen_names:
+            continue
+        seen_names.add(base_name)
+        
         results.append({
             "id":              b.id,
             "name":            b.name,

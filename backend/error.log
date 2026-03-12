@@ -1,0 +1,74 @@
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "policy_mapping" violates foreign key constraint "policy_mapping_state_policy_id_fkey"
+DETAIL:  Key (state_policy_id)=(893) is not present in table "state_policies".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/tanyavaswani/Desktop/Augenblick_hackathon/Governance-Accountability-Platform/backend/processing/state_policy_mapper.py", line 65, in map_state_policies_to_national
+    db.commit()
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2028, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 4352, in flush
+    self._flush(objects)
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 4487, in _flush
+    with util.safe_reraise():
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 4448, in _flush
+    flush_context.execute()
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "policy_mapping" violates foreign key constraint "policy_mapping_state_policy_id_fkey"
+DETAIL:  Key (state_policy_id)=(893) is not present in table "state_policies".
+
+[SQL: INSERT INTO policy_mapping (similarity_score, state_policy_id, national_policy_id) SELECT p0::FLOAT, p1::INTEGER, p2::INTEGER FROM (VALUES (%(similarity_score__0)s, %(state_policy_id__0)s, %(national_policy_id__0)s, 0), (%(similarity_score__1)s, %(st ... 3431 characters truncated ... 0, p1, p2, sen_counter) ORDER BY sen_counter RETURNING policy_mapping.id, policy_mapping.id AS id__1]
+[parameters: {'state_policy_id__0': 893, 'similarity_score__0': 0.4685536026954651, 'national_policy_id__0': 628, 'state_policy_id__1': 893, 'similarity_score__1': 0.4685536026954651, 'national_policy_id__1': 782, 'state_policy_id__2': 893, 'similarity_score__2': 0.4685536026954651, 'national_policy_id__2': 412, 'state_policy_id__3': 895, 'similarity_score__3': 0.49901342391967773, 'national_policy_id__3': 607, 'state_policy_id__4': 895, 'similarity_score__4': 0.49901342391967773, 'national_policy_id__4': 776, 'state_policy_id__5': 895, 'similarity_score__5': 0.49901342391967773, 'national_policy_id__5': 406, 'state_policy_id__6': 891, 'similarity_score__6': 0.4734247326850891, 'national_policy_id__6': 628, 'state_policy_id__7': 891, 'similarity_score__7': 0.4734247326850891, 'national_policy_id__7': 782, 'state_policy_id__8': 891, 'similarity_score__8': 0.4734247326850891, 'national_policy_id__8': 412, 'state_policy_id__9': 862, 'similarity_score__9': 0.45908862352371216, 'national_policy_id__9': 676, 'state_policy_id__10': 862, 'similarity_score__10': 0.45908862352371216, 'national_policy_id__10': 267, 'state_policy_id__11': 862, 'similarity_score__11': 0.45908862352371216, 'national_policy_id__11': 465, 'state_policy_id__12': 869, 'similarity_score__12': 0.41327595710754395, 'national_policy_id__12': 782, 'state_policy_id__13': 869, 'similarity_score__13': 0.41327595710754395, 'national_policy_id__13': 628, 'state_policy_id__14': 869, 'similarity_score__14': 0.41327595710754395, 'national_policy_id__14': 412, 'state_policy_id__15': 876, 'similarity_score__15': 0.43631547689437866, 'national_policy_id__15': 444, 'state_policy_id__16': 876, 'similarity_score__16': 0.43631547689437866 ... 26 parameters truncated ... 'similarity_score__25': 0.4380897879600525, 'national_policy_id__25': 481, 'state_policy_id__26': 882, 'similarity_score__26': 0.4380897879600525, 'national_policy_id__26': 444, 'state_policy_id__27': 896, 'similarity_score__27': 0.4362543523311615, 'national_policy_id__27': 512, 'state_policy_id__28': 896, 'similarity_score__28': 0.4362543523311615, 'national_policy_id__28': 701, 'state_policy_id__29': 896, 'similarity_score__29': 0.4362543523311615, 'national_policy_id__29': 306, 'state_policy_id__30': 898, 'similarity_score__30': 0.4287393093109131, 'national_policy_id__30': 853, 'state_policy_id__31': 898, 'similarity_score__31': 0.4287393093109131, 'national_policy_id__31': 357, 'state_policy_id__32': 898, 'similarity_score__32': 0.4287393093109131, 'national_policy_id__32': 650, 'state_policy_id__33': 899, 'similarity_score__33': 0.40870699286460876, 'national_policy_id__33': 675, 'state_policy_id__34': 899, 'similarity_score__34': 0.40870699286460876, 'national_policy_id__34': 517, 'state_policy_id__35': 899, 'similarity_score__35': 0.40870699286460876, 'national_policy_id__35': 266, 'state_policy_id__36': 901, 'similarity_score__36': 0.4628438949584961, 'national_policy_id__36': 628, 'state_policy_id__37': 901, 'similarity_score__37': 0.4628438949584961, 'national_policy_id__37': 412, 'state_policy_id__38': 901, 'similarity_score__38': 0.4628438949584961, 'national_policy_id__38': 782, 'state_policy_id__39': 904, 'similarity_score__39': 0.41886305809020996, 'national_policy_id__39': 675, 'state_policy_id__40': 904, 'similarity_score__40': 0.41886305809020996, 'national_policy_id__40': 517, 'state_policy_id__41': 904, 'similarity_score__41': 0.41886305809020996, 'national_policy_id__41': 266}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Starting semantic mapping for state policies...
+Mapping 54 state policies to 606 national policies.
+Generating embeddings for national policies...

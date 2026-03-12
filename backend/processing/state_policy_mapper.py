@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.database import SessionLocal
-from app.models import Policy, StatePolicy, PolicyMapping
+from app.models import Policy, PolicyMapping
 
 def map_state_policies_to_national(min_score=0.4):
     """
@@ -25,8 +25,8 @@ def map_state_policies_to_national(min_score=0.4):
     try:
         model = SentenceTransformer('all-MiniLM-L6-v2')
         
-        state_policies = db.query(StatePolicy).all()
-        national_policies = db.query(Policy).all()
+        state_policies = db.query(Policy).filter(Policy.policy_level == "state").all()
+        national_policies = db.query(Policy).filter(Policy.policy_level == "union").all()
         
         if not state_policies or not national_policies:
             print("Missing state or national policies to perform mapping.")
@@ -45,7 +45,7 @@ def map_state_policies_to_national(min_score=0.4):
             if existing > 0:
                 continue
 
-            sp_text = f"{sp.policy_name}. {sp.description or ''}"
+            sp_text = f"{sp.name}. {sp.description or ''}"
             sp_emb = model.encode([sp_text])[0]
 
             sims = cosine_similarity([sp_emb], national_embs)[0]
@@ -65,7 +65,8 @@ def map_state_policies_to_national(min_score=0.4):
         db.commit()
         print(f"Added {total_mappings} new policy mappings.")
     except Exception as e:
-        print(f"Error mapping policies: {e}")
+        import traceback
+        traceback.print_exc()
         db.rollback()
     finally:
         db.close()

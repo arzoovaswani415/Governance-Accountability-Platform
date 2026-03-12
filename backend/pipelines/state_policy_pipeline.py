@@ -2,8 +2,8 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.database import SessionLocal, engine
-from app.models import Base, StatePolicy, Sector
+from app.database import SessionLocal, engine, Base
+from app.models import Policy, Sector
 from processing.state_policy_dataset import STATE_POLICIES
 from processing.state_policy_mapper import map_state_policies_to_national
 
@@ -21,9 +21,9 @@ SECTOR_KEYWORDS = {
 def classify_sector(description: str, policy_name: str) -> str:
     """Classify sector based on keywords if missing."""
     text = f"{policy_name} {description}".lower()
-    for sector, keywords in SECTOR_KEYWORDS.items():
+    for sector_name, keywords in SECTOR_KEYWORDS.items():
         if any(kw in text for kw in keywords):
-            return sector
+            return sector_name
     return "Social Welfare"  # Default fallback
 
 def run_pipeline():
@@ -37,20 +37,29 @@ def run_pipeline():
         inserted = 0
         for policy_data in STATE_POLICIES:
             name = policy_data["policy_name"]
-            existing = db.query(StatePolicy).filter(StatePolicy.policy_name == name).first()
+            existing = db.query(Policy).filter(Policy.name == name, Policy.policy_level == "state").first()
             
             if not existing:
-                sector = policy_data.get("sector")
-                if not sector:
-                    sector = classify_sector(policy_data.get("description", ""), name)
+                sector_name = policy_data.get("sector")
+                if not sector_name:
+                    sector_name = classify_sector(policy_data.get("description", ""), name)
                 
-                sp = StatePolicy(
-                    policy_name=name,
+                # Assign sector id
+                sector = db.query(Sector).filter(Sector.name == sector_name).first()
+                if not sector:
+                    sector = Sector(name=sector_name)
+                    db.add(sector)
+                    db.commit()
+                    db.refresh(sector)
+                
+                sp = Policy(
+                    name=name,
                     state_name=policy_data["state"],
-                    sector=sector,
+                    policy_level="state",
+                    sector_id=sector.id,
                     description=policy_data.get("description"),
-                    launch_year=policy_data.get("year"),
-                    status="active",
+                    year_introduced=policy_data.get("year", 2020),
+                    status="implemented",
                     source_url=policy_data.get("source_url")
                 )
                 db.add(sp)
