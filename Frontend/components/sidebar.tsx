@@ -14,6 +14,7 @@ import {
 
 const navItems = [
   { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/comparison', icon: Network, label: 'Sector Accountability' },
   { href: '/promises', icon: CheckCircle, label: 'Promises' },
   { href: '/policies', icon: FileText, label: 'Policies' },
   { href: '/budget', icon: TrendingUp, label: 'Budget Analysis' },

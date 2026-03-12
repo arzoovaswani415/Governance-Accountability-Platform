@@ -5,18 +5,21 @@ import { KPICard } from '@/components/dashboard-kpi'
 import { PromiseProgressChart, SectorPerformanceChart } from '@/components/dashboard-charts'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle2, Clock, AlertCircle } from 'lucide-react'
+import { CheckCircle2, Clock, AlertCircle, Shield, FileText, TrendingUp } from 'lucide-react'
 import {
   getDashboardRecentActivity,
   getDashboardSectorPerformance,
   getDashboardSummary,
+  getAccountabilitySummary,
   type DashboardSummary,
   type RecentActivity,
   type SectorPerformanceRow,
+  type AccountabilitySummary,
 } from '@/lib/api'
 
 export default function Dashboard() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null)
+  const [accountability, setAccountability] = useState<AccountabilitySummary | null>(null)
   const [recent, setRecent] = useState<RecentActivity[]>([])
   const [sectorPerf, setSectorPerf] = useState<SectorPerformanceRow[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -27,14 +30,16 @@ export default function Dashboard() {
       setIsLoading(true)
       setError(null)
       try {
-        const [s, r, sp] = await Promise.all([
+        const [s, r, sp, acc] = await Promise.all([
           getDashboardSummary(),
           getDashboardRecentActivity(10),
           getDashboardSectorPerformance(),
+          getAccountabilitySummary().catch(() => null),
         ])
         setSummary(s)
         setRecent(r)
         setSectorPerf(sp)
+        setAccountability(acc)
       } catch (e) {
         console.error(e)
         setError('Failed to load dashboard data. Check backend connectivity and API base URL.')
@@ -115,6 +120,36 @@ export default function Dashboard() {
             variant="danger"
           />
         </div>
+
+        {/* Accountability KPI Cards */}
+        {accountability && (
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+            <div className="p-4 rounded-lg border shadow-sm bg-indigo-50 border-indigo-200 text-indigo-700 transition-all hover:shadow-md">
+              <div className="flex items-center gap-2 mb-1">
+                <Shield className="h-4 w-4" />
+                <p className="text-[10px] font-bold tracking-widest uppercase">Policy Coverage</p>
+              </div>
+              <span className="text-2xl font-bold tracking-tight">{accountability.policy_coverage_pct}%</span>
+              <p className="text-[10px] mt-1 opacity-70">{accountability.promises_with_policy} of {accountability.total_promises} promises linked</p>
+            </div>
+            <div className="p-4 rounded-lg border shadow-sm bg-violet-50 border-violet-200 text-violet-700 transition-all hover:shadow-md">
+              <div className="flex items-center gap-2 mb-1">
+                <FileText className="h-4 w-4" />
+                <p className="text-[10px] font-bold tracking-widest uppercase">Bills Passed</p>
+              </div>
+              <span className="text-2xl font-bold tracking-tight">{accountability.bills_passed}</span>
+              <p className="text-[10px] mt-1 opacity-70">{accountability.bills_implemented} implemented</p>
+            </div>
+            <div className="p-4 rounded-lg border shadow-sm bg-cyan-50 border-cyan-200 text-cyan-700 transition-all hover:shadow-md">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp className="h-4 w-4" />
+                <p className="text-[10px] font-bold tracking-widest uppercase">Fulfillment Rate</p>
+              </div>
+              <span className="text-2xl font-bold tracking-tight">{accountability.fulfillment_pct}%</span>
+              <p className="text-[10px] mt-1 opacity-70">{accountability.sectors_with_budget} sectors with budget</p>
+            </div>
+          </div>
+        )}
 
         {/* Charts Section - Desktop Balanced */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">

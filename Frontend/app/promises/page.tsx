@@ -7,13 +7,23 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { FilterBar } from '@/components/filters/filter-bar'
 import { useLocalFilters, promiseStatuses } from '@/components/filters/filter-context'
 import { PolicyLifecycleTimeline } from '@/components/policy-lifecycle-timeline'
-import { getPromises, getPromiseDetail, getSectors, PromiseBrief, PromiseDetail } from '@/lib/api'
+import { 
+  getPromises, 
+  getPromiseDetail, 
+  getSectors, 
+  findSimilarPolicies,
+  type PromiseBrief, 
+  type PromiseDetail,
+  type SimilarPolicy 
+} from '@/lib/api'
 
 export default function PromisesPage() {
   const filters = useLocalFilters()
   const [selectedPromiseId, setSelectedPromiseId] = useState<number | null>(null)
   const [promisesData, setPromisesData] = useState<PromiseBrief[]>([])
   const [selectedPromise, setSelectedPromise] = useState<PromiseDetail | null>(null)
+  const [similarPolicies, setSimilarPolicies] = useState<SimilarPolicy[]>([])
+  const [isSimilarLoading, setIsSimilarLoading] = useState(false)
   const [availableSectors, setAvailableSectors] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isDetailLoading, setIsDetailLoading] = useState(false)
@@ -49,6 +59,18 @@ export default function PromisesPage() {
       try {
         const detail = await getPromiseDetail(selectedPromiseId)
         setSelectedPromise(detail)
+        
+        // Also fetch semantic similar policies
+        setIsSimilarLoading(true)
+        try {
+          const similar = await findSimilarPolicies({ query: detail.text, top_k: 3 })
+          setSimilarPolicies(similar)
+        } catch (err) {
+          console.error('Failed to load similar policies:', err)
+          setSimilarPolicies([])
+        } finally {
+          setIsSimilarLoading(false)
+        }
       } catch (err) {
         console.error('Failed to load promise detail:', err)
       } finally {
@@ -199,10 +221,10 @@ export default function PromisesPage() {
                 </div>
               </div>
 
-              {/* Related Policies - Keep for data but style minimally if needed, or remove for now to match screenshot */}
+              {/* Related Policies (Exact DB Mappings) */}
               {selectedPromise.related_policies && selectedPromise.related_policies.length > 0 && (
                 <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
-                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">Connected Policies</h3>
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">Connected Policies (Exact)</h3>
                   <div className="space-y-4">
                     {selectedPromise.related_policies.map((policy: any, idx: number) => (
                       <div key={idx} className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/50">
@@ -216,6 +238,39 @@ export default function PromisesPage() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Semantic Similar Policies (AI) */}
+              {similarPolicies && similarPolicies.length > 0 && (
+                <div className="detail-panel border border-indigo-500/20 rounded-3xl p-8 bg-indigo-50/10">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-sm font-bold text-indigo-700 uppercase tracking-widest flex items-center gap-2">
+                       Semantic Similar Policies
+                       <Badge variant="outline" className="text-[9px] bg-indigo-100 text-indigo-700 border-indigo-200 ml-2">AI MATCH</Badge>
+                    </h3>
+                  </div>
+                  {isSimilarLoading ? (
+                     <div className="text-sm text-indigo-500">Finding semantic matches...</div>
+                  ) : (
+                    <div className="space-y-4">
+                      {similarPolicies.map((spolicy) => (
+                        <div key={spolicy.id} className="flex flex-col p-4 bg-white/60 backdrop-blur-sm rounded-2xl border border-indigo-100">
+                          <div className="flex items-start justify-between gap-4">
+                            <h4 className="text-sm font-bold text-indigo-950 mb-1">{spolicy.name}</h4>
+                            <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 text-[10px] whitespace-nowrap">
+                              {(spolicy.similarity * 100).toFixed(0)}% Match
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-indigo-900/70 mb-2 line-clamp-2">{spolicy.description}</p>
+                          <div className="flex flex-wrap items-center gap-2 mt-auto pt-2 border-t border-indigo-100/50">
+                            <span className="text-[10px] text-indigo-800 font-medium bg-indigo-50 px-2 py-0.5 rounded">{spolicy.sector || 'Various'}</span>
+                            <span className="text-[10px] text-indigo-800 font-medium bg-indigo-50 px-2 py-0.5 rounded">{spolicy.status.replace('_', ' ')}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

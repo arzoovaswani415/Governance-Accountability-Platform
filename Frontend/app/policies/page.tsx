@@ -9,7 +9,21 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { FilterBar } from '@/components/filters/filter-bar'
 import { useLocalFilters, policyStatuses } from '@/components/filters/filter-context'
 import { PolicyLifecycleTimeline } from '@/components/policy-lifecycle-timeline'
-import { getPolicies, getPolicyDetail, getBudgetsTrends, getSectors, PolicyBrief, PolicyDetail, BudgetTrend } from '@/lib/api'
+import { 
+  getPolicies, 
+  getPolicyDetail, 
+  getBudgetsTrends, 
+  getSectors, 
+  findSimilarPolicies,
+  getBills,
+  getBillTimeline,
+  type PolicyBrief, 
+  type PolicyDetail, 
+  type BudgetTrend,
+  type SimilarPolicy,
+  type BillBrief,
+  type BillTimelineResponse
+} from '@/lib/api'
 
 export default function PoliciesPage() {
   const filters = useLocalFilters()
@@ -18,6 +32,9 @@ export default function PoliciesPage() {
   const [policiesData, setPoliciesData] = useState<PolicyBrief[]>([])
   const [selectedPolicy, setSelectedPolicy] = useState<PolicyDetail | null>(null)
   const [budgetTrend, setBudgetTrend] = useState<BudgetTrend | null>(null)
+  const [similarPolicies, setSimilarPolicies] = useState<SimilarPolicy[]>([])
+  const [billTimeline, setBillTimeline] = useState<BillTimelineResponse | null>(null)
+  const [isSimilarLoading, setIsSimilarLoading] = useState(false)
 
   const [isLoading, setIsLoading] = useState(true)
   const [isDetailLoading, setIsDetailLoading] = useState(false)
@@ -61,6 +78,33 @@ export default function PoliciesPage() {
         // Also load budget trend for this policy's sector
         const trends = await getBudgetsTrends({ sector: detail.sector.name })
         setBudgetTrend(trends[0] || null)
+
+        // Find semantic similar policies
+        setIsSimilarLoading(true)
+        try {
+          const similar = await findSimilarPolicies({ policy_id: selectedPolicyId, top_k: 3 })
+          setSimilarPolicies(similar)
+        } catch {
+          setSimilarPolicies([])
+        } finally {
+          setIsSimilarLoading(false)
+        }
+
+        // See if there is a matching bill for this policy to show the granular bill timeline
+        setBillTimeline(null)
+        try {
+          const bills = await getBills({ ministry: detail.ministry || undefined })
+          if (bills.length > 0) {
+            // Very naive match for demo purposes, or we could just use the first bill 
+            // from the same ministry. Let's find best match or pick the first one.
+            const matchedBill = bills.find(b => b.name.includes(detail.name.split(' ')[0])) || bills[0]
+            if (matchedBill) {
+              const bTimeline = await getBillTimeline(matchedBill.id)
+              setBillTimeline(bTimeline)
+            }
+          }
+        } catch {}
+
       } catch (err) {
         console.error('Failed to load policy detail:', err)
       } finally {
@@ -213,7 +257,7 @@ export default function PoliciesPage() {
                 <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
                   <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">Related Manifesto Promises</h3>
                   <div className="space-y-4">
-                    {selectedPolicy.related_promises.map((promise, idx) => (
+                    {selectedPolicy.related_promises.map((promise: any, idx: number) => (
                       <div key={idx} className="flex items-start gap-4 p-4 bg-card rounded-2xl border border-border/50">
                         <CheckCircle className="h-5 w-5 text-emerald-500 mt-0.5 flex-shrink-0" />
                         <p className="text-sm font-bold text-foreground leading-snug">{promise.text}</p>
@@ -254,38 +298,71 @@ export default function PoliciesPage() {
                 </div>
               )}
 
-              {/* Legislative Evolution */}
-              {selectedPolicy.timeline && selectedPolicy.timeline.length > 0 && (
+              {/* Legislative Evolution (Real Bill Timeline if available, else generic) */}
+              {(billTimeline?.timeline?.length || selectedPolicy.timeline?.length) ? (
                 <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
-                  <PolicyLifecycleTimeline 
-                    events={selectedPolicy.timeline.map(t => ({
-                      year: t.year,
-                      event: t.description ? `${t.event_type}: ${t.description}` : t.event_type
-                    }))}
-                    title="Legislative Evolution"
-                    showProgressBar={true}
-                    variant="vertical"
-                  />
-                </div>
-              )}
-
-              {/* Related Policies */}
-              {selectedPolicy.related_policies && selectedPolicy.related_policies.length > 0 && (
-                <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
-                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">Related Policies in Sector</h3>
-                  <div className="space-y-4">
-                    {selectedPolicy.related_policies.map((relPolicy, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/50 hover:bg-muted/30 transition-all cursor-pointer">
-                        <div className="flex items-center gap-4">
-                          <FileText className="h-5 w-5 text-emerald-500 flex-shrink-0" />
-                          <div>
-                            <p className="text-sm font-bold text-foreground">{relPolicy.name}</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">{relPolicy.year_introduced}</p>
-                          </div>
-                        </div>
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">Legislative Evolution</h3>
+                  {billTimeline?.timeline?.length ? (
+                    <>
+                      <div className="mb-4 p-3 bg-secondary/10 border border-secondary text-secondary-foreground rounded-xl text-xs flex justify-between items-center">
+                        <span className="font-bold">Tracking Bill: {billTimeline.bill_name}</span>
+                        <Badge variant="outline" className="bg-white">{billTimeline.status}</Badge>
                       </div>
-                    ))}
+                      <PolicyLifecycleTimeline 
+                        events={billTimeline.timeline.map(t => ({
+                          year: t.date ? new Date(t.date).getFullYear() : 'Unknown',
+                          event: t.description ? `${t.stage}: ${t.description}` : t.stage
+                        }))}
+                        title="Granular Bill Action Timeline"
+                        showProgressBar={true}
+                        variant="vertical"
+                      />
+                    </>
+                  ) : (
+                    <PolicyLifecycleTimeline 
+                      events={selectedPolicy.timeline.map((t: any) => ({
+                        year: t.year,
+                        event: t.description ? `${t.event_type}: ${t.description}` : t.event_type
+                      }))}
+                      title="Policy Timeline"
+                      showProgressBar={true}
+                      variant="vertical"
+                    />
+                  )}
+                </div>
+              ) : null}
+
+              {/* Related Policies (Semantic) */}
+              {similarPolicies && similarPolicies.length > 0 && (
+                <div className="detail-panel border border-indigo-500/20 rounded-3xl p-8 bg-indigo-50/10">
+                  <div className="flex items-center justify-between mb-6">
+                     <h3 className="text-sm font-bold text-indigo-700 uppercase tracking-widest">Semantic Similar Policies</h3>
+                     <Badge variant="outline" className="text-[9px] bg-indigo-100 text-indigo-700 border-indigo-200">AI MATCH</Badge>
                   </div>
+                  {isSimilarLoading ? (
+                     <div className="text-sm text-indigo-500">Finding semantic matches...</div>
+                  ) : (
+                    <div className="space-y-4">
+                      {similarPolicies.map((spolicy) => (
+                        <div key={spolicy.id} className="flex flex-col p-4 bg-white/60 backdrop-blur-sm rounded-2xl border border-indigo-100 hover:bg-white/80 transition-colors">
+                          <div className="flex items-start justify-between gap-4 mb-2">
+                            <h4 className="text-sm font-bold text-indigo-950 leading-tight">{spolicy.name}</h4>
+                            <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 text-[10px] whitespace-nowrap">
+                              {(spolicy.similarity * 100).toFixed(0)}% Match
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-2 mb-2">
+                             <span className="text-xs text-indigo-600 font-medium">{spolicy.year_introduced}</span>
+                             <span className="text-xs text-indigo-400">•</span>
+                             <span className="text-xs text-indigo-600">{spolicy.ministry || 'N/A'}</span>
+                          </div>
+                          {spolicy.description && (
+                            <p className="text-[11px] text-indigo-900/70 line-clamp-2">{spolicy.description}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

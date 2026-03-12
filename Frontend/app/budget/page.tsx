@@ -27,7 +27,17 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-import { getBudgetsTrends, getBudgetPromiseAlignment, getSectors, BudgetPromiseAlignment } from '@/lib/api'
+import { 
+  getBudgetPromiseAlignment, 
+  getSectors, 
+  getBudgetPipelineSectors,
+  getBudgetPipelineTrend,
+  getBudgetDistribution,
+  type BudgetPromiseAlignment,
+  type BudgetSectorData,
+  type BudgetTrendPipeline,
+  type BudgetDistribution as BudgetDistType
+} from '@/lib/api'
 
 import { useEffect } from 'react'
 
@@ -50,55 +60,50 @@ export default function BudgetAnalysisPage() {
     async function fetchData() {
       setIsLoading(true)
       try {
-        const [trends, alignments] = await Promise.all([
-          getBudgetsTrends(),
+        const [trendsRaw, distRaw, sectorsRaw, alignments] = await Promise.all([
+          getBudgetPipelineTrend(),
+          getBudgetDistribution(),
+          getBudgetPipelineSectors(),
           getBudgetPromiseAlignment()
         ])
 
         try {
-          const sectors = await getSectors()
-          setAvailableSectors(sectors.map(s => s.name))
+          const sectorsList = await getSectors()
+          setAvailableSectors(sectorsList.map(s => s.name))
         } catch {
           setAvailableSectors([])
         }
 
+        // Process Trends
         const yearMap = new Map<number, any>()
-        const sectorColors = [
-          'var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)', '#8884d8', '#82ca9d'
-        ]
-        let distData: any[] = []
-        let total = 0
-        let health = 0
-        let energy = 0
-        let agri = 0
-
-        trends.forEach((trend, idx) => {
-          let latestAmount = 0
-          trend.yearly_data.forEach(yd => {
-            if (!yearMap.has(yd.year)) {
-              yearMap.set(yd.year, { year: yd.year })
-            }
-            const yearObj = yearMap.get(yd.year)
-            yearObj[trend.sector] = yd.amount_crores
-            latestAmount = yd.amount_crores
-          })
-          
-          distData.push({
-            name: trend.sector,
-            value: latestAmount,
-            color: sectorColors[idx % sectorColors.length]
-          })
-          
-          total += latestAmount
-          if (trend.sector === 'Healthcare') health = latestAmount
-          if (trend.sector === 'Energy') energy = latestAmount
-          if (trend.sector === 'Agriculture') agri = latestAmount
+        trendsRaw.forEach(t => {
+          if (!yearMap.has(t.year)) yearMap.set(t.year, { year: t.year })
+          const yearObj = yearMap.get(t.year)
+          yearObj[t.sector] = t.budget
         })
-
         const chartData = Array.from(yearMap.values()).sort((a: any, b: any) => a.year - b.year)
         setTrendData(chartData)
+
+        // Process Distribution
+        const sectorColors = [
+          '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'
+        ]
+        const distData = distRaw.map((d, i) => ({
+          name: d.sector,
+          value: d.budget,
+          color: sectorColors[i % sectorColors.length]
+        }))
         setDistributionData(distData)
+
+        // Totals
+        let total = 0
+        distRaw.forEach(d => total += d.budget)
         setTotalBudget(total)
+
+        const health = sectorsRaw.find(s => s.sector === 'Healthcare')?.budget || 0
+        const energy = sectorsRaw.find(s => s.sector === 'Energy')?.budget || 0
+        const agri = sectorsRaw.find(s => s.sector === 'Agriculture')?.budget || 0
+        
         setHealthcareBudget(health)
         setEnergyBudget(energy)
         setAgricultureBudget(agri)
