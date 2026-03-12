@@ -4,8 +4,6 @@ import { Card } from '@/components/ui/card'
 import {
   PieChart,
   Pie,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -13,21 +11,22 @@ import {
   Legend,
   ResponsiveContainer,
   Cell,
+  BarChart,
+  Bar,
 } from 'recharts'
 
-const promiseProgressData = [
-  { name: 'Completed', value: 45 },
-  { name: 'In Progress', value: 35 },
-  { name: 'Not Started', value: 20 },
-]
+export type PromiseProgressInput = {
+  fulfilled: number
+  in_progress: number
+  partial: number
+  no_progress: number
+}
 
-const sectorPerformanceData = [
-  { sector: 'Healthcare', fulfilled: 78, pending: 22 },
-  { sector: 'Education', fulfilled: 65, pending: 35 },
-  { sector: 'Infrastructure', fulfilled: 52, pending: 48 },
-  { sector: 'Economy', fulfilled: 71, pending: 29 },
-  { sector: 'Environment', fulfilled: 38, pending: 62 },
-]
+export type SectorPerformanceChartRow = {
+  sector: string
+  fulfilled: number
+  pending: number
+}
 
 const COLORS = {
   primary: 'hsl(var(--color-primary))',
@@ -39,7 +38,21 @@ const COLORS = {
   chart3: 'hsl(var(--color-chart-3))',
 }
 
-export function PromiseProgressChart() {
+export function PromiseProgressChart({ data }: { data: PromiseProgressInput }) {
+  const total =
+    (data.fulfilled ?? 0) +
+    (data.in_progress ?? 0) +
+    (data.partial ?? 0) +
+    (data.no_progress ?? 0)
+
+  const pct = (n: number) => (total > 0 ? Math.round((n / total) * 100) : 0)
+
+  const promiseProgressData = [
+    { name: 'Fulfilled', value: pct(data.fulfilled ?? 0) },
+    { name: 'In Progress', value: pct(data.in_progress ?? 0) },
+    { name: 'No Progress', value: pct(data.no_progress ?? 0) },
+  ]
+
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold mb-4">Promise Progress</h3>
@@ -73,12 +86,12 @@ export function PromiseProgressChart() {
   )
 }
 
-export function SectorPerformanceChart() {
+export function SectorPerformanceChart({ data }: { data: SectorPerformanceChartRow[] }) {
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold mb-4">Sector Performance</h3>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={sectorPerformanceData}>
+        <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--color-border))" />
           <XAxis dataKey="sector" stroke="hsl(var(--color-muted-foreground))" />
           <YAxis stroke="hsl(var(--color-muted-foreground))" />

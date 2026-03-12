@@ -7,11 +7,9 @@ import { Button } from '@/components/ui/button'
 import { MessageSquare, CheckCircle, FileText, Zap } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { FilterBar } from '@/components/filters/filter-bar'
-import { useLocalFilters, policyStatuses, sectors as defaultSectors } from '@/components/filters/filter-context'
+import { useLocalFilters, policyStatuses } from '@/components/filters/filter-context'
 import { PolicyLifecycleTimeline } from '@/components/policy-lifecycle-timeline'
-import { getPolicies, getPolicyDetail, getBudgetsTrends, PolicyBrief, PolicyDetail, BudgetTrend } from '@/lib/api'
-
-const sectors = ['Healthcare', 'Energy', 'Agriculture', 'Education', 'Infrastructure', 'Technology', 'Environment']
+import { getPolicies, getPolicyDetail, getBudgetsTrends, getSectors, PolicyBrief, PolicyDetail, BudgetTrend } from '@/lib/api'
 
 export default function PoliciesPage() {
   const filters = useLocalFilters()
@@ -24,11 +22,19 @@ export default function PoliciesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isDetailLoading, setIsDetailLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [availableSectors, setAvailableSectors] = useState<string[]>([])
 
   useEffect(() => {
     async function loadPolicies() {
       setIsLoading(true)
       try {
+        try {
+          const sectors = await getSectors()
+          setAvailableSectors(sectors.map(s => s.name))
+        } catch {
+          setAvailableSectors([])
+        }
+
         const data = await getPolicies()
         setPoliciesData(data)
         if (data.length > 0) {
@@ -102,7 +108,7 @@ export default function PoliciesPage() {
           selectedSectors={filters.selectedSectors}
           setSelectedSectors={filters.setSelectedSectors}
           toggleSector={filters.toggleSector}
-          sectors={sectors}
+          sectors={availableSectors}
           sectorLabel="Policy Sector"
           selectedStatuses={filters.selectedStatuses}
           setSelectedStatuses={filters.setSelectedStatuses}

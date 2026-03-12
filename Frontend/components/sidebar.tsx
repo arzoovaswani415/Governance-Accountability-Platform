@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   FileText,
   CheckCircle,
-  Users,
   MessageSquare,
   Menu,
   X,
@@ -23,9 +22,8 @@ const navItems = [
   { href: '/policies', icon: FileText, label: 'Policies' },
   { href: '/budget', icon: TrendingUp, label: 'Budget Analysis' },
   { href: '/timeline', icon: Clock, label: 'Timeline' },
-  { href: '/governance-map', icon: Network, label: 'Governance Map' },
   { href: '/assistant', icon: MessageSquare, label: 'AI Assistant' },
-  { href: '/comparison', icon: Users, label: 'Comparison' },
+  { href: '/governance-map', icon: Network, label: 'Governance Map' },
 ]
 
 export function Sidebar() {

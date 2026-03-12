@@ -6,8 +6,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   TrendingUp,
-  CheckCircle,
-  AlertCircle,
   MessageSquare,
   AlertTriangle,
 } from 'lucide-react'
@@ -29,7 +27,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-import { getBudgetsTrends, getBudgetPromiseAlignment, BudgetPromiseAlignment } from '@/lib/api'
+import { getBudgetsTrends, getBudgetPromiseAlignment, getSectors, BudgetPromiseAlignment } from '@/lib/api'
 
 import { useEffect } from 'react'
 
@@ -46,6 +44,7 @@ export default function BudgetAnalysisPage() {
   const [healthcareBudget, setHealthcareBudget] = useState(0)
   const [energyBudget, setEnergyBudget] = useState(0)
   const [agricultureBudget, setAgricultureBudget] = useState(0)
+  const [availableSectors, setAvailableSectors] = useState<string[]>([])
 
   useEffect(() => {
     async function fetchData() {
@@ -55,6 +54,13 @@ export default function BudgetAnalysisPage() {
           getBudgetsTrends(),
           getBudgetPromiseAlignment()
         ])
+
+        try {
+          const sectors = await getSectors()
+          setAvailableSectors(sectors.map(s => s.name))
+        } catch {
+          setAvailableSectors([])
+        }
 
         const yearMap = new Map<number, any>()
         const sectorColors = [
@@ -97,14 +103,13 @@ export default function BudgetAnalysisPage() {
         setEnergyBudget(energy)
         setAgricultureBudget(agri)
 
-        setAlignmentData(alignments)
-        
-        const gaps = alignments.filter(a => 
-          a.funding_status === 'Low' || 
-          a.funding_status === 'Critical' || 
-          (a.insight && a.insight.toLowerCase().includes('gap')) || 
-          (a.insight && a.insight.toLowerCase().includes('requires'))
-        )
+        const sortedAlignments = alignments
+          .slice()
+          .sort((a, b) => (b.promise_count ?? 0) - (a.promise_count ?? 0))
+        setAlignmentData(sortedAlignments)
+
+        // Funding gaps: promises exist but alignment is weak
+        const gaps = sortedAlignments.filter(a => a.promise_count > 0 && a.alignment === 'weak')
         setFundingGaps(gaps)
         
       } catch (err) {
@@ -116,23 +121,16 @@ export default function BudgetAnalysisPage() {
     fetchData()
   }, [])
 
-  const getBudgetColor = (budget?: string | null) => {
-    if (!budget) return 'bg-muted text-muted-foreground'
-    switch (budget.toLowerCase()) {
-      case 'high':
-      case 'adequate':
-        return 'bg-secondary text-secondary-foreground'
-      case 'moderate':
-        return 'bg-accent text-accent-foreground'
-      case 'low':
-      case 'critical':
-        return 'bg-destructive text-destructive-foreground'
-      default:
-        return 'bg-muted text-muted-foreground'
-    }
+  const getAlignmentBadge = (alignment: BudgetPromiseAlignment['alignment']) => {
+    if (alignment === 'strong') return 'bg-secondary text-secondary-foreground'
+    if (alignment === 'moderate') return 'bg-accent text-accent-foreground'
+    if (alignment === 'weak') return 'bg-destructive text-destructive-foreground'
+    return 'bg-muted text-muted-foreground'
   }
 
-  const sectors = ['Healthcare', 'Energy', 'Agriculture', 'Education', 'Infrastructure', 'Technology', 'Environment']
+  const sectors = availableSectors.length > 0
+    ? availableSectors
+    : ['Healthcare', 'Energy', 'Agriculture', 'Education', 'Infrastructure', 'Technology', 'Environment']
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-background">
@@ -230,52 +228,32 @@ export default function BudgetAnalysisPage() {
         </ResponsiveContainer>
       </Card>
 
-      {/* SECTION 3: Budget vs Implementation Analysis */}
+      {/* SECTION 3: Budget vs Promises (sector-level, real data) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {alignmentData.slice(0, 3).map((item, idx) => (
-          <Card key={item.promise_id || `align-card-${idx}`} className="p-6 border border-border">
-            <div className="mb-4">
-              <h3 className="font-semibold text-sm leading-snug mb-3">{item.promise_text}</h3>
-              <Badge variant="outline" className="text-xs font-medium">
-                {item.sector}
-              </Badge>
+          <Card key={`${item.sector}-${idx}`} className="p-6 border border-border">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-semibold text-base leading-snug">{item.sector}</h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Promises: <span className="font-medium text-foreground">{item.promise_count}</span>
+                </p>
+              </div>
+              <Badge className={getAlignmentBadge(item.alignment)}>{item.alignment}</Badge>
             </div>
 
             <div className="space-y-3 pt-3 border-t">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                  Budget Allocated
-                </p>
-                <p className="text-lg font-bold mt-1">₹{(item.budget_allocated / 1000).toFixed(1)}K Cr</p>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Avg funding (₹ Cr)
+                </span>
+                <span className="text-sm font-bold">₹{item.avg_funding_crores.toLocaleString()}</span>
               </div>
-
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                  Implementation Status
-                </p>
-                <Badge className="mt-1 font-semibold">{item.implementation_status || 'Unknown'}</Badge>
-              </div>
-
-              {/* Indicator Icons */}
-              <div className="pt-3 border-t space-y-2">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className={`h-4 w-4 ${item.budget_allocated > 0 ? 'text-secondary' : 'text-muted-foreground'}`} />
-                  <span className="text-xs">Budget Allocated</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className={`h-4 w-4 ${item.implementation_status && item.implementation_status !== 'Not Started' ? 'text-secondary' : 'text-muted-foreground'}`} />
-                  <span className="text-xs">Program Started</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {item.implementation_status === 'Completed' ? (
-                     <CheckCircle className="h-4 w-4 text-secondary" />
-                  ) : (item.implementation_status && item.implementation_status.includes('Progress')) ? (
-                     <TrendingUp className="h-4 w-4 text-accent" />
-                  ) : (
-                     <AlertCircle className="h-4 w-4 text-muted-foreground" />
-                  )}
-                  <span className="text-xs">Outcome Achieved</span>
-                </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Budget growth
+                </span>
+                <span className="text-sm font-bold">{item.budget_growth_percent}%</span>
               </div>
             </div>
           </Card>
@@ -313,42 +291,39 @@ export default function BudgetAnalysisPage() {
           <div className="flex-1">
             <h3 className="font-bold text-lg mb-3">Budget Growth Insights</h3>
             <p className="text-base text-foreground leading-relaxed">
-              Healthcare funding increased by 38% between 2019 and 2024, indicating strong financial commitment toward
-              healthcare infrastructure. This aligns well with manifesto promises for universal healthcare. Infrastructure
-              and energy sectors also saw significant growth, while education funding remained relatively stagnant at only
-              6% growth over the same period.
+              This section will become more evidence-backed as we expand document ingestion and strengthen promise ↔ policy ↔ budget
+              linkage confidence. For now, the charts and alignment cards above are computed from the current database budgets + promise
+              counts per sector.
             </p>
           </div>
         </div>
       </Card>
 
-      {/* SECTION 6: Budget vs Promises Analysis Table */}
+      {/* SECTION 6: Budget vs Promises Analysis Table (sector-level, real data) */}
       <Card className="p-7 border border-border shadow-sm mb-8">
         <h2 className="text-xl font-bold mb-6">Budget vs Promises Analysis</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Promise</th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Sector</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Related Policy</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Budget Support</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Status</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Promise Count</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Avg Funding (₹ Cr)</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Budget Growth</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Alignment</th>
               </tr>
             </thead>
             <tbody>
               {alignmentData.map((item, idx) => (
-                <tr key={item.promise_id || `table-row-${idx}`} className="border-b hover:bg-muted/30 transition-colors">
-                  <td className="py-3 px-4 font-medium">{item.promise_text}</td>
+                <tr key={`${item.sector}-${idx}`} className="border-b hover:bg-muted/30 transition-colors">
                   <td className="py-3 px-4">
                     <Badge variant="outline">{item.sector}</Badge>
                   </td>
-                  <td className="py-3 px-4">{(item.related_policies && item.related_policies.length > 0) ? item.related_policies.join(', ') : 'N/A'}</td>
+                  <td className="py-3 px-4 font-medium">{item.promise_count}</td>
+                  <td className="py-3 px-4">₹{item.avg_funding_crores.toLocaleString()}</td>
+                  <td className="py-3 px-4">{item.budget_growth_percent}%</td>
                   <td className="py-3 px-4">
-                    <Badge className={getBudgetColor(item.funding_status)}>{item.funding_status}</Badge>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge variant="outline">{item.implementation_status || 'Unknown'}</Badge>
+                    <Badge className={getAlignmentBadge(item.alignment)}>{item.alignment}</Badge>
                   </td>
                 </tr>
               ))}
@@ -362,22 +337,28 @@ export default function BudgetAnalysisPage() {
         <h2 className="text-2xl font-bold mb-6">Funding Gap Detection</h2>
         <div className="space-y-4">
           {fundingGaps.map((gap, idx) => (
-            <Card key={gap.promise_id || `gap-${idx}`} className="p-6 border-l-4 border-l-destructive bg-destructive/5">
+            <Card key={`${gap.sector}-${idx}`} className="p-6 border-l-4 border-l-destructive bg-destructive/5">
               <div className="flex items-start gap-4">
                 <AlertTriangle className="h-6 w-6 text-destructive mt-1 flex-shrink-0" />
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold">{gap.promise_text}</h3>
-                    <Badge className="bg-destructive text-destructive-foreground">{gap.funding_status} Support</Badge>
+                    <h3 className="font-semibold">{gap.sector}</h3>
+                    <Badge className="bg-destructive text-destructive-foreground">Weak alignment</Badge>
                   </div>
                   <Badge variant="outline" className="mb-3">
-                    {gap.sector}
+                    Promises: {gap.promise_count}
                   </Badge>
-                  <p className="text-sm text-foreground mb-4">{gap.insight}</p>
+                  <p className="text-sm text-foreground mb-4">
+                    This sector has promises recorded but low/flat budget growth signals.
+                  </p>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Budget Allocated</p>
-                      <p className="font-semibold">₹{(gap.budget_allocated / 1000).toFixed(1)}K Cr</p>
+                      <p className="text-muted-foreground">Avg Funding (₹ Cr)</p>
+                      <p className="font-semibold">₹{gap.avg_funding_crores.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Budget Growth</p>
+                      <p className="font-semibold">{gap.budget_growth_percent}%</p>
                     </div>
                   </div>
                 </div>

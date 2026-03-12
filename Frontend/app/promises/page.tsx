@@ -9,7 +9,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { FilterBar } from '@/components/filters/filter-bar'
 import { useLocalFilters, promiseStatuses } from '@/components/filters/filter-context'
 import { PolicyLifecycleTimeline } from '@/components/policy-lifecycle-timeline'
-import { getPromises, getPromiseDetail, PromiseBrief, PromiseDetail } from '@/lib/api'
+import { getPromises, getPromiseDetail, getSectors, PromiseBrief, PromiseDetail } from '@/lib/api'
 
 export default function PromisesPage() {
   const filters = useLocalFilters()
@@ -17,6 +17,7 @@ export default function PromisesPage() {
   
   const [promisesData, setPromisesData] = useState<PromiseBrief[]>([])
   const [selectedPromise, setSelectedPromise] = useState<PromiseDetail | null>(null)
+  const [availableSectors, setAvailableSectors] = useState<string[]>([])
   
   const [isLoading, setIsLoading] = useState(true)
   const [isDetailLoading, setIsDetailLoading] = useState(false)
@@ -26,6 +27,13 @@ export default function PromisesPage() {
     async function loadPromises() {
       setIsLoading(true)
       try {
+        try {
+          const sectors = await getSectors()
+          setAvailableSectors(sectors.map(s => s.name))
+        } catch {
+          setAvailableSectors([])
+        }
+
         const data = await getPromises()
         setPromisesData(data)
         if (data.length > 0) {
@@ -119,6 +127,8 @@ export default function PromisesPage() {
             selectedSectors={filters.selectedSectors}
             setSelectedSectors={filters.setSelectedSectors}
             toggleSector={filters.toggleSector}
+            sectors={availableSectors}
+            sectorLabel="Promise Sector"
             selectedStatuses={filters.selectedStatuses}
             setSelectedStatuses={filters.setSelectedStatuses}
             toggleStatus={filters.toggleStatus}

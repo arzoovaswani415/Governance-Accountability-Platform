@@ -3,17 +3,8 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 
 // Shared filter constants
-export const sectors = [
-  'Healthcare',
-  'Energy',
-  'Agriculture',
-  'Education',
-  'Infrastructure',
-  'Technology',
-  'Economy',
-  'Environment',
-  'Social',
-]
+// Sectors are fetched dynamically from the backend; keep this as a safe fallback.
+export const sectors: string[] = []
 
 export const electionCycles = [
   'Overall',

@@ -15,7 +15,7 @@ def list_promises(
     election_cycle: str | None = None,
     search: str | None = None,
     skip: int = 0,
-    limit: int = 50,
+    limit: int = 1000,
     db: Session = Depends(get_db),
 ):
     """List promises with filters: sector, status, election_cycle, keyword search."""

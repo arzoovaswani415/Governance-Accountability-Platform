@@ -20,7 +20,7 @@ import {
 import { getTimelineEvents, TimelineEvent } from '@/lib/api'
 import { useEffect } from 'react'
 
-const sectors = ['Healthcare', 'Energy', 'Agriculture', 'Education', 'Infrastructure', 'Technology', 'Environment']
+import { getSectors } from '@/lib/api'
 
 export default function TimelinePage() {
   const filters = useLocalFilters()
@@ -28,11 +28,19 @@ export default function TimelinePage() {
   const [timelineData, setTimelineData] = useState<any[]>([])
   const [activityChartData, setActivityChartData] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [availableSectors, setAvailableSectors] = useState<string[]>([])
 
   useEffect(() => {
     async function loadData() {
       setIsLoading(true)
       try {
+        try {
+          const sectors = await getSectors()
+          setAvailableSectors(sectors.map(s => s.name))
+        } catch {
+          setAvailableSectors([])
+        }
+
         const events = await getTimelineEvents()
         
         const grouped = new Map<string, any>()
@@ -98,6 +106,11 @@ export default function TimelinePage() {
     }
     loadData()
   }, [])
+
+  const sectors =
+    availableSectors.length > 0
+      ? availableSectors
+      : ['Healthcare', 'Energy', 'Agriculture', 'Education', 'Infrastructure', 'Technology', 'Environment']
 
   function getStatusFromEventType(eventType: string) {
     const type = eventType.toLowerCase()

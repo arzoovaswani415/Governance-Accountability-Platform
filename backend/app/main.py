@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import create_tables
-from app.api import dashboard, promises, policies, budgets, timeline, ai_assistant
+from app.api import dashboard, promises, policies, budgets, timeline, ai_assistant, sectors
 
 # Create FastAPI application
 app = FastAPI(
@@ -28,6 +28,7 @@ app.include_router(policies.router, prefix="/api/policies", tags=["Policies"])
 app.include_router(budgets.router, prefix="/api/budgets", tags=["Budgets"])
 app.include_router(timeline.router, prefix="/api/timeline", tags=["Legislative Timeline"])
 app.include_router(ai_assistant.router, prefix="/api/ai", tags=["AI Assistant"])
+app.include_router(sectors.router, prefix="/api/sectors", tags=["Sectors"])
 
 
 @app.on_event("startup")

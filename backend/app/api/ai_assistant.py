@@ -85,7 +85,7 @@ def _generate_ai_response(question: str, context: str) -> str:
             raise ValueError("Gemini API key not configured")
 
         genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel("gemini-2.0-flash")
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
         prompt = f"""You are a governance intelligence assistant. Answer the user's question based ONLY on the provided governance data.
 
@@ -106,6 +106,8 @@ If the data doesn't contain enough information to fully answer, say so honestly.
         return response.text
 
     except Exception as e:
+        import logging
+        logging.error(f"Gemini API Error: {str(e)}")
         # Fallback: rule-based summary
         return _fallback_response(question, context)
 

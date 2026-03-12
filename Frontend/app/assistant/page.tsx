@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Send, Loader2 } from 'lucide-react'
+import { apiAskAI } from '@/lib/api'
 
 interface Message {
   id: string
@@ -13,30 +14,19 @@ interface Message {
   timestamp: Date
 }
 
-const mockResponses: Record<string, string> = {
-  default: 'I can help you analyze government promises, track policy implementation, compare political parties, and explore governance transparency data. What would you like to know?',
-  'healthcare promise': 'According to our database, healthcare promises have a 78% fulfillment rate across all parties. The Democratic Party has focused on expanding coverage, while the Republican Party emphasizes market-based solutions.',
-  'policy': 'We have 370 active policies across various sectors. Healthcare leads with 52 policies, followed by education with 48 policies. Would you like detailed information about any specific sector?',
-  'comparison': 'The Democratic Party has completed 112 out of 145 promises (77%), while the Republican Party has completed 98 out of 138 (71%). Infrastructure and education are areas where both parties show strong commitment.',
-  'fulfilled': 'Overall, 262 out of 370 promises have been fulfilled (71%). Healthcare policies show the highest fulfillment rate at 84%, while environmental policies are at 42%.',
-  'timeline': 'Promise fulfillment has been accelerating. In January we had 42 completed promises, growing to 130 by June. This represents a 209% increase in implementation pace.',
-  'environment': 'Environmental policies show varying levels of commitment. Democratic promises are at 92% priority, while Republican environmental initiatives are at 35%. There are 28 active environmental projects.',
-  'education': 'Education sector has 48 active policies with 65% fulfillment rate. Key initiatives include student loan relief (completed), free college (in progress), and education reform (pending).',
-  'economy': 'Economic policies show strong bipartisan support with 88% commitment. Tax reform is completed, while economic stimulus programs are 60% implemented.',
-  'infrastructure': 'Infrastructure received 1.2T in investment through recent bills. Projects include road renewal, bridge repair, public transit, and broadband expansion. Current completion rate is 65%.',
-}
-
 export default function AssistantPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
-      content: mockResponses.default,
+      content:
+        "Ask me about Indian government promises, policies, bills, budgets, and timelines — I’ll answer using the platform’s database and show supporting evidence.",
       role: 'assistant',
       timestamp: new Date(),
     },
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -51,6 +41,8 @@ export default function AssistantPage() {
     e.preventDefault()
     if (!input.trim()) return
 
+    setError(null)
+
     const userMessage: Message = {
       id: Date.now().toString(),
       content: input,
@@ -62,28 +54,36 @@ export default function AssistantPage() {
     setInput('')
     setIsLoading(true)
 
-    // Simulate API delay
-    setTimeout(() => {
-      let response = mockResponses.default
-
-      const lowerInput = input.toLowerCase()
-      for (const [key, value] of Object.entries(mockResponses)) {
-        if (lowerInput.includes(key) && key !== 'default') {
-          response = value
-          break
-        }
-      }
-
+    try {
+      const result = await apiAskAI({ question: userMessage.content })
+      const evidenceLine =
+        result.evidence?.length
+          ? `\n\nEvidence used: ${result.evidence
+              .map((e: any) => (e?.type ? `${e.type}${e?.id ? `#${e.id}` : ''}` : 'item'))
+              .slice(0, 6)
+              .join(', ')}`
+          : ''
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: response,
+        content: `${result.answer ?? 'No answer returned.'}${evidenceLine}`,
         role: 'assistant',
         timestamp: new Date(),
       }
-
       setMessages((prev) => [...prev, assistantMessage])
+    } catch (err) {
+      console.error(err)
+      setError('Failed to reach the AI service. Check that the backend is running and CORS is configured.')
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content:
+          'I could not reach the AI service right now. Please ensure the backend is running (FastAPI) and the frontend `NEXT_PUBLIC_API_BASE_URL` is set correctly.',
+        role: 'assistant',
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+    } finally {
       setIsLoading(false)
-    }, 800)
+    }
   }
 
   return (
@@ -100,6 +100,11 @@ export default function AssistantPage() {
       <Card className="flex flex-col h-96 md:h-[600px] border-2">
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+          {error && (
+            <div className="text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md p-3">
+              {error}
+            </div>
+          )}
           {messages.map((message) => (
             <div
               key={message.id}
@@ -164,12 +169,12 @@ export default function AssistantPage() {
         <p className="text-sm font-medium text-muted-foreground mb-3">Try asking about:</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {[
-            'What healthcare promises have been fulfilled?',
-            'Compare Democratic and Republican performance',
-            'Show me education policy updates',
-            'What is the overall promise fulfillment rate?',
-            'Tell me about infrastructure progress',
-            'Which party has the best environmental policies?',
+            'What promises are in the Healthcare sector and what is their status?',
+            'Show recent policy timeline events in Education',
+            'How has the Infrastructure budget changed over the years?',
+            'Which sectors have the most promises with no_progress?',
+            'List key policies in Agriculture and their current status',
+            'What does the data suggest about progress in Environment?',
           ].map((suggestion) => (
             <button
               key={suggestion}

@@ -1,0 +1,73 @@
+INFO:     Started server process [36404]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:47532 - "GET /api/dashboard/recent-activity?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47530 - "GET /api/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47560 - "GET /api/dashboard/recent-activity?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47566 - "GET /api/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47548 - "GET /api/dashboard/sector-performance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42196 - "GET /api/sectors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:42228 - "GET /api/sectors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:42212 - "GET /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42234 - "GET /api/promises?limit=1000 HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:42212 - "GET /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42250 - "GET /api/promises?limit=1000 HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:42240 - "GET /api/promises/?limit=1000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42254 - "GET /api/promises/47 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42212 - "GET /api/promises/?limit=1000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42190 - "GET /api/dashboard/sector-performance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54342 - "GET /api/promises/48 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49194 - "GET /api/promises/50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34828 - "GET /api/promises/130 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41256 - "GET /api/budgets/trends HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41262 - "GET /api/budgets/trends HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41266 - "GET /api/sectors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:41286 - "GET /api/sectors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:41272 - "GET /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41272 - "GET /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41290 - "GET /api/timeline/events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41296 - "GET /api/timeline/events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41260 - "GET /api/budgets/promise-alignment HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41316 - "GET /api/sectors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:41272 - "GET /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41300 - "GET /api/budgets/promise-alignment HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47104 - "GET /api/sectors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:41272 - "GET /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47116 - "GET /api/dashboard/recent-activity?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47128 - "GET /api/dashboard/recent-activity?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47114 - "GET /api/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47132 - "GET /api/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47122 - "GET /api/dashboard/sector-performance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56884 - "GET /api/dashboard/sector-performance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52712 - "GET /api/sectors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:52716 - "OPTIONS /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52718 - "GET /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52732 - "GET /api/promises?limit=1000 HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:52718 - "OPTIONS /api/promises/?limit=1000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52716 - "GET /api/promises/?limit=1000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52746 - "GET /api/promises/47 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49940 - "GET /api/dashboard/recent-activity?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49932 - "GET /api/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49952 - "GET /api/dashboard/sector-performance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50814 - "GET /api/sectors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:50826 - "OPTIONS /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50852 - "GET /api/sectors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:50838 - "GET /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "GET /api/promises?limit=1000 HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:50826 - "OPTIONS /api/promises/?limit=1000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50838 - "GET /api/sectors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50880 - "GET /api/promises?limit=1000 HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:50876 - "GET /api/promises/?limit=1000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50838 - "GET /api/promises/?limit=1000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45628 - "GET /api/promises/47 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35206 - "GET /api/promises?limit=50 HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:35212 - "GET /api/policies?limit=50 HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:35220 - "OPTIONS /api/promises/?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35226 - "GET /api/promises?limit=50 HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:35250 - "GET /api/policies?limit=50 HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:35220 - "OPTIONS /api/policies/?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35230 - "GET /api/promises/?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35238 - "GET /api/policies/?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35220 - "GET /api/promises/?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35262 - "GET /api/policies/?limit=50 HTTP/1.1" 200 OK
