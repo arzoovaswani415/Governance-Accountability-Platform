@@ -24,3 +24,4 @@ class Policy(Base):
     sector = relationship("Sector", back_populates="policies")
     promise_mappings = relationship("PromisePolicyMapping", back_populates="policy")
     timeline_events = relationship("TimelineEvent", back_populates="policy")
+    state_mappings = relationship("PolicyMapping", back_populates="national_policy")

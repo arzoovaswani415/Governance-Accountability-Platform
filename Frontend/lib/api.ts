@@ -97,7 +97,7 @@ export interface GovernanceMapData {
   nodes: {
     id: string
     name: string
-    type: 'promise' | 'policy' | 'sector' | 'budget'
+    type: 'promise' | 'policy' | 'sector' | 'budget' | 'state_policy'
     val?: number
     color?: string
   }[]
@@ -165,6 +165,27 @@ export async function getPolicies(filters?: {
 
 export async function getPolicyDetail(id: number): Promise<PolicyDetail> {
   return apiFetch<PolicyDetail>(`/policies/${id}`)
+}
+
+// ─── STATE POLICIES ───────────────────────────────────────────────────────────
+
+export interface StatePolicy {
+  id: number
+  policy_name: string
+  state_name: string
+  sector: string
+  description: string
+  launch_year: number
+  status: string
+  source_url: string
+}
+
+export async function getStatePolicies(filters?: {
+  state?: string
+  sector?: string
+  year?: number
+}): Promise<StatePolicy[]> {
+  return apiFetch<StatePolicy[]>('/state-policies', filters)
 }
 
 // ─── BUDGETS ──────────────────────────────────────────────────────────────────
@@ -248,9 +269,10 @@ export async function apiAskAI(payload: AIAskPayload): Promise<AIAskResult> {
 export async function getGovernanceMapData(): Promise<GovernanceMapData> {
   // Build graph from promises + policies from the backend
   try {
-    const [promises, policies] = await Promise.all([
+    const [promises, policies, statePolicies] = await Promise.all([
       getPromises({ limit: 50 }),
       getPolicies({ limit: 50 }),
+      getStatePolicies()
     ])
 
     const nodes: GovernanceMapData['nodes'] = []
@@ -272,6 +294,12 @@ export async function getGovernanceMapData(): Promise<GovernanceMapData> {
     policies.slice(0, 30).forEach(p => {
       nodes.push({ id: `policy-${p.id}`, name: p.name, type: 'policy', val: 8, color: '#3b82f6' })
       if (p.sector?.name) links.push({ source: `sector-${p.sector.name}`, target: `policy-${p.id}`, label: 'has policy' })
+    })
+
+    // Add state policy nodes + links to sector
+    statePolicies.slice(0, 30).forEach(sp => {
+      nodes.push({ id: `state-policy-${sp.id}`, name: `${sp.policy_name} (${sp.state_name})`, type: 'state_policy', val: 7, color: '#f59e0b' })
+      if (sp.sector) links.push({ source: `sector-${sp.sector}`, target: `state-policy-${sp.id}`, label: 'state policy' })
     })
 
     return { nodes, links }

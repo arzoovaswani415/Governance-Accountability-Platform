@@ -8,6 +8,7 @@ from app.api import budget as budget_pipeline_router
 from app.api import bills as bills_router
 from app.api import similarity as similarity_router
 from app.api import accountability as accountability_router
+from app.api import state_policies as state_policies_router
 
 # Create FastAPI application
 app = FastAPI(
@@ -37,6 +38,7 @@ app.include_router(budget_pipeline_router.router, prefix="/api/budget", tags=["B
 app.include_router(bills_router.router, prefix="/api/bills", tags=["Bills"])
 app.include_router(similarity_router.router, prefix="/api/similarity", tags=["Similarity"])
 app.include_router(accountability_router.router, prefix="/api/accountability", tags=["Accountability"])
+app.include_router(state_policies_router.router, prefix="/api/state-policies", tags=["State Policies"])
 
 
 @app.on_event("startup")

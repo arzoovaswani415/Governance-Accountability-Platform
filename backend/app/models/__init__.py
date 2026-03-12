@@ -7,6 +7,8 @@ from app.models.budget import BudgetAllocation
 from app.models.timeline_event import TimelineEvent
 from app.models.mapping import PromisePolicyMapping
 from app.models.bill_timeline import BillTimeline
+from app.models.state_policy import StatePolicy
+from app.models.policy_mapping import PolicyMapping
 
 __all__ = [
     "ElectionCycle",
@@ -18,4 +20,6 @@ __all__ = [
     "TimelineEvent",
     "PromisePolicyMapping",
     "BillTimeline",
+    "StatePolicy",
+    "PolicyMapping",
 ]
