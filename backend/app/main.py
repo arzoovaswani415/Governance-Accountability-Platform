@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import create_tables
-from app.api import dashboard, promises, policies, budgets, timeline, ai_assistant, sectors
+from app.api import dashboard, promises, policies, budgets, timeline, ai_assistant, sectors, debate_analysis, governance_graph
 from app.api import budget as budget_pipeline_router
 from app.api import bills as bills_router
 from app.api import similarity as similarity_router
@@ -37,6 +37,8 @@ app.include_router(budget_pipeline_router.router, prefix="/api/budget", tags=["B
 app.include_router(bills_router.router, prefix="/api/bills", tags=["Bills"])
 app.include_router(similarity_router.router, prefix="/api/similarity", tags=["Similarity"])
 app.include_router(accountability_router.router, prefix="/api/accountability", tags=["Accountability"])
+app.include_router(debate_analysis.router, prefix="/api/debate-analysis", tags=["Debate Intelligence"])
+app.include_router(governance_graph.router, prefix="/api/governance-map", tags=["Governance Map"])
 
 
 @app.on_event("startup")

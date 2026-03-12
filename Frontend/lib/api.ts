@@ -284,45 +284,8 @@ export async function apiAskAI(payload: AIAskPayload): Promise<AIAskResult> {
 // ─── GOVERNANCE MAP ───────────────────────────────────────────────────────────
 
 export async function getGovernanceMapData(): Promise<GovernanceMapData> {
-  // Build graph from promises + policies from the backend
-  try {
-    const [promises, policies, statePolicies] = await Promise.all([
-      getPromises({ limit: 50 }),
-      getPolicies({ limit: 50 }),
-      getStatePolicies()
-    ])
-
-    const nodes: GovernanceMapData['nodes'] = []
-    const links: GovernanceMapData['links'] = []
-    const sectorSet = new Set<string>()
-
-    // Add sector nodes
-    promises.forEach(p => { if (p.sector?.name) sectorSet.add(p.sector.name) })
-    policies.forEach(p => { if (p.sector?.name) sectorSet.add(p.sector.name) })
-    sectorSet.forEach(s => nodes.push({ id: `sector-${s}`, name: s, type: 'sector', val: 12, color: '#6366f1' }))
-
-    // Add promise nodes + links to sector
-    promises.slice(0, 30).forEach(p => {
-      nodes.push({ id: `promise-${p.id}`, name: p.text.slice(0, 60), type: 'promise', val: 5, color: '#22c55e' })
-      if (p.sector?.name) links.push({ source: `sector-${p.sector.name}`, target: `promise-${p.id}`, label: 'has promise' })
-    })
-
-    // Add policy nodes + links to sector
-    policies.slice(0, 30).forEach(p => {
-      nodes.push({ id: `policy-${p.id}`, name: p.name, type: 'policy', val: 8, color: '#3b82f6' })
-      if (p.sector?.name) links.push({ source: `sector-${p.sector.name}`, target: `policy-${p.id}`, label: 'has policy' })
-    })
-
-    // Add state policy nodes + links to sector
-    statePolicies.slice(0, 30).forEach(sp => {
-      nodes.push({ id: `state-policy-${sp.id}`, name: `${sp.policy_name} (${sp.state_name})`, type: 'state_policy', val: 7, color: '#f59e0b' })
-      if (sp.sector) links.push({ source: `sector-${sp.sector}`, target: `state-policy-${sp.id}`, label: 'state policy' })
-    })
-
-    return { nodes, links }
-  } catch {
-    return { nodes: [], links: [] }
-  }
+  // Use the new specialized graph API
+  return apiFetch<GovernanceMapData>('/governance-map/graph-data')
 }
 
 // ─── ACCOUNTABILITY ───────────────────────────────────────────────────────────
@@ -456,6 +419,41 @@ export async function getDebateTimeline(billId: number): Promise<DebateTimelineR
 export async function getDebateSentiment(billId: number): Promise<DebateSentimentResponse> {
   return apiFetch<DebateSentimentResponse>(`/bills/${billId}/debate-sentiment`)
 }
+
+// ─── SYNTHETIC DEBATE ANALYSIS ───────────────────────────────────────────────
+
+export interface DebateAnalysisResponse {
+  bill_id: number;
+  bill_name: string;
+  debate_summary: string;
+  key_themes: string[];
+  key_concerns: string[];
+  sentiment: {
+    support: number;
+    opposition: number;
+    neutral: number;
+  };
+  government_rationale: string;
+  opposition_feedback: string;
+  intelligence_verdict: string;
+  impact_assessment?: {
+    summary: string;
+    economic_impact: string;
+    social_impact: string;
+    environmental_impact: string;
+    affected_stakeholders: string[];
+  };
+  amendments: {
+    phase: string;
+    description: string;
+    date: string;
+  }[];
+}
+
+export async function getDebateAnalysis(billId: number): Promise<DebateAnalysisResponse> {
+  return apiFetch<DebateAnalysisResponse>(`/debate-analysis/${billId}`);
+}
+
 
 
 // ─── BUDGET PIPELINE ──────────────────────────────────────────────────────────
