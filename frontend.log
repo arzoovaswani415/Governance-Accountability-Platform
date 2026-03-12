@@ -118,3 +118,914 @@ Error: connect ECONNREFUSED 127.0.0.1:8000
  GET /promises 200 in 151ms (compile: 54ms, render: 97ms)
 ○ Compiling /governance-map ...
  GET /governance-map 200 in 3.3s (compile: 3.2s, render: 104ms)
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Compiled in 7.2s
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET /promises 200 in 3.0s (compile: 301ms, render: 2.7s)
+ GET / 200 in 3.0s (compile: 1146ms, render: 1904ms)
+ GET /governance-map 200 in 3.3s (compile: 1124ms, render: 2.2s)
+ GET / 200 in 1729ms (compile: 134ms, render: 1594ms)
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET /promises 200 in 1601ms (compile: 202ms, render: 1399ms)
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET /governance-map 200 in 1570ms (compile: 591ms, render: 979ms)
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET / 200 in 1001ms (compile: 56ms, render: 946ms)
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET / 200 in 1416ms (compile: 73ms, render: 1343ms)
+ GET /promises 200 in 1411ms (compile: 151ms, render: 1261ms)
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET / 200 in 1308ms (compile: 65ms, render: 1243ms)
+⚠ ./tailwind.config.js:85:13
+Module not found: Can't resolve 'tailwindcss-animate'
+[0m [90m 83 |[39m     }[33m,[39m
+ [90m 84 |[39m   }[33m,[39m
+[31m[1m>[22m[39m[90m 85 |[39m   plugins[33m:[39m [require([32m"tailwindcss-animate"[39m)][33m,[39m
+ [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 86 |[39m }
+ [90m 87 |[39m[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET / 200 in 1266ms (compile: 52ms, render: 1214ms)
+ GET /governance-map 200 in 1238ms (compile: 90ms, render: 1148ms)
+ GET / 200 in 1177ms (compile: 69ms, render: 1107ms)
+ GET /promises 200 in 1141ms (compile: 80ms, render: 1061ms)
+ GET / 200 in 999ms (compile: 54ms, render: 945ms)
+ GET / 200 in 980ms (compile: 311ms, render: 669ms)
+ GET /governance-map 200 in 990ms (compile: 174ms, render: 816ms)
+ GET /promises 200 in 560ms (compile: 44ms, render: 516ms)
+ GET / 200 in 407ms (compile: 51ms, render: 356ms)
+ GET /governance-map 200 in 290ms (compile: 33ms, render: 257ms)
+✓ Compiled in 0ms
+ GET / 200 in 1103ms (compile: 120ms, render: 984ms)
+ GET /governance-map 200 in 1113ms (compile: 336ms, render: 777ms)
+ GET /promises 200 in 1123ms (compile: 217ms, render: 906ms)
+ GET / 200 in 1088ms (compile: 26ms, render: 1062ms)
+ GET / 200 in 1297ms (compile: 176ms, render: 1122ms)
+ GET / 200 in 1263ms (compile: 228ms, render: 1035ms)
+ GET /promises 200 in 1240ms (compile: 93ms, render: 1147ms)
+ GET /governance-map 200 in 1253ms (compile: 87ms, render: 1166ms)
+ GET / 200 in 1193ms (compile: 31ms, render: 1162ms)
+ GET / 200 in 1268ms (compile: 106ms, render: 1162ms)
+ GET /promises 200 in 1191ms (compile: 42ms, render: 1149ms)
+ GET /governance-map 200 in 1208ms (compile: 135ms, render: 1074ms)
+ GET / 200 in 1210ms (compile: 198ms, render: 1012ms)
+ GET / 200 in 1106ms (compile: 176ms, render: 930ms)
+ GET /promises 200 in 867ms (compile: 56ms, render: 811ms)
+ GET / 200 in 714ms (compile: 38ms, render: 677ms)
+ GET / 200 in 728ms (compile: 220ms, render: 508ms)
+ GET /governance-map 200 in 500ms (compile: 28ms, render: 472ms)
+ GET /promises 200 in 422ms (compile: 33ms, render: 389ms)
+ GET /governance-map 200 in 311ms (compile: 21ms, render: 290ms)
+✓ Compiled in 1673ms
+✓ Compiled in 1424ms
+✓ Compiled in 6s
+✓ Compiled in 824ms
+⨯ ./components/filters/filter-bar.tsx:426:1
+Parsing ecmascript source code failed
+[0m [90m 424 |[39m     [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 425 |[39m   )
+[31m[1m>[22m[39m[90m 426 |[39m }
+ [90m     |[39m [31m[1m^[22m[39m
+ [90m 427 |[39m[0m
+
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+
+Import traces:
+  Client Component Browser:
+    ./components/filters/filter-bar.tsx [Client Component Browser]
+    ./app/promises/page.tsx [Client Component Browser]
+    ./app/promises/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/filters/filter-bar.tsx [Client Component SSR]
+    ./app/promises/page.tsx [Client Component SSR]
+    ./app/promises/page.tsx [Server Component]
+
+
+ GET /promises 500 in 1103ms (compile: 521ms, render: 582ms)
+✓ Compiled in 1ms
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /promises 200 in 1084ms (compile: 275ms, render: 809ms)
+ GET / 200 in 527ms (compile: 163ms, render: 364ms)
+ GET / 200 in 265ms (compile: 97ms, render: 168ms)
+ GET / 200 in 102ms (compile: 9ms, render: 94ms)
+ GET /promises 200 in 303ms (compile: 15ms, render: 288ms)
+ HEAD /promises 200 in 638ms (compile: 118ms, render: 520ms)
+ GET /promises 200 in 206ms (compile: 34ms, render: 172ms)
+ HEAD /promises 200 in 91ms (compile: 10ms, render: 81ms)
+✓ Compiled in 1473ms
+ GET / 200 in 958ms (compile: 273ms, render: 684ms)
+ GET /promises 200 in 924ms (compile: 640ms, render: 284ms)
+ GET / 200 in 329ms (compile: 11ms, render: 319ms)
+ GET /promises 200 in 331ms (compile: 54ms, render: 276ms)
+ GET / 200 in 295ms (compile: 9ms, render: 286ms)
+ GET /promises 200 in 322ms (compile: 10ms, render: 312ms)
+ GET / 200 in 325ms (compile: 76ms, render: 249ms)
+ GET /promises 200 in 188ms (compile: 14ms, render: 174ms)
+ GET / 200 in 189ms (compile: 66ms, render: 123ms)
+ GET /promises 200 in 83ms (compile: 11ms, render: 72ms)
+✓ Compiled in 775ms
+✓ Compiled in 411ms
+✓ Compiled in 787ms
+✓ Compiled in 805ms
+ GET /budget 200 in 757ms (compile: 517ms, render: 240ms)
+ GET /promises 200 in 198ms (compile: 142ms, render: 56ms)
+Error: Cannot apply unknown utility class `selection:text-primary-hover`
+    [2m[at onInvalidCandidate (/home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/tailwindcss/dist/lib.js:21:1511)][0m
+    [2m[at Ee (/home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/tailwindcss/dist/lib.js:16:37066)][0m
+    [2m[at /home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/tailwindcss/dist/lib.js:21:355][0m
+    [2m[at Pr (/home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/tailwindcss/dist/lib.js:3:1733)][0m
+    [2m[at _ (/home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/tailwindcss/dist/lib.js:3:1377)][0m
+    [2m[at Te (/home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/tailwindcss/dist/lib.js:21:172)][0m
+    [2m[at pn (/home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/tailwindcss/dist/lib.js:38:294)][0m
+    [2m[at async dn (/home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/tailwindcss/dist/lib.js:38:631)][0m
+    [2m[at async Xr (/home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/@tailwindcss/node/dist/index.js:10:3417)][0m
+    [2m[at async N (/home/mahesh/Desktop/Augenblick/Governance-Accountability-Platform/Frontend/node_modules/@tailwindcss/postcss/dist/index.js:10:3979)][0m
+✓ Compiled in 1787ms
+✓ Compiled in 93ms
+✓ Compiled in 84ms
+✓ Compiled in 72ms
+✓ Compiled in 128ms
+✓ Compiled in 453ms
+✓ Compiled in 1271ms
+✓ Compiled in 561ms
+✓ Compiled in 373ms
+Persisting failed: Unable to write SST file 00001146.sst
+
+Caused by:
+    No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (42059) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "rebase", global_name: "turbo-tasks-fs@turbo_tasks_fs::rebase", .. }, this: None, arg: (FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(1009, "turbo_tasks_fs::virtual_fs::VirtualFileSystem#0")), path: "_next/static/chunks/[root-of-the-server]__51d697a8._.css" }, FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(1009, "turbo_tasks_fs::virtual_fs::VirtualFileSystem#0")), path: "_next" }, FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(12, "turbo_tasks_fs::DiskFileSystem#0")), path: ".next/dev" }) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tokio-runtime-worker' (42157) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "rebase", global_name: "turbo-tasks-fs@turbo_tasks_fs::rebase", .. }, this: None, arg: (FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(1009, "turbo_tasks_fs::virtual_fs::VirtualFileSystem#0")), path: "_next/static/chunks/[root-of-the-server]__51d697a8._.css" }, FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(1009, "turbo_tasks_fs::virtual_fs::VirtualFileSystem#0")), path: "_next" }, FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(12, "turbo_tasks_fs::DiskFileSystem#0")), path: ".next/dev" }) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (41077) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "rebase", global_name: "turbo-tasks-fs@turbo_tasks_fs::rebase", .. }, this: None, arg: (FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(1009, "turbo_tasks_fs::virtual_fs::VirtualFileSystem#0")), path: "_next/static/chunks/[root-of-the-server]__51d697a8._.css" }, FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(1009, "turbo_tasks_fs::virtual_fs::VirtualFileSystem#0")), path: "_next" }, FileSystemPath { fs: ResolvedVc(RawVc::TaskCell(12, "turbo_tasks_fs::DiskFileSystem#0")), path: ".next/dev" }) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (41077) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 494288 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001084.meta
+    1: Unable to open static sorted file 00001080.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42087) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for EcmascriptBuildNodeChunk::source_map (TaskId 595469))
+
+Caused by:
+    0: Looking up data for TaskId 595469 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42040) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for OutputAssetsReference::references (TaskId 167072))
+
+Caused by:
+    0: Looking up data for TaskId 167072 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42076) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "primary_chunkable_referenced_modules", global_name: "turbopack-core@turbopack_core::reference::primary_chunkable_referenced_modules", .. }, this: None, arg: (Vc(RawVc::TaskCell(40753, "next_core::next_client_reference::ecmascript_client_reference::ecmascript_client_reference_module::EcmascriptClientReferenceModule#0")), false, false) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42710) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "primary_chunkable_referenced_modules", global_name: "turbopack-core@turbopack_core::reference::primary_chunkable_referenced_modules", .. }, this: None, arg: (Vc(RawVc::TaskCell(40753, "next_core::next_client_reference::ecmascript_client_reference::ecmascript_client_reference_module::EcmascriptClientReferenceModule#0")), false, false) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "primary_chunkable_referenced_modules", global_name: "turbopack-core@turbopack_core::reference::primary_chunkable_referenced_modules", .. }, this: None, arg: (Vc(RawVc::TaskCell(40753, "next_core::next_client_reference::ecmascript_client_reference::ecmascript_client_reference_module::EcmascriptClientReferenceModule#0")), false, false) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42040) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "primary_chunkable_referenced_modules", global_name: "turbopack-core@turbopack_core::reference::primary_chunkable_referenced_modules", .. }, this: None, arg: (Vc(RawVc::TaskCell(40753, "next_core::next_client_reference::ecmascript_client_reference::ecmascript_client_reference_module::EcmascriptClientReferenceModule#0")), false, false) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42157) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "primary_chunkable_referenced_modules", global_name: "turbopack-core@turbopack_core::reference::primary_chunkable_referenced_modules", .. }, this: None, arg: (Vc(RawVc::TaskCell(40753, "next_core::next_client_reference::ecmascript_client_reference::ecmascript_client_reference_module::EcmascriptClientReferenceModule#0")), false, false) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42157) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for primary_chunkable_referenced_modules (TaskId 54542))
+
+Caused by:
+    0: Looking up data for TaskId 54542 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42076) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for primary_chunkable_referenced_modules (TaskId 54542))
+
+Caused by:
+    0: Looking up data for TaskId 54542 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42040) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for primary_chunkable_referenced_modules (TaskId 54542))
+
+Caused by:
+    0: Looking up data for TaskId 54542 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for primary_chunkable_referenced_modules (TaskId 54542))
+
+Caused by:
+    0: Looking up data for TaskId 54542 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42710) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for primary_chunkable_referenced_modules (TaskId 54542))
+
+Caused by:
+    0: Looking up data for TaskId 54542 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (41077) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for analyze_ecmascript_module (TaskId 335729))
+
+Caused by:
+    0: Looking up data for TaskId 335729 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42161) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for analyze_ecmascript_module (TaskId 335729))
+
+Caused by:
+    0: Looking up data for TaskId 335729 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (42162) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "turbopack-ecmascript@turbopack_ecmascript::references::esm::base::EsmAssetReference::ModuleReference::resolve_reference", .. }, this: Some(RawVc::TaskCell(802, "turbopack_ecmascript::references::esm::base::EsmAssetReference#5")), arg: () } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (41077) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "turbopack-ecmascript@turbopack_ecmascript::references::esm::base::EsmAssetReference::ModuleReference::resolve_reference", .. }, this: Some(RawVc::TaskCell(802, "turbopack_ecmascript::references::esm::base::EsmAssetReference#5")), arg: () } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (41077) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "turbopack-ecmascript@turbopack_ecmascript::references::esm::base::EsmAssetReference::ModuleReference::resolve_reference", .. }, this: Some(RawVc::TaskCell(802, "turbopack_ecmascript::references::esm::base::EsmAssetReference#5")), arg: () } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (41077) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <NextExternalResolvePlugin as AfterResolvePlugin>::after_resolve_condition (TaskId 1230))
+
+Caused by:
+    0: Looking up data for TaskId 1230 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42087) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <NextExternalResolvePlugin as AfterResolvePlugin>::after_resolve_condition (TaskId 1230))
+
+Caused by:
+    0: Looking up data for TaskId 1230 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42157) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "turbopack-ecmascript@turbopack_ecmascript::references::esm::base::EsmAssetReference::ModuleReference::resolve_reference", .. }, this: Some(RawVc::TaskCell(802, "turbopack_ecmascript::references::esm::base::EsmAssetReference#5")), arg: () } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42040) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EcmascriptModuleAsset as Module>::is_self_async (TaskId 415170))
+
+Caused by:
+    0: Looking up data for TaskId 415170 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EcmascriptModuleAsset as Module>::is_self_async (TaskId 415170))
+
+Caused by:
+    0: Looking up data for TaskId 415170 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42042) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EcmascriptModuleAsset as Module>::is_self_async (TaskId 415170))
+
+Caused by:
+    0: Looking up data for TaskId 415170 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42157) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EcmascriptModuleAsset as Module>::is_self_async (TaskId 415170))
+
+Caused by:
+    0: Looking up data for TaskId 415170 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42710) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EcmascriptModuleAsset as Module>::is_self_async (TaskId 415170))
+
+Caused by:
+    0: Looking up data for TaskId 415170 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (41077) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for resolve (TaskId 356135))
+
+Caused by:
+    0: Looking up data for TaskId 356135 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 41348 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00000298.meta
+    1: Unable to open static sorted file 00000295.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for resolve (TaskId 41854))
+
+Caused by:
+    0: Looking up data for TaskId 41854 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42076) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EcmascriptModuleAsset as EcmascriptChunkPlaceable>::get_exports (TaskId 341014))
+
+Caused by:
+    0: Looking up data for TaskId 341014 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42042) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EcmascriptModuleAsset as EcmascriptChunkPlaceable>::get_exports (TaskId 341014))
+
+Caused by:
+    0: Looking up data for TaskId 341014 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42710) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 339713 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001011.meta
+    1: Unable to open static sorted file 00001008.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42076) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EcmascriptModuleAsset as EcmascriptChunkPlaceable>::get_exports (TaskId 341014))
+
+Caused by:
+    0: Looking up data for TaskId 341014 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for resolve (TaskId 41854))
+
+Caused by:
+    0: Looking up data for TaskId 41854 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 339713 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001011.meta
+    1: Unable to open static sorted file 00001008.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42087) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 339713 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001011.meta
+    1: Unable to open static sorted file 00001008.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42710) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for resolve (TaskId 41854))
+
+Caused by:
+    0: Looking up data for TaskId 41854 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (44724) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for item_code_and_ids (TaskId 595887))
+
+Caused by:
+    0: Looking up data for TaskId 595887 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42161) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for resolve (TaskId 179638))
+
+Caused by:
+    0: Looking up data for TaskId 179638 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42042) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 595819 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001084.meta
+    1: Unable to open static sorted file 00001080.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (44724) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for EcmascriptChunk::chunk_content (TaskId 595788))
+
+Caused by:
+    0: Looking up data for TaskId 595788 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (44724) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 179470 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001011.meta
+    1: Unable to open static sorted file 00001008.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42042) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 339713 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001011.meta
+    1: Unable to open static sorted file 00001008.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for resolve (TaskId 179638))
+
+Caused by:
+    0: Looking up data for TaskId 179638 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for resolve (TaskId 179638))
+
+Caused by:
+    0: Looking up data for TaskId 179638 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42076) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "turbopack-ecmascript@turbopack_ecmascript::references::esm::base::EsmAssetReference::ModuleReference::resolve_reference", .. }, this: Some(RawVc::TaskCell(179316, "turbopack_ecmascript::references::esm::base::EsmAssetReference#24")), arg: () } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42135) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "turbopack-ecmascript@turbopack_ecmascript::references::esm::base::EsmAssetReference::ModuleReference::resolve_reference", .. }, this: Some(RawVc::TaskCell(179316, "turbopack_ecmascript::references::esm::base::EsmAssetReference#24")), arg: () } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42087) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for resolve (TaskId 179638))
+
+Caused by:
+    0: Looking up data for TaskId 179638 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42162) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 339713 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001011.meta
+    1: Unable to open static sorted file 00001008.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (44724) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 339713 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001011.meta
+    1: Unable to open static sorted file 00001008.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (44724) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EsmAssetReference as ChunkableModuleReference>::chunking_type (TaskId 504712))
+
+Caused by:
+    0: Looking up data for TaskId 504712 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (44724) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EsmAssetReference as ChunkableModuleReference>::chunking_type (TaskId 504712))
+
+Caused by:
+    0: Looking up data for TaskId 504712 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42076) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:963:22:
+Failed to lookup task type: Looking up task type for TaskId 339713 from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001011.meta
+    1: Unable to open static sorted file 00001008.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42087) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "ResolveOrigin::resolve_options", global_name: "turbopack-core@turbopack_core::resolve::origin::ResolveOrigin::resolve_options", .. }, this: Some(RawVc::TaskCell(179313, "turbopack_ecmascript::EcmascriptModuleAsset#0")), arg: (EcmaScriptModules(ImportPart(Export("getSectors"))),) } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (41077) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EsmAssetReference as ChunkableModuleReference>::chunking_type (TaskId 504712))
+
+Caused by:
+    0: Looking up data for TaskId 504712 from database failed
+    1: Unable to open static sorted file referenced from 00001141.meta
+    2: Unable to open static sorted file 00001136.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (42658) panicked at /build/turbopack/crates/turbo-tasks-backend/src/backend/mod.rs:1354:30:
+Failed to lookup task id: Looking up task id for CachedTaskType { native_fn: NativeFunction { name: "<EsmAssetReference as ModuleReference>::resolve_reference", global_name: "turbopack-ecmascript@turbopack_ecmascript::references::esm::base::EsmAssetReference::ModuleReference::resolve_reference", .. }, this: Some(RawVc::TaskCell(802, "turbopack_ecmascript::references::esm::base::EsmAssetReference#5")), arg: () } from database failed
+
+Caused by:
+    0: Unable to open static sorted file referenced from 00001144.meta
+    1: Unable to open static sorted file 00001139.sst
+    2: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)

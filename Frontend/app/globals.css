@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -60,6 +59,12 @@
   --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 4px 6px -1px hsl(0 0% 0% / 0.17);
   --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
   --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
+
+  /* Government Institutional Colors */
+  --gov-saffron: #FF9933;
+  --gov-white: #FFFFFF;
+  --gov-green: #138808;
+  --gov-blue: #000080;
 }
 
 .dark {
@@ -217,4 +222,93 @@
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
   border-color: var(--primary);
+}
+
+/* Institutional Decoration */
+.gov-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background-image: url('/chakra-watermark.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.gov-border-tricolor {
+  border-bottom: 2px solid transparent;
+  background: linear-gradient(to right, var(--gov-saffron) 33%, var(--gov-white) 33%, var(--gov-white) 66%, var(--gov-green) 66%) bottom / 100% 2px no-repeat;
+}
+
+.gov-badge-official {
+  @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm border text-[9px] font-bold uppercase tracking-wider;
+  background-color: color-mix(in srgb, var(--gov-saffron), transparent 95%);
+  border-color: color-mix(in srgb, var(--gov-saffron), transparent 80%);
+  color: var(--gov-saffron);
+}
+
+.gov-badge-verified {
+  @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm border text-[9px] font-bold uppercase tracking-wider;
+  background-color: color-mix(in srgb, var(--gov-green), transparent 95%);
+  border-color: color-mix(in srgb, var(--gov-green), transparent 80%);
+  color: var(--gov-green);
+}
+
+/* ─── Explorer Redesign ─── */
+
+.explorer-bg {
+  @apply relative;
+  background-image: url('/assets/tricolor-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.glass-header {
+  @apply bg-white/40 backdrop-blur-xl border-b border-white/20;
+}
+
+.explorer-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-8;
+}
+
+.gov-card {
+  @apply relative overflow-hidden rounded-2xl border-2 border-white/30 bg-white/60 backdrop-blur-md transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-white/60 cursor-pointer;
+}
+
+.gov-card-image {
+  @apply relative h-48 overflow-hidden rounded-t-xl;
+}
+
+.gov-card-image img {
+  @apply object-cover w-full h-full transition-transform duration-500 group-hover:scale-110;
+}
+
+.gov-card-content {
+  @apply p-5 flex flex-col gap-3;
+}
+
+.gov-card-title {
+  @apply text-sm font-bold text-slate-800 leading-snug line-clamp-2 min-h-[2.5rem];
+}
+
+.gov-card-footer {
+  @apply mt-auto flex items-center justify-between pt-4 border-t border-slate-200/50;
+}
+
+.gov-status-pill {
+  @apply text-[9px] uppercase tracking-tighter font-black px-2 py-0.5 rounded-full border shadow-sm;
+}
+
+.institutional-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+  margin: 1.5rem 0;
 }

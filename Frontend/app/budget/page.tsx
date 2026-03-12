@@ -8,6 +8,7 @@ import {
   TrendingUp,
   MessageSquare,
   AlertTriangle,
+  Shield,
 } from 'lucide-react'
 import { FilterBar } from '@/components/filters/filter-bar'
 import { useLocalFilters, budgetTypes } from '@/components/filters/filter-context'
@@ -140,7 +141,11 @@ export default function BudgetAnalysisPage() {
   return (
     <div className="min-h-screen p-4 md:p-8 bg-background">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-8 border-b border-border/50 pb-6 relative">
+        <div className="flex items-center gap-2 mb-2">
+           <Shield className="h-6 w-6 text-primary opacity-80" />
+           <span className="gov-badge-official">National Budgetary Pipeline</span>
+        </div>
         <h1 className="text-4xl font-bold tracking-tight">Budget Analysis</h1>
         <p className="text-muted-foreground mt-2 text-base">
           Analyze how government budget allocations relate to manifesto promises and policies

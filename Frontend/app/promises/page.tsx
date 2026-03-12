@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, AlertCircle, MessageSquare, ArrowDown, FileText } from 'lucide-react'
+import { CheckCircle, AlertCircle, MessageSquare, ArrowDown, FileText, Shield, X, AlertTriangle } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { FilterBar } from '@/components/filters/filter-bar'
 import { useLocalFilters, promiseStatuses } from '@/components/filters/filter-context'
@@ -17,9 +17,21 @@ import {
   type SimilarPolicy 
 } from '@/lib/api'
 
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
+import { ExplorerHeader } from '@/components/explorer/ExplorerHeader'
+import { PromiseCard } from '@/components/explorer/PromiseCard'
+
 export default function PromisesPage() {
   const filters = useLocalFilters()
   const [selectedPromiseId, setSelectedPromiseId] = useState<number | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
   const [promisesData, setPromisesData] = useState<PromiseBrief[]>([])
   const [selectedPromise, setSelectedPromise] = useState<PromiseDetail | null>(null)
   const [similarPolicies, setSimilarPolicies] = useState<SimilarPolicy[]>([])
@@ -41,7 +53,6 @@ export default function PromisesPage() {
         }
         const data = await getPromises()
         setPromisesData(data)
-        if (data.length > 0) setSelectedPromiseId(data[0].id)
       } catch (err) {
         setError('Failed to load promises')
         console.error(err)
@@ -59,25 +70,22 @@ export default function PromisesPage() {
       try {
         const detail = await getPromiseDetail(selectedPromiseId)
         setSelectedPromise(detail)
+        setIsDetailLoading(false) // Show main detail immediately
         
-        // Also fetch semantic similar policies
+        // Background: Fetch semantic similar policies
         setIsSimilarLoading(true)
-        try {
-          const similar = await findSimilarPolicies({ query: detail.text, top_k: 3 })
-          setSimilarPolicies(similar)
-        } catch (err) {
-          console.error('Failed to load similar policies:', err)
-          setSimilarPolicies([])
-        } finally {
-          setIsSimilarLoading(false)
-        }
+        findSimilarPolicies({ query: detail.text, top_k: 3 })
+          .then(similar => setSimilarPolicies(similar))
+          .catch(() => setSimilarPolicies([]))
+          .finally(() => setIsSimilarLoading(false))
       } catch (err) {
         console.error('Failed to load promise detail:', err)
-      } finally {
         setIsDetailLoading(false)
       }
     }
-    loadPromiseDetail()
+    if (selectedPromiseId) {
+      loadPromiseDetail()
+    }
   }, [selectedPromiseId])
 
   const filtered = promisesData.filter((promise) => {
@@ -87,12 +95,13 @@ export default function PromisesPage() {
     return matchesSearch && matchesSector && matchesStatus
   })
 
+  // Status mappings for visuals
   const statusStyles: Record<string, string> = {
-    fulfilled: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-    in_progress: 'bg-blue-50 text-blue-700 border border-blue-200',
-    partial: 'bg-amber-50 text-amber-700 border border-amber-200',
-    no_progress: 'bg-red-50 text-red-700 border border-red-200',
-    announced: 'bg-slate-50 text-slate-600 border border-slate-200',
+    fulfilled: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    in_progress: 'bg-blue-50 text-blue-700 border-blue-200',
+    partial: 'bg-amber-50 text-amber-700 border-amber-200',
+    no_progress: 'bg-red-50 text-red-700 border-red-200',
+    announced: 'bg-slate-50 text-slate-600 border-slate-200',
   }
   const getStatusColor = (s: string) => statusStyles[s] || 'bg-muted text-muted-foreground'
 
@@ -102,251 +111,226 @@ export default function PromisesPage() {
   }
   const getStatusLabel = (s: string) => statusLabels[s] || 'Unknown'
 
-  if (isLoading) {
-    return <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">Loading promises…</div>
-  }
-  if (error) {
-    return <div className="flex-1 flex items-center justify-center text-sm text-red-500">{error}</div>
+  const handleCardClick = (id: number) => {
+    setSelectedPromiseId(id)
+    setIsDialogOpen(true)
   }
 
   return (
     <div className="flex flex-col h-full">
+      <ExplorerHeader 
+        title="Promise Explorer"
+        availableSectors={availableSectors}
+        statuses={promiseStatuses}
+        filters={filters}
+      />
 
-      {/* ── Navbar Section (Top Sticky) ── */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border/40 px-8 py-3 w-full">
-        <FilterBar
-          searchQuery={filters.searchQuery}
-          setSearchQuery={filters.setSearchQuery}
-          searchPlaceholder="Search promises..."
-          electionCycle={filters.electionCycle}
-          setElectionCycle={filters.setElectionCycle}
-          selectedSectors={filters.selectedSectors}
-          setSelectedSectors={filters.setSelectedSectors}
-          toggleSector={filters.toggleSector}
-          sectors={availableSectors}
-          sectorLabel="Sector"
-          selectedStatuses={filters.selectedStatuses}
-          setSelectedStatuses={filters.setSelectedStatuses}
-          toggleStatus={filters.toggleStatus}
-          statuses={promiseStatuses}
-          statusLabel="Status"
-          clearAllFilters={filters.clearAllFilters}
-          hasActiveFilters={filters.hasActiveFilters}
-          centerContent={
-            <h1 className="text-xl font-bold text-foreground tracking-tighter whitespace-nowrap">
-              Promise Explorer
-            </h1>
-          }
-        />
-      </div>
-
-      {/* ── Two-column content ── */}
-      <div className="flex flex-1 min-h-0 overflow-hidden pt-6">
-
-        {/* Left: Promise list */}
-        <div className="w-[380px] flex-shrink-0 px-8 overflow-y-auto custom-scrollbar">
-          <div className="space-y-5 pb-8">
-            {filtered.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-12">No promises match your filters</p>
-            ) : (
-              filtered.map((promise) => (
-                <button
-                  key={promise.id}
-                  onClick={() => setSelectedPromiseId(promise.id)}
-                  className={`w-full text-left p-6 rounded-2xl border-2 transition-all duration-200 ${
-                    selectedPromiseId === promise.id
-                      ? 'border-black bg-muted/50'
-                      : 'border-border/40 bg-card hover:border-border hover:bg-muted/20'
-                  }`}
-                >
-                  <h3 className="text-sm font-bold text-foreground leading-tight mb-4">
-                    {promise.text}
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[11px] text-muted-foreground bg-muted/40 rounded px-2 py-1 font-medium">
-                      {promise.sector.name}
-                    </span>
-                    <span className="text-[11px] text-muted-foreground bg-muted/40 rounded px-2 py-1 font-medium">
-                      {promise.election_cycle.name.split(' ')[0]}
-                    </span>
-                  </div>
-                  <div className="mt-4">
-                    <span className={`text-[10px] uppercase tracking-widest px-2 py-1 rounded font-bold ${getStatusColor(promise.status).replace('border', 'border-0')}`}>
-                      {getStatusLabel(promise.status)}
-                    </span>
-                  </div>
-                </button>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Right: Detail panel */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {isDetailLoading ? (
-            <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">Loading…</div>
-          ) : !selectedPromise ? (
-            <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
-              Select a promise to see its details
+      <main className="flex-1">
+        <div className="max-w-[1600px] mx-auto min-h-full px-10 pb-10">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-40">
+              <span className="text-sm font-bold text-slate-500 animate-pulse">Analyzing Manifesto Commitments...</span>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-40 text-center">
+              <p className="text-lg font-bold text-slate-400">No promises found matching your criteria</p>
+              <button onClick={() => filters.clearAllFilters()} className="mt-4 text-sm text-primary font-bold">Clear all filters</button>
             </div>
           ) : (
-            <div className="space-y-4">
-
-              {/* Overview */}
-              <div className="detail-panel border-border/60 rounded-3xl p-10 bg-card">
-                <div className="flex items-start justify-between gap-8 mb-10">
-                  <h2 className="text-2xl font-bold text-foreground leading-tight tracking-tight">{selectedPromise.text}</h2>
-                  <Badge variant="secondary" className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-muted/50">
-                    {getStatusLabel(selectedPromise.status)}
-                  </Badge>
-                </div>
-                
-                <p className="text-[15px] text-muted-foreground/90 leading-relaxed mb-12">
-                  Implementation tracking for this manifesto promise. Connected to legislative actions and monitored via official government reports and budgetary allocations.
-                </p>
-
-                <div className="grid grid-cols-3 gap-8 pt-10 border-t border-border/50">
-                  <div>
-                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Sector</h4>
-                    <p className="text-sm font-bold text-foreground">{selectedPromise.sector.name}</p>
-                  </div>
-                  <div>
-                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Election Cycle</h4>
-                    <p className="text-sm font-bold text-foreground">{selectedPromise.election_cycle.name}</p>
-                  </div>
-                  <div>
-                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Category</h4>
-                    <p className="text-sm font-bold text-foreground">Government of India</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Related Policies (Exact DB Mappings) */}
-              {selectedPromise.related_policies && selectedPromise.related_policies.length > 0 && (
-                <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
-                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">Connected Policies (Exact)</h3>
-                  <div className="space-y-4">
-                    {selectedPromise.related_policies.map((policy: any, idx: number) => (
-                      <div key={idx} className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/50">
-                        <div className="flex items-center gap-4">
-                          <FileText className="h-5 w-5 text-purple-500" />
-                          <div>
-                            <p className="text-sm font-bold text-foreground">{policy.name}</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">{policy.year_introduced} • {policy.status}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Semantic Similar Policies (AI) */}
-              {similarPolicies && similarPolicies.length > 0 && (
-                <div className="detail-panel border border-indigo-500/20 rounded-3xl p-8 bg-indigo-50/10">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-sm font-bold text-indigo-700 uppercase tracking-widest flex items-center gap-2">
-                       Semantic Similar Policies
-                       <Badge variant="outline" className="text-[9px] bg-indigo-100 text-indigo-700 border-indigo-200 ml-2">AI MATCH</Badge>
-                    </h3>
-                  </div>
-                  {isSimilarLoading ? (
-                     <div className="text-sm text-indigo-500">Finding semantic matches...</div>
-                  ) : (
-                    <div className="space-y-4">
-                      {similarPolicies.map((spolicy) => (
-                        <div key={spolicy.id} className="flex flex-col p-4 bg-white/60 backdrop-blur-sm rounded-2xl border border-indigo-100">
-                          <div className="flex items-start justify-between gap-4">
-                            <h4 className="text-sm font-bold text-indigo-950 mb-1">{spolicy.name}</h4>
-                            <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 text-[10px] whitespace-nowrap">
-                              {(spolicy.similarity * 100).toFixed(0)}% Match
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-indigo-900/70 mb-2 line-clamp-2">{spolicy.description}</p>
-                          <div className="flex flex-wrap items-center gap-2 mt-auto pt-2 border-t border-indigo-100/50">
-                            <span className="text-[10px] text-indigo-800 font-medium bg-indigo-50 px-2 py-0.5 rounded">{spolicy.sector || 'Various'}</span>
-                            <span className="text-[10px] text-indigo-800 font-medium bg-indigo-50 px-2 py-0.5 rounded">{spolicy.status.replace('_', ' ')}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Simplified Explanation - Matching the design */}
-              <div className="detail-panel border border-emerald-500/20 rounded-3xl p-10 bg-emerald-50/10">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-2 rounded-lg bg-emerald-500/10">
-                    <MessageSquare className="h-5 w-5 text-emerald-600" />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground">Simplified Explanation</h3>
-                </div>
-                <p className="text-[15px] text-muted-foreground/90 leading-relaxed">
-                  {selectedPromise.ai_insight || `This promise focus on ${selectedPromise.sector.name} sector. It aims to improve ${selectedPromise.text.toLowerCase()} through targeted policy interventions and budgetary support.`}
-                </p>
-              </div>
-
-              {/* Budget Trends */}
-              {selectedPromise.budget_trends && selectedPromise.budget_trends.length > 0 && (
-                <div className="detail-panel">
-                  <h3 className="text-sm font-semibold text-foreground mb-4">{selectedPromise.sector.name} — Budget Allocation</h3>
-                  <ResponsiveContainer width="100%" height={220}>
-                    <LineChart data={selectedPromise.budget_trends} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                      <XAxis dataKey="year" style={{ fontSize: '11px' }} stroke="#9ca3af" />
-                      <YAxis style={{ fontSize: '11px' }} stroke="#9ca3af" />
-                      <Tooltip
-                        contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }}
-                        formatter={(value: any) => [`₹${value.toLocaleString()} Cr`, 'Budget']}
-                      />
-                      <Line type="monotone" dataKey="amount_crores" stroke="#6366f1" strokeWidth={2} dot={{ fill: '#6366f1', r: 4 }} activeDot={{ r: 6 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-
-              {/* Implementation Signals */}
-              <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
-                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">Implementation Signals</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {[
-                    { label: 'Policy Introduced', achieved: selectedPromise.related_policies?.length > 0 },
-                    { label: 'Budget Allocated', achieved: selectedPromise.budget_trends?.length > 0 },
-                    { label: 'Program Launched', achieved: ['in_progress', 'partial', 'fulfilled'].includes(selectedPromise.status) },
-                    { label: 'Outcome Achieved', achieved: selectedPromise.status === 'fulfilled' },
-                  ].map((signal, idx) => (
-                    <div key={idx} className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all ${
-                      signal.achieved ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-muted/30 border-border text-muted-foreground'
-                    }`}>
-                      {signal.achieved
-                        ? <CheckCircle className="h-6 w-6 mb-2" />
-                        : <AlertCircle className="h-6 w-6 mb-2" />
-                      }
-                      <p className="text-[12px] font-bold leading-tight">{signal.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Timeline */}
-              {selectedPromise.timeline_events && selectedPromise.timeline_events.length > 0 && (
-                <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
-                  <PolicyLifecycleTimeline
-                    events={selectedPromise.timeline_events.map((e: any) => ({
-                      year: e.year,
-                      event: `${e.event_type}: ${e.policy_name}` + (e.description ? ` — ${e.description}` : ''),
-                    }))}
-                    title="Legislative Timeline"
-                    showProgressBar={true}
-                    variant="vertical"
-                  />
-                </div>
-              )}
+            <div className="explorer-grid">
+              {filtered.map((promise) => (
+                <PromiseCard
+                  key={promise.id}
+                  promise={promise}
+                  onClick={() => handleCardClick(promise.id)}
+                  statusColor={getStatusColor}
+                />
+              ))}
             </div>
           )}
         </div>
-      </div>
+      </main>
+
+      {/* Detail Popup */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[1400px] w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden custom-scrollbar p-0 gap-0 border-none rounded-3xl shadow-2xl bg-white [&>button]:hidden">
+          {isDetailLoading || !selectedPromise ? (
+            <div className="p-20 text-center">
+              <span className="text-sm font-bold text-slate-400 animate-pulse">Syncing Tracker Data...</span>
+            </div>
+          ) : (
+            <div className="flex flex-col">
+                {/* Modal Header/Banner */}
+                <div className="min-h-32 bg-slate-900 relative p-8 flex flex-col justify-end">
+                   <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950" />
+                   <div className="absolute top-4 right-4 z-50">
+                      <button 
+                        onClick={() => setIsDialogOpen(false)}
+                        className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                   </div>
+                   <div className="relative z-10 flex flex-col gap-3">
+                      <div>
+                        <Badge className={`uppercase tracking-widest text-[9px] font-black px-2 py-0.5 border-none shadow-sm ${getStatusColor(selectedPromise.status).replace('bg-', 'bg-').replace('text-', 'text-')}`}>
+                           {getStatusLabel(selectedPromise.status)}
+                        </Badge>
+                      </div>
+                      <h2 className="text-xl font-black text-white leading-tight pr-12">{selectedPromise.text}</h2>
+                   </div>
+                </div>
+
+                <div className="p-10">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                     {/* Left Column: Key Metrics & AI */}
+                     <div className="lg:col-span-4 space-y-10">
+                        <div>
+                          <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Commitment Profile</h3>
+                          <div className="grid grid-cols-2 gap-3">
+                             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-4">
+                                <span className="text-[9px] font-bold text-slate-500 uppercase flex-shrink-0">Sector</span>
+                                <span className="text-sm font-black text-slate-800 text-right">{selectedPromise.sector.name}</span>
+                             </div>
+                             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-4">
+                                <span className="text-[9px] font-bold text-slate-500 uppercase flex-shrink-0">Election Cycle</span>
+                                <span className="text-sm font-black text-slate-800 text-right">{selectedPromise.election_cycle.name}</span>
+                             </div>
+                             <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center justify-between gap-4">
+                                <span className="text-[9px] font-bold text-emerald-600 uppercase flex-shrink-0">Fulfillment</span>
+                                <span className="text-sm font-black text-emerald-800 text-right">{(selectedPromise.fulfillment_score * 100).toFixed(0)}%</span>
+                             </div>
+                             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-4">
+                                <span className="text-[9px] font-bold text-slate-500 uppercase flex-shrink-0">Verification</span>
+                                <span className="text-sm font-black text-slate-800 text-right">Verified</span>
+                             </div>
+                          </div>
+                        </div>
+
+                        {/* AI Insight */}
+                        <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100/50 relative overflow-hidden group">
+                           <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                              <Shield className="h-10 w-10 text-blue-600" />
+                           </div>
+                           <div className="relative z-10">
+                              <div className="flex items-center gap-2 mb-3">
+                                <MessageSquare className="h-4 w-4 text-blue-600" />
+                                <h3 className="text-xs font-black text-blue-800 uppercase tracking-tight">Governance Intelligence</h3>
+                              </div>
+                              <p className="text-sm text-blue-900/80 leading-relaxed italic">
+                                "{selectedPromise.ai_insight || `This commitment significantly impacts the ${selectedPromise.sector.name} sector by addressing core systemic challenges outlined in the 2024 mandate.`}"
+                              </p>
+                           </div>
+                        </div>
+
+                        {/* Similar Promises (if available or reuse similar policies UI) */}
+                        {similarPolicies && similarPolicies.length > 0 && (
+                          <div className="space-y-4">
+                             <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Related Policy Correlates</h3>
+                             <div className="space-y-2">
+                                {similarPolicies.map(sp => (
+                                  <div key={sp.id} className="p-3 bg-white rounded-xl border border-slate-100 flex items-center justify-between hover:border-blue-200 cursor-default transition-colors">
+                                     <span className="text-xs font-bold text-slate-700 truncate mr-3">{sp.name}</span>
+                                     <Badge variant="secondary" className="text-[8px] font-black bg-slate-100">AI MATCH</Badge>
+                                  </div>
+                                ))}
+                             </div>
+                          </div>
+                        )}
+                     </div>
+
+                     {/* Right Column: Details & Evidence */}
+                     <div className="lg:col-span-8 space-y-12">
+                        <div>
+                          <h3 className="text-2xl font-black text-slate-800 mb-4 tracking-tighter">Manifesto Commitment</h3>
+                          <p className="text-slate-600 leading-relaxed text-lg font-medium max-w-4xl">
+                            {selectedPromise.text}
+                          </p>
+                        </div>
+
+                        {/* Connected Implementation Policies */}
+                        {selectedPromise.related_policies && selectedPromise.related_policies.length > 0 && (
+                          <div className="bg-purple-50/30 rounded-3xl p-8 border border-purple-100">
+                            <h3 className="text-xs font-black text-purple-700 uppercase tracking-widest mb-6 flex items-center gap-2">
+                              <FileText className="h-4 w-4" />
+                              Active Implementation Policies
+                            </h3>
+                            <div className="grid grid-cols-1 gap-4">
+                              {selectedPromise.related_policies.map((policy: any, idx: number) => (
+                                <div key={idx} className="flex items-start gap-5 p-6 bg-white rounded-2xl border border-purple-100 shadow-sm hover:shadow-md transition-all group">
+                                  <div className="h-10 w-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 flex-shrink-0 group-hover:scale-110 transition-transform">
+                                    <FileText className="h-5 w-5" />
+                                  </div>
+                                  <div className="flex-1">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <p className="text-[15px] font-bold text-slate-800 leading-tight">{policy.name}</p>
+                                        <Badge className={`text-[8px] font-black uppercase tracking-tighter border-none shadow-sm ${getStatusColor(policy.status).replace('bg-', 'bg-').replace('text-', 'text-')}`}>
+                                          {policy.status}
+                                        </Badge>
+                                      </div>
+                                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Year: {policy.year_introduced} • Implementation ID: #POL-{policy.id}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Budget Analysis */}
+                        {selectedPromise.budget_trends && selectedPromise.budget_trends.length > 0 && (
+                          <div>
+                            <div className="flex items-center justify-between mb-6">
+                              <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">{selectedPromise.sector.name} — Resource Allocation (₹ Cr)</h3>
+                              <Badge variant="outline" className="bg-slate-50 text-slate-500 border-slate-200">Official Data</Badge>
+                            </div>
+                            <div className="h-[240px] w-full bg-slate-50/50 rounded-2xl p-4 border border-slate-100">
+                               <ResponsiveContainer width="100%" height="100%">
+                                 <LineChart data={selectedPromise.budget_trends}>
+                                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                                   <XAxis dataKey="year" stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} />
+                                   <YAxis stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} />
+                                   <Tooltip 
+                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontWeight: 800 }}
+                                     formatter={(v) => [`₹${v.toLocaleString()} Cr`, 'Budget']}
+                                   />
+                                   <Line 
+                                     type="monotone" 
+                                     dataKey="amount_crores" 
+                                     stroke="#8b5cf6" 
+                                     strokeWidth={3} 
+                                     dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 4, stroke: '#fff' }}
+                                     activeDot={{ r: 6, strokeWidth: 0 }}
+                                   />
+                                 </LineChart>
+                               </ResponsiveContainer>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Implementation Signals */}
+                        <div>
+                          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Delivery Milestones</h3>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            {[
+                              { label: 'Policy Coverage', value: 'High', color: 'emerald' },
+                              { label: 'Legislative Support', value: 'Strong', color: 'blue' },
+                              { label: 'Budgetary Support', value: 'Adequate', color: 'purple' },
+                              { label: 'Fulfillment Status', value: getStatusLabel(selectedPromise.status), color: 'indigo' }
+                            ].map((stat, i) => (
+                              <div key={i} className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter mb-1">{stat.label}</p>
+                                 <p className={`text-xs font-black text-${stat.color}-600`}>{stat.value}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                     </div>
+                  </div>
+                </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

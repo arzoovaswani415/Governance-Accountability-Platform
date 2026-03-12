@@ -34,8 +34,9 @@ export default function RootLayout({
           </div>
 
           {/* ── Right: Main content floating panel ── */}
-          <div className="floating-panel flex-1 flex flex-col h-[calc(100vh-24px)] overflow-hidden">
-            <main className="flex-1 overflow-y-auto p-6">
+          <div className="floating-panel flex-1 flex flex-col h-[calc(100vh-24px)] overflow-hidden relative explorer-bg">
+            <div className="gov-watermark" />
+            <main className="flex-1 overflow-y-auto relative z-10">
               {children}
             </main>
           </div>

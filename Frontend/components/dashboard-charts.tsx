@@ -27,12 +27,13 @@ export type SectorPerformanceChartRow = {
   pending: number
 }
 
-// Dark Orange / Burnt Orange monochromatic shading
-const SHADES = [
-  '#c2410c', // Darkest (Burnt Orange)
-  '#ea580c', // Medium (Dark Orange)
-  '#fb923c', // Lightest
-]
+// Institutional Palette
+const COLORS = {
+  primary: '#6366f1',   // Indigo
+  success: '#10b981',   // Emerald
+  pending: '#f59e0b',   // Amber
+  neutral: '#94a3b8',   // Slate
+}
 
 export function PromiseProgressChart({ data }: { data: PromiseProgressInput }) {
   const total =
@@ -44,9 +45,9 @@ export function PromiseProgressChart({ data }: { data: PromiseProgressInput }) {
   const pct = (total > 0) ? (n: number) => Math.round((n / total) * 100) : (_n: number) => 0
 
   const promiseProgressData = [
-    { name: 'Fulfilled', value: pct(data.fulfilled ?? 0), color: SHADES[0] },
-    { name: 'In Progress', value: pct(data.in_progress ?? 0), color: SHADES[1] },
-    { name: 'No Progress', value: pct(data.no_progress ?? 0), color: SHADES[2] },
+    { name: 'Fulfilled', value: pct(data.fulfilled ?? 0), color: COLORS.success },
+    { name: 'In Progress', value: pct(data.in_progress ?? 0), color: COLORS.primary },
+    { name: 'No Progress', value: pct(data.no_progress ?? 0), color: COLORS.neutral },
   ]
 
   return (
@@ -111,14 +112,16 @@ export function SectorPerformanceChart({ data }: { data: SectorPerformanceChartR
           <Bar 
             dataKey="fulfilled" 
             stackId="a" 
-            fill={SHADES[0]} 
+            fill={COLORS.success} 
             name="Fulfilled" 
+            radius={[0, 0, 4, 4]}
           />
           <Bar 
             dataKey="pending" 
             stackId="a" 
-            fill={SHADES[1]} 
+            fill={COLORS.neutral} 
             name="Pending" 
+            radius={[4, 4, 0, 0]}
           />
         </BarChart>
       </ResponsiveContainer>

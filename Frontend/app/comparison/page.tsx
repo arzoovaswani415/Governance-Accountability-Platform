@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { AlertCircle, Shield, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react'
+import { AlertCircle, Shield, ArrowUpRight, ArrowDownRight, Minus, FileText } from 'lucide-react'
 import {
   getAccountabilitySectors,
   getAccountabilityGaps,
@@ -45,9 +45,21 @@ export default function ComparisonPage() {
 
   return (
     <div className="min-h-full w-full max-w-[1200px] mx-auto p-8">
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Sector Accountability</h1>
-        <p className="text-muted-foreground">Compare how effectively promises translate to policies and budgets across sectors.</p>
+      <div className="mb-10 flex items-end justify-between border-b border-border/50 pb-6">
+        <div>
+          <span className="gov-badge-official mb-2">Legislative Records</span>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2 flex items-center gap-3">
+            <FileText className="h-8 w-8 text-primary opacity-80" />
+            Sector Accountability
+          </h1>
+          <p className="text-muted-foreground">Compare how effectively promises translate to policies and budgets across sectors.</p>
+        </div>
+        <div className="hidden lg:block">
+          <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50">
+            <Shield className="h-3.5 w-3.5 text-primary" />
+            OFFICIAL DATA TRACKER
+          </div>
+        </div>
       </div>
 
       {error && (

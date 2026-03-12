@@ -29,14 +29,19 @@ export function Sidebar() {
   return (
     <aside className="flex flex-col h-full w-full">
       {/* Logo / Brand */}
-      <div className="px-5 py-5 border-b border-border">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center">
-            <span className="text-white font-bold text-xs">FF</span>
+      <div className="px-5 py-6 border-b border-border relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-right from-[#FF9933] via-white to-[#138808] opacity-50" />
+        <div className="flex items-center gap-3 relative z-10">
+          <div className="w-9 h-9 flex-shrink-0 flex items-center justify-center">
+            <img 
+              src="/gov-emblem.png" 
+              alt="Government Emblem" 
+              className="w-full h-full object-contain filter grayscale brightness-110 group-hover:grayscale-0 transition-all duration-300" 
+            />
           </div>
           <div>
-            <h1 className="text-sm font-semibold text-foreground tracking-tight leading-none">FairFlow</h1>
-            <p className="text-[10px] text-muted-foreground mt-0.5 leading-none">Governance Tracker</p>
+            <h1 className="text-sm font-bold text-foreground tracking-tight leading-none">FAIRFLOW</h1>
+            <p className="text-[9px] text-muted-foreground mt-1 font-medium uppercase tracking-wider leading-none">Governance Intelligence</p>
           </div>
         </div>
       </div>

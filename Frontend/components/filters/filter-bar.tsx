@@ -29,6 +29,7 @@ interface FilterBarProps {
   searchQuery: string
   setSearchQuery: (query: string) => void
   searchPlaceholder?: string
+  showSearch?: boolean
   
   // Election Cycle
   electionCycle: string
@@ -84,6 +85,7 @@ export function FilterBar({
   statuses = [],
   statusLabel = 'Status',
   showStatuses = true,
+  showSearch = true,
   budgetType,
   setBudgetType,
   budgetTypes = [],
@@ -162,23 +164,27 @@ export function FilterBar({
     <div className="w-full">
       <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4 w-full">
         {/* Search Bar (Left) */}
-        <div className="relative w-full md:w-[240px] shrink-0">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground/50" />
-          <Input
-            placeholder={searchPlaceholder}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-7 pr-4 h-8 bg-muted/20 border-border/40 focus-visible:ring-1 focus-visible:bg-background transition-all rounded-lg text-[12px] placeholder:text-muted-foreground/30"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
+        {showSearch ? (
+          <div className="relative w-full md:w-[240px] shrink-0">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground/50" />
+            <Input
+              placeholder={searchPlaceholder}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-7 pr-4 h-8 bg-muted/20 border-border/40 focus-visible:ring-1 focus-visible:bg-background transition-all rounded-lg text-[12px] placeholder:text-muted-foreground/30"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="hidden md:block w-[240px] shrink-0" />
+        )}
 
         {/* Center Content */}
         <div className="hidden md:flex justify-center flex-1">
