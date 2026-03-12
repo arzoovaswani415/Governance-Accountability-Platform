@@ -60,6 +60,9 @@ interface FilterBarProps {
   // Reset
   clearAllFilters?: () => void
   hasActiveFilters?: boolean
+
+  // Center Content
+  centerContent?: React.ReactNode
 }
 
 export function FilterBar({
@@ -87,6 +90,7 @@ export function FilterBar({
   showBudgetType = false,
   clearAllFilters,
   hasActiveFilters,
+  centerContent,
 }: FilterBarProps) {
   const [sectorOpen, setSectorOpen] = useState(false)
   const [statusOpen, setStatusOpen] = useState(false)
@@ -155,33 +159,39 @@ export function FilterBar({
   const getStatusInfo = (key: string) => statuses.find((s) => s.key === key)
 
   return (
-    <div className="space-y-4">
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder={searchPlaceholder}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 h-10 bg-background border-border"
-        />
-        {searchQuery && (
-          <button
-            onClick={() => setSearchQuery('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      </div>
+    <div className="w-full">
+      <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4 w-full">
+        {/* Search Bar (Left) */}
+        <div className="relative w-full md:w-[240px] shrink-0">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground/50" />
+          <Input
+            placeholder={searchPlaceholder}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-7 pr-4 h-8 bg-muted/20 border-border/40 focus-visible:ring-1 focus-visible:bg-background transition-all rounded-lg text-[12px] placeholder:text-muted-foreground/30"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
 
-      {/* Filter Row */}
-      <div className="flex flex-wrap items-center gap-3">
+        {/* Center Content */}
+        <div className="hidden md:flex justify-center flex-1">
+          {centerContent}
+        </div>
+
+        {/* Filter Row (Right) */}
+        <div className="flex flex-wrap items-center justify-end gap-2 w-full md:w-auto">
         {/* Election Cycle Dropdown */}
         {showElectionCycle && (
           <Select value={electionCycle} onValueChange={setElectionCycle}>
-            <SelectTrigger className="h-9 min-w-[140px] bg-background">
-              <SelectValue placeholder="Election Cycle" />
+            <SelectTrigger className="h-8 min-w-[120px] border-dashed border-border/60 rounded-lg bg-transparent hover:bg-muted/20 transition-colors text-[12px]">
+              <SelectValue placeholder="Cycle" />
             </SelectTrigger>
             <SelectContent>
               {electionCycles.map((cycle) => (
@@ -200,8 +210,8 @@ export function FilterBar({
               <Button
                 variant="outline"
                 className={cn(
-                  'h-9 min-w-[120px] justify-between gap-2 font-normal',
-                  selectedSectors.length > 0 && 'border-primary/50 bg-primary/5'
+                  'h-8 min-w-[90px] justify-between gap-2 font-medium bg-transparent border-dashed border-border/60 rounded-lg hover:bg-muted/20 hover:border-border transition-all text-[12px]',
+                  selectedSectors.length > 0 && 'border-solid border-primary/50 bg-primary/5 text-primary'
                 )}
               >
                 <span className="flex items-center gap-2">
@@ -261,8 +271,8 @@ export function FilterBar({
               <Button
                 variant="outline"
                 className={cn(
-                  'h-9 min-w-[120px] justify-between gap-2 font-normal',
-                  selectedStatuses.length > 0 && 'border-primary/50 bg-primary/5'
+                  'h-8 min-w-[90px] justify-between gap-2 font-medium bg-transparent border-dashed border-border/60 rounded-lg hover:bg-muted/20 hover:border-border transition-all text-[12px]',
+                  selectedStatuses.length > 0 && 'border-solid border-primary/50 bg-primary/5 text-primary'
                 )}
               >
                 <span className="flex items-center gap-2">
@@ -337,22 +347,20 @@ export function FilterBar({
           </div>
         )}
 
-        {/* Spacer */}
-        <div className="flex-1" />
-
         {/* Reset Button */}
         {computedHasActiveFilters && (
           <Button
             variant="ghost"
             size="sm"
             onClick={handleClearAllFilters}
-            className="h-9 text-muted-foreground hover:text-foreground gap-2"
+            className="h-9 text-muted-foreground hover:text-foreground gap-2 rounded-full"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Reset
           </Button>
         )}
       </div>
+    </div>
 
       {/* Active Filter Chips */}
       {computedHasActiveFilters && (

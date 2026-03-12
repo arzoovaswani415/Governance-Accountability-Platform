@@ -7,14 +7,10 @@ import {
   FileText,
   CheckCircle,
   MessageSquare,
-  Menu,
-  X,
   TrendingUp,
   Clock,
   Network,
 } from 'lucide-react'
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 
 const navItems = [
   { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -28,71 +24,60 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <>
-      {/* Mobile menu button */}
-      <div className="fixed top-4 left-4 z-50 md:hidden">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsOpen(!isOpen)}
-          className="bg-sidebar text-sidebar-foreground"
-        >
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </Button>
+    <aside className="flex flex-col h-full w-full">
+      {/* Logo / Brand */}
+      <div className="px-5 py-5 border-b border-border">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center">
+            <span className="text-white font-bold text-xs">FF</span>
+          </div>
+          <div>
+            <h1 className="text-sm font-semibold text-foreground tracking-tight leading-none">FairFlow</h1>
+            <p className="text-[10px] text-muted-foreground mt-0.5 leading-none">Governance Tracker</p>
+          </div>
+        </div>
       </div>
 
-      {/* Sidebar overlay for mobile */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+        {/* Section label */}
+        <p className="section-label px-2 mb-2">Navigation</p>
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed left-0 top-0 h-screen bg-sidebar text-sidebar-foreground w-60 border-r border-sidebar-border transition-transform duration-300 z-40 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        }`}
-      >
-        <div className="p-6 border-b border-sidebar-border">
-          <h1 className="text-2xl font-bold text-sidebar-primary">FairFlow</h1>
-          <p className="text-xs text-sidebar-foreground/70 mt-1">
-            Governance Transparency
-          </p>
-        </div>
+        {navItems.map((item) => {
+          const Icon = item.icon
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/' && pathname?.startsWith(item.href))
 
-        <nav className="p-4 space-y-2">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive =
-              pathname === item.href ||
-              (item.href !== '/' && pathname?.startsWith(item.href))
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
-                    : 'text-sidebar-foreground hover:bg-sidebar-primary/10'
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-1.5 rounded-md text-[13px] transition-all duration-100 group ${
+                isActive
+                  ? 'bg-muted text-foreground font-bold'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              <Icon
+                className={`h-4 w-4 flex-shrink-0 transition-colors ${
+                  isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'
                 }`}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
-            )
-          })}
-        </nav>
-      </aside>
+              />
+              <span>{item.label}</span>
+            </Link>
+          )
+        })}
+      </nav>
 
-      {/* Mobile spacer */}
-      <div className="h-0 md:hidden" />
-    </>
+      {/* Footer */}
+      <div className="px-4 py-4 border-t border-border">
+        <p className="text-[11px] text-muted-foreground">
+          India Governance Platform
+        </p>
+      </div>
+    </aside>
   )
 }

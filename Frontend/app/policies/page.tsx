@@ -87,19 +87,10 @@ export default function PoliciesPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8 bg-background">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">Policy Explorer</h1>
-        <p className="text-muted-foreground mt-2 text-base">
-          Explore government policies, bills, amendments, and regulations. Understand how they connect to manifesto promises and impact budgets.
-        </p>
-      </div>
-
-      {/* Modern Filter Bar - Sticky */}
-      <div className="sticky top-16 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-4 mb-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <Card className="p-4 bg-card/95 border border-border shadow-sm">
-          <FilterBar
+    <div className="flex flex-col h-full bg-background">
+      {/* ── Navbar Section (Top Sticky) ── */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border/40 px-8 py-3 w-full">
+        <FilterBar
           searchQuery={filters.searchQuery}
           setSearchQuery={filters.setSearchQuery}
           searchPlaceholder="Search policies, bills, or acts..."
@@ -109,150 +100,163 @@ export default function PoliciesPage() {
           setSelectedSectors={filters.setSelectedSectors}
           toggleSector={filters.toggleSector}
           sectors={availableSectors}
-          sectorLabel="Policy Sector"
+          sectorLabel="Sector"
           selectedStatuses={filters.selectedStatuses}
           setSelectedStatuses={filters.setSelectedStatuses}
           toggleStatus={filters.toggleStatus}
           statuses={policyStatuses}
-          statusLabel="Policy Status"
+          statusLabel="Status"
           clearAllFilters={filters.clearAllFilters}
           hasActiveFilters={filters.hasActiveFilters}
+          centerContent={
+            <h1 className="text-xl font-bold text-foreground tracking-tighter whitespace-nowrap">
+              Policy Explorer
+            </h1>
+          }
         />
-        </Card>
       </div>
 
       {/* Main Content - Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Panel - Policy List */}
-        <div className="lg:col-span-1">
-          <div className="max-h-[calc(100vh-280px)] overflow-y-auto space-y-4 pr-2">
+      <div className="flex flex-1 min-h-0 overflow-hidden pt-6">
+        {/* Left: Policy list */}
+        <div className="w-[380px] flex-shrink-0 px-8 overflow-y-auto custom-scrollbar">
+          <div className="space-y-5 pb-8">
             {filtered.length === 0 ? (
-              <Card className="p-8 text-center">
-                <p className="text-muted-foreground">No policies match your filters</p>
-              </Card>
+              <p className="text-sm text-muted-foreground text-center py-12">No policies match your filters</p>
             ) : (
               filtered.map((policy) => (
-                <Card
+                <button
                   key={policy.id}
                   onClick={() => setSelectedPolicyId(policy.id)}
-                  className={`p-4 cursor-pointer transition-all duration-200 border shadow-sm ${
+                  className={`w-full text-left p-6 rounded-2xl border-2 transition-all duration-200 ${
                     selectedPolicyId === policy.id
-                      ? 'border-primary bg-primary/5 shadow-md ring-1 ring-primary/20'
-                      : 'border-border hover:border-primary/40 hover:bg-muted/40 hover:shadow-md'
+                      ? 'border-black bg-muted/50'
+                      : 'border-border/40 bg-card hover:border-border hover:bg-muted/20'
                   }`}
                 >
-                  <h3 className="font-semibold text-sm line-clamp-2 leading-snug">{policy.name}</h3>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <Badge variant="outline" className="text-xs font-medium">{policy.sector.name}</Badge>
-                    <Badge variant="outline" className="text-xs font-medium">{policy.year_introduced}</Badge>
+                  <h3 className="text-sm font-bold text-foreground leading-tight mb-4">
+                    {policy.name}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] text-muted-foreground bg-muted/40 rounded px-2 py-1 font-medium">
+                      {policy.sector.name}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground bg-muted/40 rounded px-2 py-1 font-medium">
+                      {policy.year_introduced}
+                    </span>
                   </div>
-                  <div className="mt-2">
-                    <Badge className={`text-xs font-semibold ${getStatusColor(policy.status)}`}>
+                  <div className="mt-4">
+                    <span className={`text-[10px] uppercase tracking-widest px-2 py-1 rounded font-bold ${getStatusColor(policy.status.toLowerCase()).replace('border', 'border-0')}`}>
                       {policy.status}
-                    </Badge>
+                    </span>
                   </div>
-                </Card>
+                </button>
               ))
             )}
           </div>
         </div>
 
-        {/* Right Panel - Policy Details */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Right: Detail panel */}
+        <div className="flex-1 overflow-y-auto p-6">
           {isDetailLoading || !selectedPolicy ? (
-             <Card className="p-8 border border-border shadow-sm flex justify-center text-muted-foreground">
-               Loading details...
-             </Card>
+            <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
+              {isDetailLoading ? 'Loading details...' : 'Select a policy to see its details'}
+            </div>
           ) : (
-            <>
-              {/* Section 1: Policy Overview */}
-              <Card className="p-8 border border-border shadow-sm">
-                <div className="flex items-start justify-between mb-5">
-                  <h2 className="text-2xl font-bold leading-tight max-w-xl">{selectedPolicy.name}</h2>
-                  <Badge className={`${getStatusColor(selectedPolicy.status.toLowerCase())} font-semibold whitespace-nowrap ml-3`}>
+            <div className="space-y-4">
+              {/* Overview */}
+              <div className="detail-panel border-border/60 rounded-3xl p-10 bg-card">
+                <div className="flex items-start justify-between gap-8 mb-10">
+                  <h2 className="text-2xl font-bold text-foreground leading-tight tracking-tight">
+                    {selectedPolicy.name}
+                  </h2>
+                  <Badge variant="secondary" className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-muted/50">
                     {selectedPolicy.status}
                   </Badge>
                 </div>
-                <p className="text-base text-foreground mb-6 leading-relaxed">{selectedPolicy.description}</p>
-                <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+                <p className="text-[15px] text-muted-foreground/90 leading-relaxed mb-12">
+                  {selectedPolicy.description}
+                </p>
+                <div className="grid grid-cols-3 gap-8 pt-10 border-t border-border/50">
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Sector</p>
-                    <p className="text-sm font-medium mt-1">{selectedPolicy.sector.name}</p>
+                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Sector</h4>
+                    <p className="text-sm font-bold text-foreground">{selectedPolicy.sector.name}</p>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Year Introduced</p>
-                    <p className="text-sm font-medium mt-1">{selectedPolicy.year_introduced}</p>
+                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Year Introduced</h4>
+                    <p className="text-sm font-bold text-foreground">{selectedPolicy.year_introduced}</p>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Ministry</p>
-                    <p className="text-sm font-medium mt-1">{selectedPolicy.ministry || 'N/A'}</p>
+                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Ministry</h4>
+                    <p className="text-sm font-bold text-foreground">{selectedPolicy.ministry || 'N/A'}</p>
                   </div>
                 </div>
-              </Card>
+              </div>
 
-              {/* Section 2: AI Policy Summary */}
+              {/* Simplified Explanation */}
               {selectedPolicy.ai_summary && (
-                <Card className="p-7 border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
-                  <div className="flex items-start gap-4">
-                    <MessageSquare className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg mb-3">Simplified Explanation</h3>
-                      <p className="text-base text-foreground leading-relaxed">{selectedPolicy.ai_summary}</p>
+                <div className="detail-panel border border-emerald-500/20 rounded-3xl p-10 bg-emerald-50/10">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="p-2 rounded-lg bg-emerald-500/10">
+                      <MessageSquare className="h-5 w-5 text-emerald-600" />
                     </div>
+                    <h3 className="text-lg font-bold text-foreground">Simplified Explanation</h3>
                   </div>
-                </Card>
+                  <p className="text-[15px] text-muted-foreground/90 leading-relaxed">
+                    {selectedPolicy.ai_summary}
+                  </p>
+                </div>
               )}
 
-              {/* Section 3: Related Manifesto Promises */}
+              {/* Related Manifesto Promises */}
               {selectedPolicy.related_promises && selectedPolicy.related_promises.length > 0 && (
-                <Card className="p-7 border border-border shadow-sm">
-                  <h3 className="font-bold text-lg mb-5">Related Manifesto Promises</h3>
-                  <div className="space-y-3">
+                <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">Related Manifesto Promises</h3>
+                  <div className="space-y-4">
                     {selectedPolicy.related_promises.map((promise, idx) => (
-                      <div key={idx} className="flex items-start gap-3 p-4 bg-muted/40 rounded-lg border border-border/50">
-                        <CheckCircle className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
-                        <p className="text-sm font-medium text-foreground">{promise.text}</p>
+                      <div key={idx} className="flex items-start gap-4 p-4 bg-card rounded-2xl border border-border/50">
+                        <CheckCircle className="h-5 w-5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <p className="text-sm font-bold text-foreground leading-snug">{promise.text}</p>
                       </div>
                     ))}
                   </div>
-                </Card>
+                </div>
               )}
 
-              {/* Section 4: Budget Allocation Support */}
+              {/* Budget Allocation Support */}
               {budgetTrend && (
-                <Card className="p-7 border border-border shadow-sm">
-                  <h3 className="font-bold text-lg mb-5">{budgetTrend.sector} Sector Budget Allocation</h3>
-                  <ResponsiveContainer width="100%" height={280}>
+                <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-card">
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">{budgetTrend.sector} Sector Budget Allocation</h3>
+                  <ResponsiveContainer width="100%" height={240}>
                     <LineChart data={budgetTrend.yearly_data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                      <XAxis dataKey="year" stroke="var(--muted-foreground)" style={{ fontSize: '12px' }} />
-                      <YAxis stroke="var(--muted-foreground)" style={{ fontSize: '12px' }} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                      <XAxis dataKey="year" stroke="#9ca3af" style={{ fontSize: '11px' }} />
+                      <YAxis stroke="#9ca3af" style={{ fontSize: '11px' }} />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: 'var(--card)',
-                          border: '1px solid var(--border)',
+                          backgroundColor: '#fff',
+                          border: '1px solid #e5e7eb',
                           borderRadius: '8px',
-                          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                          fontSize: '12px'
                         }}
-                        formatter={(value) => `₹${value.toLocaleString()} Cr`}
+                        formatter={(value: any) => [`₹${value.toLocaleString()} Cr`, 'Amount']}
                       />
                       <Line
                         type="monotone"
                         dataKey="amount_crores"
-                        stroke="var(--primary)"
-                        strokeWidth={3}
-                        dot={{ fill: 'var(--primary)', r: 5 }}
-                        activeDot={{ r: 7 }}
-                        isAnimationActive={true}
+                        stroke="#10b981"
+                        strokeWidth={2}
+                        dot={{ fill: '#10b981', r: 4 }}
+                        activeDot={{ r: 6 }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
-                </Card>
+                </div>
               )}
 
-              {/* Section 5: Legislative Evolution */}
+              {/* Legislative Evolution */}
               {selectedPolicy.timeline && selectedPolicy.timeline.length > 0 && (
-                <Card className="p-7 border border-border shadow-sm">
+                <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
                   <PolicyLifecycleTimeline 
                     events={selectedPolicy.timeline.map(t => ({
                       year: t.year,
@@ -262,27 +266,29 @@ export default function PoliciesPage() {
                     showProgressBar={true}
                     variant="vertical"
                   />
-                </Card>
+                </div>
               )}
 
-              {/* Section 6: Related Policies */}
+              {/* Related Policies */}
               {selectedPolicy.related_policies && selectedPolicy.related_policies.length > 0 && (
-                <Card className="p-7 border border-border shadow-sm">
-                  <h3 className="font-bold text-lg mb-5">Related Policies in Sector</h3>
-                  <div className="space-y-3">
+                <div className="detail-panel border border-border/40 rounded-3xl p-8 bg-muted/5">
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">Related Policies in Sector</h3>
+                  <div className="space-y-4">
                     {selectedPolicy.related_policies.map((relPolicy, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-4 bg-muted/40 rounded-lg border border-border/50 hover:bg-muted/60 transition-colors cursor-pointer">
-                        <div className="flex items-center gap-3">
-                          <FileText className="h-5 w-5 text-primary flex-shrink-0" />
-                          <p className="text-sm font-medium text-foreground">{relPolicy.name} ({relPolicy.year_introduced})</p>
+                      <div key={idx} className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/50 hover:bg-muted/30 transition-all cursor-pointer">
+                        <div className="flex items-center gap-4">
+                          <FileText className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+                          <div>
+                            <p className="text-sm font-bold text-foreground">{relPolicy.name}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">{relPolicy.year_introduced}</p>
+                          </div>
                         </div>
-                        <Zap className="h-4 w-4 text-muted-foreground" />
                       </div>
                     ))}
                   </div>
-                </Card>
+                </div>
               )}
-            </>
+            </div>
           )}
         </div>
       </div>

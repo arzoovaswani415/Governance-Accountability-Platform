@@ -67,94 +67,97 @@ export default function Dashboard() {
   }, [summary])
 
   return (
-    <div className="p-4 md:p-8 pb-12">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Track government promises and policy implementation across all sectors
-        </p>
+    <div className="relative min-h-full w-full">
+      {/* Background Grid - Aceternity Style */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 [background-size:20px_20px] [background-image:linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] opacity-[0.4]" />
+        <div className="absolute inset-0 bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
       </div>
 
-      {error && (
-        <div className="mb-6 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md p-3">
-          {error}
+      <div className="relative z-10 max-w-[1200px] mx-auto p-8">
+        {/* Header - Compact & Professional */}
+        <div className="flex items-center justify-between mb-10 pb-4 border-b border-border/50">
+          <div>
+            <h1 className="text-xl font-bold text-foreground tracking-tight">Overview</h1>
+          </div>
+          <div className="flex gap-2">
+             <Badge variant="outline" className="text-[10px] font-bold py-0.5">LIVE DATA</Badge>
+             <Badge variant="outline" className="text-[10px] font-bold py-0.5">v1.2.0</Badge>
+          </div>
         </div>
-      )}
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <KPICard
-          title="Total Promises"
-          value={summary?.total_promises ?? (isLoading ? '…' : 0)}
-          variant="default"
-        />
-        <KPICard
-          title="Fulfilled"
-          value={summary?.fulfilled ?? (isLoading ? '…' : 0)}
-          variant="success"
-        />
-        <KPICard
-          title="In Progress"
-          value={summary?.in_progress ?? (isLoading ? '…' : 0)}
-          variant="warning"
-        />
-        <KPICard
-          title="No Progress"
-          value={summary?.no_progress ?? (isLoading ? '…' : 0)}
-          variant="danger"
-        />
-      </div>
+        {error && (
+          <div className="mb-6 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md p-3">
+            {error}
+          </div>
+        )}
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <PromiseProgressChart data={statusCounts} />
-        <SectorPerformanceChart data={sectorChartData} />
-      </div>
+        {/* KPI Cards - Dense Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          <KPICard
+            title="TOTAL PROMISES"
+            value={summary?.total_promises ?? (isLoading ? '…' : 0)}
+            variant="default"
+          />
+          <KPICard
+            title="FULFILLED"
+            value={summary?.fulfilled ?? (isLoading ? '…' : 0)}
+            variant="success"
+          />
+          <KPICard
+            title="IN PROGRESS"
+            value={summary?.in_progress ?? (isLoading ? '…' : 0)}
+            variant="warning"
+          />
+          <KPICard
+            title="NO PROGRESS"
+            value={summary?.no_progress ?? (isLoading ? '…' : 0)}
+            variant="danger"
+          />
+        </div>
 
-      {/* Recent Updates */}
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Recent Policy Updates</h2>
-        <div className="space-y-3">
-          {(recent ?? []).map((update, idx) => (
-            <Card
-              key={`${update.policy_name}-${update.year}-${idx}`}
-              className="p-4 hover:bg-muted/50 transition-colors cursor-pointer border-l-4 border-l-primary"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    {update.event_type?.toLowerCase().includes('passed') && (
-                      <CheckCircle2 className="h-5 w-5 text-secondary" />
-                    )}
-                    {update.event_type?.toLowerCase().includes('review') && (
-                      <Clock className="h-5 w-5 text-accent" />
-                    )}
-                    {!update.event_type?.toLowerCase().includes('passed') &&
-                      !update.event_type?.toLowerCase().includes('review') && (
-                        <AlertCircle className="h-5 w-5 text-primary" />
-                      )}
-                    <h3 className="font-semibold text-foreground">{update.policy_name}</h3>
+        {/* Charts Section - Desktop Balanced */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+          <div className="lg:col-span-5 text-center">
+             <PromiseProgressChart data={statusCounts} />
+          </div>
+          <div className="lg:col-span-7">
+             <SectorPerformanceChart data={sectorChartData} />
+          </div>
+        </div>
+
+        {/* Recent Updates - Compact List */}
+        <div className="mt-8 border-t border-border pt-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="section-label">Latest legislative activity</h2>
+            <span className="text-[11px] text-muted-foreground font-medium">Auto-synced via PRS India</span>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-1">
+            {recent && recent.length > 0 ? (
+              recent.map((update, idx) => (
+                <div
+                  key={`${update.policy_name}-${update.year}-${idx}`}
+                  className="group hover:bg-muted/50 p-3 rounded-lg border border-transparent transition-all flex items-center justify-between bg-white/40 backdrop-blur-[2px]"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-1.5 h-1.5 rounded-full bg-border group-hover:bg-[#c2410c] transition-colors" />
+                    <div>
+                      <h3 className="font-semibold text-[13px] text-foreground inline-block mr-2">{update.policy_name}</h3>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">{update.event_type}</span>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {update.year} • {update.event_type}
-                  </p>
+                  <div className="text-[11px] text-muted-foreground font-medium pr-2">
+                    {update.year}
+                  </div>
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <Badge
-                    variant="secondary"
-                  >
-                    {update.event_type}
-                  </Badge>
-                  {update.description && (
-                    <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded line-clamp-2 max-w-xs">
-                      {update.description}
-                    </span>
-                  )}
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-12 border border-dashed border-border rounded-xl bg-white/20">
+                <p className="text-sm text-muted-foreground font-medium">No recent legislative activity found.</p>
               </div>
-            </Card>
-          ))}
+            )}
+          </div>
         </div>
       </div>
     </div>

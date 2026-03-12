@@ -1,12 +1,7 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Sidebar } from '@/components/sidebar'
-import { Navbar } from '@/components/navbar'
 import './globals.css'
-
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'FairFlow - Governance Transparency Dashboard',
@@ -14,18 +9,9 @@ export const metadata: Metadata = {
   generator: 'v0.app',
   icons: {
     icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
+      { url: '/icon-light-32x32.png', media: '(prefers-color-scheme: light)' },
+      { url: '/icon-dark-32x32.png', media: '(prefers-color-scheme: dark)' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
     ],
     apple: '/apple-icon.png',
   },
@@ -38,12 +24,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">
-        <Sidebar />
-        <Navbar />
-        <main className="md:ml-60 mt-16 min-h-screen">
-          {children}
-        </main>
+      {/* Outer shell — warm gray background */}
+      <body className="font-sans antialiased bg-background min-h-screen">
+        <div className="flex min-h-screen gap-3 p-3">
+
+          {/* ── Left: Sidebar floating panel ── */}
+          <div className="floating-panel flex-shrink-0 w-56 h-[calc(100vh-24px)] sticky top-3 hidden md:flex flex-col">
+            <Sidebar />
+          </div>
+
+          {/* ── Right: Main content floating panel ── */}
+          <div className="floating-panel flex-1 flex flex-col h-[calc(100vh-24px)] overflow-hidden">
+            <main className="flex-1 overflow-y-auto p-6">
+              {children}
+            </main>
+          </div>
+
+        </div>
         <Analytics />
       </body>
     </html>

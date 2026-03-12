@@ -13,35 +13,35 @@ interface KPICardProps {
 
 export function KPICard({ title, value, change, unit, variant = 'default' }: KPICardProps) {
   const variants = {
-    default: 'bg-primary/10 text-primary border-primary/20',
-    success: 'bg-secondary/10 text-secondary border-secondary/20',
-    warning: 'bg-accent/10 text-accent border-accent/20',
-    danger: 'bg-destructive/10 text-destructive border-destructive/20',
+    default: 'bg-primary-light text-primary-hover border border-primary/20 hover:bg-primary/10',
+    success: 'bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100',
+    warning: 'bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100',
+    danger: 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100',
   }
 
   const isPositive = change && change > 0
 
   return (
-    <Card className={`p-6 border ${variants[variant]}`}>
+    <div className={`p-4 rounded-lg border shadow-sm transition-all duration-200 hover:shadow-md ${variants[variant]}`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <div className="flex items-baseline gap-2 mt-2">
-            <span className="text-3xl font-bold">{value}</span>
-            {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
+          <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">{title}</p>
+          <div className="flex items-baseline gap-2 mt-1">
+            <span className="text-2xl font-bold tracking-tight">{value}</span>
+            {unit && <span className="text-[10px] text-muted-foreground uppercase font-bold">{unit}</span>}
           </div>
         </div>
         {change !== undefined && (
           <div className={`flex items-center gap-1 ${isPositive ? 'text-secondary' : 'text-destructive'}`}>
             {isPositive ? (
-              <TrendingUp className="h-4 w-4" />
+              <TrendingUp className="h-3 w-3" />
             ) : (
-              <TrendingDown className="h-4 w-4" />
+              <TrendingDown className="h-3 w-3" />
             )}
-            <span className="text-sm font-medium">{Math.abs(change)}%</span>
+            <span className="text-[11px] font-bold">{Math.abs(change)}%</span>
           </div>
         )}
       </div>
-    </Card>
+    </div>
   )
 }
