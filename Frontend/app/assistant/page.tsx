@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { format } from "date-fns";
-import { Send, Upload, Paperclip, Loader2, MessageSquare, PlusCircle } from "lucide-react";
+import { Send, Upload, Paperclip, Loader2, MessageSquare, PlusCircle, Trash2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   ChatSession,
   ChatMessage,
@@ -10,7 +12,8 @@ import {
   getChatSessions,
   getChatHistory,
   uploadDocument,
-  sendChatMessage
+  sendChatMessage,
+  deleteChatSession
 } from "@/lib/api";
 
 export default function AssistantPage() {
@@ -148,6 +151,21 @@ export default function AssistantPage() {
     }
   };
 
+  const handleDeleteSession = async (e: React.MouseEvent, sessionId: string) => {
+    e.stopPropagation();
+    try {
+      await deleteChatSession(sessionId);
+      setSessions(prev => prev.filter(s => s.id !== sessionId));
+      if (activeSession?.id === sessionId) {
+        setActiveSession(null);
+        setMessages([]);
+        fetchSessions(); // Fetch the latest to fall back to the next available session
+      }
+    } catch (err) {
+      console.error("Failed to delete session", err);
+    }
+  };
+
   return (
     <div className="flex h-[calc(100vh-80px)] bg-gray-50 flex-col md:flex-row">
       {/* Sidebar - History */}
@@ -168,14 +186,23 @@ export default function AssistantPage() {
             <div 
               key={s.id} 
               onClick={() => loadSession(s.id)}
-              className={`p-3 rounded-lg cursor-pointer flex items-center gap-3 transition-colors ${
+              className={`group p-3 rounded-lg cursor-pointer flex items-center justify-between gap-3 transition-colors ${
                 activeSession?.id === s.id ? 'bg-blue-50 border border-blue-100 text-blue-800' : 'hover:bg-gray-100 text-gray-600 border border-transparent'
               }`}
             >
-              <MessageSquare size={16} className={activeSession?.id === s.id ? "text-blue-500" : "text-gray-400"} />
-              <div className="truncate text-sm font-medium">
-                {s.session_title}
+              <div className="flex items-center gap-3 overflow-hidden">
+                <MessageSquare size={16} className={activeSession?.id === s.id ? "text-blue-500 shrink-0" : "text-gray-400 shrink-0"} />
+                <div className="truncate text-sm font-medium">
+                  {s.session_title}
+                </div>
               </div>
+              <button 
+                onClick={(e) => handleDeleteSession(e, s.id)}
+                className="opacity-0 group-hover:opacity-100 p-1.5 text-red-500 hover:bg-red-100 rounded-md transition-all shrink-0"
+                title="Delete Chat"
+              >
+                <Trash2 size={16} />
+              </button>
             </div>
           ))}
           {sessions.length === 0 && (
@@ -211,15 +238,23 @@ export default function AssistantPage() {
           {messages.map((m, idx) => (
             <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div 
-                className={`max-w-[85%] md:max-w-[70%] p-4 rounded-2xl shadow-sm ${
+                className={`max-w-[85%] md:max-w-[75%] p-4 rounded-2xl shadow-sm ${
                   m.role === 'user' 
                     ? 'bg-blue-600 text-white rounded-br-none' 
                     : m.role === 'system'
                     ? 'bg-green-50 text-green-800 border border-green-200 text-sm font-medium mx-auto text-center shadow-none'
-                    : 'bg-white text-gray-800 rounded-bl-none border border-gray-100 leading-relaxed whitespace-pre-wrap'
+                    : 'bg-white text-gray-800 rounded-bl-none border border-gray-100 leading-relaxed'
                 }`}
               >
-                {m.message}
+                {m.role === 'user' || m.role === 'system' ? (
+                  <div className="whitespace-pre-wrap">{m.message}</div>
+                ) : (
+                  <div className="prose prose-sm md:prose-base max-w-none text-gray-800 prose-p:leading-relaxed prose-a:text-blue-600 prose-strong:text-gray-900">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {m.message}
+                    </ReactMarkdown>
+                  </div>
+                )}
               </div>
             </div>
           ))}

@@ -554,3 +554,9 @@ export async function sendChatMessage(payload: { session_id: string; message: st
     body: JSON.stringify(payload)
   });
 }
+
+export async function deleteChatSession(sessionId: string) {
+  return apiFetch<{ status: string; message: string }>(`/api/ai/chat/session/${sessionId}`, undefined, {
+    method: 'DELETE'
+  });
+}

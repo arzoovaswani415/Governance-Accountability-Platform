@@ -154,6 +154,15 @@ def get_all_chat_sessions(db: Session = Depends(get_db)):
     sessions = db.query(ChatSession).order_by(desc(ChatSession.updated_at)).all()
     return sessions
 
+@router.delete("/chat/session/{session_id}")
+def delete_chat_session(session_id: str, db: Session = Depends(get_db)):
+    session = db.query(ChatSession).filter(ChatSession.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    db.delete(session)
+    db.commit()
+    return {"status": "success", "message": "Session deleted"}
+
 @router.post("/chat/upload", response_model=UploadedDocumentOut)
 def upload_document(
     session_id: str = Form(...),
