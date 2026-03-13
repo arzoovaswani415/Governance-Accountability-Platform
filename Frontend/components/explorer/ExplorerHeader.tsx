@@ -27,17 +27,6 @@ export function ExplorerHeader({
             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-orange-600 mb-0">Legislative Archive</span>
             <h1 className="text-lg font-black text-slate-800 tracking-tighter whitespace-nowrap leading-none">{title}</h1>
           </div>
-
-          <div className="relative w-64 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400 transition-colors group-focus-within:text-primary" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={filters.searchQuery}
-              onChange={(e) => filters.setSearchQuery(e.target.value)}
-              className="w-full bg-white/40 border-2 border-slate-100/50 rounded-lg py-1 pl-9 pr-3 text-[11px] focus:outline-none focus:border-primary/40 focus:bg-white transition-all font-bold"
-            />
-          </div>
         </div>
 
         {/* Right: Filters */}

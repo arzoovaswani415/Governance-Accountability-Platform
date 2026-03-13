@@ -146,34 +146,32 @@ export default function BudgetAnalysisPage() {
     : ['Healthcare', 'Energy', 'Agriculture', 'Education', 'Infrastructure', 'Technology', 'Environment']
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pt-20 pb-10 px-8">
-      {/* Premium Header */}
-      <div className="max-w-[1600px] mx-auto mb-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-10 w-10 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-200">
-                <Shield className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">Fiscal Intelligence Unit</span>
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider leading-none">Republic of India • 2024-25</span>
-              </div>
+    <div className="min-h-screen bg-slate-50/50 pt-8 pb-10 px-8">
+      {/* Sleek Header Section */}
+      <div className="max-w-[1600px] mx-auto mb-8">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-5">
+          <div className="flex items-center gap-4">
+            <div className="p-2.5 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-100">
+              <Shield className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-tight">
-              National Budgetary <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-indigo-600">Pipeline Analysis</span>
-            </h1>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Global Fiscal Intelligence</span>
+                <Badge className="bg-emerald-500/10 text-emerald-600 border-none h-4 px-1.5 text-[8px] font-black uppercase tracking-tighter">Live Monitor</Badge>
+              </div>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Budgetary Pipeline</h1>
+            </div>
           </div>
-          <div className="flex items-center gap-4 bg-white p-2 rounded-2xl shadow-sm border border-slate-200/60">
-            <div className="px-4 py-2 text-right">
+          
+          <div className="flex items-center gap-6">
+            <div className="text-right">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Monitored</p>
-              <p className="text-xl font-black text-slate-900">₹{(totalBudget / 1000).toFixed(1)}K Cr</p>
+              <p className="text-xl font-black text-slate-900">₹{(totalBudget / 1000).toFixed(1)}K <span className="text-xs font-bold text-slate-400">Cr</span></p>
             </div>
-            <div className="h-10 w-px bg-slate-100" />
-            <div className="px-4 py-2">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</p>
-              <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-200 font-black uppercase text-[10px]">Active Tracker</Badge>
+            <div className="h-10 w-px bg-slate-200" />
+            <div className="text-right">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Growth Vector</p>
+              <p className="text-xl font-black text-emerald-600 text-right">+8.4%</p>
             </div>
           </div>
         </div>
@@ -187,37 +185,44 @@ export default function BudgetAnalysisPage() {
               <Database className="h-4 w-4 text-emerald-500" />
               Query Parameters
             </h3>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Global Search</label>
-                <FilterBar
-                  searchQuery={filters.searchQuery}
-                  setSearchQuery={filters.setSearchQuery}
-                  searchPlaceholder="Filter fiscal data..."
-                  electionCycle={filters.electionCycle}
-                  setElectionCycle={filters.setElectionCycle}
-                  selectedSectors={filters.selectedSectors}
-                  setSelectedSectors={filters.setSelectedSectors}
-                  toggleSector={filters.toggleSector}
-                  sectors={sectors}
-                  selectedStatuses={filters.selectedStatuses}
-                  setSelectedStatuses={filters.setSelectedStatuses}
-                  showStatuses={false}
-                  statuses={[]}
-                  budgetType={filters.budgetType}
-                  setBudgetType={filters.setBudgetType}
-                  budgetTypes={budgetTypes}
-                  showBudgetType={true}
-                  clearAllFilters={filters.clearAllFilters}
-                  hasActiveFilters={filters.hasActiveFilters}
-                  hideFilters={true}
-                />
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Fiscal Search</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                  <Input
+                    placeholder="Search sectors..."
+                    value={filters.searchQuery}
+                    onChange={(e) => filters.setSearchQuery(e.target.value)}
+                    className="pl-9 h-10 bg-slate-50 border-slate-200 rounded-xl text-xs"
+                  />
+                </div>
               </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Analysis Mode</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {budgetTypes.map((type) => (
+                    <Button
+                      key={type}
+                      variant={filters.budgetType === type ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => filters.setBudgetType(type)}
+                      className={cn(
+                        "h-9 rounded-xl text-[11px] font-bold",
+                        filters.budgetType === type ? "bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-200" : "border-slate-200 text-slate-600"
+                      )}
+                    >
+                      {type}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
               <div className="pt-6 border-t border-slate-100 italic text-[11px] text-slate-400 leading-relaxed">
                 "Cross-referencing annual budget reports with manifesto points across all active government sectors."
               </div>
-            </div>
           </Card>
         </div>
 
@@ -269,7 +274,7 @@ export default function BudgetAnalysisPage() {
                 <AreaChart data={trendData}>
                   <defs>
                     {distributionData.map((d, i) => (
-                      <linearGradient key={i} id={`color${d.name}`} x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient key={i} id={`color-${d.name.replace(/\s+/g, '-')}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor={d.color} stopOpacity={0.3}/>
                         <stop offset="95%" stopColor={d.color} stopOpacity={0}/>
                       </linearGradient>
@@ -301,7 +306,7 @@ export default function BudgetAnalysisPage() {
                       stroke={d.color} 
                       strokeWidth={4}
                       fillOpacity={1} 
-                      fill={`url(#color${d.name})`} 
+                      fill={`url(#color-${d.name.replace(/\s+/g, '-')})`} 
                     />
                   ))}
                 </AreaChart>
