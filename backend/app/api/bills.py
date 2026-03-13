@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from app.database import get_db
-from app.models import Bill, BillTimeline
+from app.models import Bill, BillTimeline, BillDebate, DebateSentiment
 
 router = APIRouter()
 
@@ -106,3 +106,61 @@ def get_bill_timeline(
             for e in events
         ],
     }
+
+
+@router.get("/{bill_id}/debate-summary")
+def get_debate_summary(bill_id: int, db: Session = Depends(get_db)):
+    """
+    Returns AI-generated debate summary and key amendments.
+    """
+    bill = db.query(Bill).filter(Bill.id == bill_id).first()
+    if not bill:
+        raise HTTPException(status_code=404, detail="Bill not found")
+    
+    sentiment = db.query(DebateSentiment).filter(DebateSentiment.bill_id == bill_id).first()
+    amendments = db.query(BillDebate).filter(
+        BillDebate.bill_id == bill_id, 
+        BillDebate.stage == "Amendment"
+    ).all()
+
+    return {
+        "bill_name": bill.name,
+        "debate_summary": sentiment.analysis_summary if sentiment else "Debate summary currently being generated.",
+        "key_amendments": [
+            {"stage": a.stage, "description": a.description, "date": str(a.date)} 
+            for a in amendments
+        ]
+    }
+
+
+@router.get("/{bill_id}/debate-timeline")
+def get_debate_timeline(bill_id: int, db: Session = Depends(get_db)):
+    """
+    Returns the distinct legislative stages found during debate.
+    """
+    stages = db.query(BillDebate).filter(BillDebate.bill_id == bill_id).order_by(BillDebate.date.asc()).all()
+    
+    return {
+        "bill_id": bill_id,
+        "timeline": [
+            {"stage": s.stage, "description": s.description, "date": str(s.date)} 
+            for s in stages
+        ]
+    }
+
+
+@router.get("/{bill_id}/debate-sentiment")
+def get_debate_sentiment(bill_id: int, db: Session = Depends(get_db)):
+    """
+    Returns sentiment percentages for the bill's debate.
+    """
+    sentiment = db.query(DebateSentiment).filter(DebateSentiment.bill_id == bill_id).first()
+    if not sentiment:
+        return {"support": 0, "opposition": 0, "neutral": 100}
+
+    return {
+        "support": sentiment.support_percentage,
+        "opposition": sentiment.opposition_percentage,
+        "neutral": sentiment.neutral_percentage
+    }
+

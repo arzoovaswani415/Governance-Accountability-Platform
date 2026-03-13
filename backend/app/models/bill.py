@@ -22,3 +22,5 @@ class Bill(Base):
     # Relationships
     sector = relationship("Sector", back_populates="bills")
     bill_timelines = relationship("BillTimeline", back_populates="bill", cascade="all, delete-orphan")
+    debates = relationship("BillDebate", back_populates="bill", cascade="all, delete-orphan")
+    sentiment = relationship("DebateSentiment", back_populates="bill", cascade="all, delete-orphan", uselist=False)

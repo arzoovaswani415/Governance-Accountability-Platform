@@ -78,6 +78,57 @@ def build_graph():
                     }
                     edges.append(edge)
 
+        # Inject State Policies and Mappings from Database
+        import sys
+        backend_dir = Path(__file__).parent.parent.parent / "backend"
+        if str(backend_dir) not in sys.path:
+            sys.path.insert(0, str(backend_dir))
+        
+        try:
+            from app.database import SessionLocal
+            from app.models import Policy, PolicyMapping
+            
+            db = SessionLocal()
+            state_policies = db.query(Policy).filter(Policy.policy_level == "state").all()
+            for p in state_policies:
+                node_id = f"StatePolicy_{p.id}"
+                if node_id not in node_id_map:
+                    node = {
+                        "id": node_id,
+                        "title": p.name,
+                        "type": "StatePolicy",
+                        "sector": p.sector.name if p.sector else "General",
+                        "year": str(p.year_introduced),
+                        "source": p.state_name or "State Government",
+                        "cleaned_text": p.description or ""
+                    }
+                    nodes.append(node)
+                    node_id_map[node_id] = node_id
+            
+            mappings = db.query(PolicyMapping).all()
+            for m in mappings:
+                source_id = f"StatePolicy_{m.state_policy_id}"
+                # Find target_id by searching the nodes
+                target_id = None
+                for n in nodes:
+                    if n["type"] == "policies" and n["title"].lower().strip() == m.national_policy.name.lower().strip():
+                        target_id = n["id"]
+                        break
+                
+                if target_id and source_id in node_id_map:
+                    edge = {
+                        "source": source_id,
+                        "target": target_id,
+                        "relationship_type": "similar_to",
+                        "similarity_score": getattr(m, 'similarity_score', 1.0)
+                    }
+                    edges.append(edge)
+                    
+            db.close()
+            logging.info("Successfully fetched State policies from database for KG.")
+        except Exception as ex:
+            logging.error(f"Error fetching state policies from DB: {ex}")
+
         # Final Knowledge Graph
         graph = {
             "nodes": nodes,

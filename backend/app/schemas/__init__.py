@@ -65,6 +65,8 @@ class PolicyBase(BaseModel):
     ai_summary: Optional[str] = None
     source_url: Optional[str] = None
     sector_id: int
+    policy_level: str = "union"
+    state_name: Optional[str] = None
 
 
 class PolicyOut(PolicyBase):
@@ -81,6 +83,8 @@ class PolicyBrief(BaseModel):
     year_introduced: int
     status: str
     sector: SectorOut
+    policy_level: str = "union"
+    state_name: Optional[str] = None
 
     class Config:
         from_attributes = True

@@ -97,7 +97,7 @@ export interface GovernanceMapData {
   nodes: {
     id: string
     name: string
-    type: 'promise' | 'policy' | 'sector' | 'budget'
+    type: 'promise' | 'policy' | 'sector' | 'budget' | 'state_policy'
     val?: number
     color?: string
   }[]
@@ -110,13 +110,25 @@ export interface GovernanceMapData {
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
-async function apiFetch<T>(path: string, params?: Record<string, string | number | undefined>): Promise<T> {
+async function apiFetch<T>(
+  path: string, 
+  params?: Record<string, string | number | undefined>,
+  options?: RequestInit
+): Promise<T> {
   let url: URL;
   try {
-    const fullPath = `${API_BASE}${path}`.replace(/\/\//g, '/').replace(':/', '://');
+    let base = API_BASE;
+    if (path.startsWith('/api') && base.endsWith('/api')) {
+      base = base.slice(0, -4);
+    }
+    const fullPath = `${base}${path}`.replace(/\/\//g, '/').replace(':/', '://');
     url = new URL(fullPath, typeof window !== 'undefined' ? window.location.origin : undefined);
   } catch (e) {
-    url = new URL(`${API_BASE}${path}`, 'http://localhost:3000');
+    let base = API_BASE;
+    if (path.startsWith('/api') && base.endsWith('/api')) {
+      base = base.slice(0, -4);
+    }
+    url = new URL(`${base}${path}`, 'http://localhost:3000');
   }
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
@@ -126,7 +138,11 @@ async function apiFetch<T>(path: string, params?: Record<string, string | number
     })
   }
   const res = await fetch(url.toString(), {
-    headers: { 'ngrok-skip-browser-warning': 'true' },
+    ...options,
+    headers: { 
+      'ngrok-skip-browser-warning': 'true',
+      ...(options?.headers || {})
+    },
   })
   if (!res.ok) throw new Error(`API error ${res.status}: ${path}`)
   return res.json() as Promise<T>
@@ -160,11 +176,33 @@ export async function getPolicies(filters?: {
   skip?: number
   limit?: number
 }): Promise<PolicyBrief[]> {
-  return apiFetch<PolicyBrief[]>('/policies/', filters)
+  const mergedFilters = { limit: 1000, ...filters }
+  return apiFetch<PolicyBrief[]>('/policies/', mergedFilters)
 }
 
 export async function getPolicyDetail(id: number): Promise<PolicyDetail> {
   return apiFetch<PolicyDetail>(`/policies/${id}`)
+}
+
+// ─── STATE POLICIES ───────────────────────────────────────────────────────────
+
+export interface StatePolicy {
+  id: number
+  policy_name: string
+  state_name: string
+  sector: string
+  description: string
+  launch_year: number
+  status: string
+  source_url: string
+}
+
+export async function getStatePolicies(filters?: {
+  state?: string
+  sector?: string
+  year?: number
+}): Promise<StatePolicy[]> {
+  return apiFetch<StatePolicy[]>('/state-policies', filters)
 }
 
 // ─── BUDGETS ──────────────────────────────────────────────────────────────────
@@ -246,38 +284,8 @@ export async function apiAskAI(payload: AIAskPayload): Promise<AIAskResult> {
 // ─── GOVERNANCE MAP ───────────────────────────────────────────────────────────
 
 export async function getGovernanceMapData(): Promise<GovernanceMapData> {
-  // Build graph from promises + policies from the backend
-  try {
-    const [promises, policies] = await Promise.all([
-      getPromises({ limit: 50 }),
-      getPolicies({ limit: 50 }),
-    ])
-
-    const nodes: GovernanceMapData['nodes'] = []
-    const links: GovernanceMapData['links'] = []
-    const sectorSet = new Set<string>()
-
-    // Add sector nodes
-    promises.forEach(p => { if (p.sector?.name) sectorSet.add(p.sector.name) })
-    policies.forEach(p => { if (p.sector?.name) sectorSet.add(p.sector.name) })
-    sectorSet.forEach(s => nodes.push({ id: `sector-${s}`, name: s, type: 'sector', val: 12, color: '#6366f1' }))
-
-    // Add promise nodes + links to sector
-    promises.slice(0, 30).forEach(p => {
-      nodes.push({ id: `promise-${p.id}`, name: p.text.slice(0, 60), type: 'promise', val: 5, color: '#22c55e' })
-      if (p.sector?.name) links.push({ source: `sector-${p.sector.name}`, target: `promise-${p.id}`, label: 'has promise' })
-    })
-
-    // Add policy nodes + links to sector
-    policies.slice(0, 30).forEach(p => {
-      nodes.push({ id: `policy-${p.id}`, name: p.name, type: 'policy', val: 8, color: '#3b82f6' })
-      if (p.sector?.name) links.push({ source: `sector-${p.sector.name}`, target: `policy-${p.id}`, label: 'has policy' })
-    })
-
-    return { nodes, links }
-  } catch {
-    return { nodes: [], links: [] }
-  }
+  // Use the new specialized graph API
+  return apiFetch<GovernanceMapData>('/governance-map/graph-data')
 }
 
 // ─── ACCOUNTABILITY ───────────────────────────────────────────────────────────
@@ -363,6 +371,91 @@ export async function getBillTimeline(billId: number): Promise<BillTimelineRespo
   return apiFetch<BillTimelineResponse>(`/bills/${billId}/timeline`)
 }
 
+// ─── DEBATE INTELLIGENCE ──────────────────────────────────────────────────────
+
+export interface DebateAmendment {
+  stage: string
+  description: string
+  date: string
+}
+
+export interface DebateSummaryResponse {
+  bill_name: string
+  debate_summary: string
+  key_amendments: DebateAmendment[]
+}
+
+export interface DebateTimelineEvent {
+  stage: string
+  description: string
+  date: string
+}
+
+export interface DebateTimelineResponse {
+  bill_id: number
+  timeline: DebateTimelineEvent[]
+}
+
+export interface DebateSentimentResponse {
+  support: number
+  opposition: number
+  neutral: number
+  summary?: string
+  rationale?: string
+  feedback?: string
+  verdict?: string
+  themes?: string
+  concerns?: string
+}
+
+export async function getDebateSummary(billId: number): Promise<DebateSummaryResponse> {
+  return apiFetch<DebateSummaryResponse>(`/bills/${billId}/debate-summary`)
+}
+
+export async function getDebateTimeline(billId: number): Promise<DebateTimelineResponse> {
+  return apiFetch<DebateTimelineResponse>(`/bills/${billId}/debate-timeline`)
+}
+
+export async function getDebateSentiment(billId: number): Promise<DebateSentimentResponse> {
+  return apiFetch<DebateSentimentResponse>(`/bills/${billId}/debate-sentiment`)
+}
+
+// ─── SYNTHETIC DEBATE ANALYSIS ───────────────────────────────────────────────
+
+export interface DebateAnalysisResponse {
+  bill_id: number;
+  bill_name: string;
+  debate_summary: string;
+  key_themes: string[];
+  key_concerns: string[];
+  sentiment: {
+    support: number;
+    opposition: number;
+    neutral: number;
+  };
+  government_rationale: string;
+  opposition_feedback: string;
+  intelligence_verdict: string;
+  impact_assessment?: {
+    summary: string;
+    economic_impact: string;
+    social_impact: string;
+    environmental_impact: string;
+    affected_stakeholders: string[];
+  };
+  amendments: {
+    phase: string;
+    description: string;
+    date: string;
+  }[];
+}
+
+export async function getDebateAnalysis(billId: number): Promise<DebateAnalysisResponse> {
+  return apiFetch<DebateAnalysisResponse>(`/debate-analysis/${billId}`);
+}
+
+
+
 // ─── BUDGET PIPELINE ──────────────────────────────────────────────────────────
 
 export interface BudgetSectorData {
@@ -430,4 +523,88 @@ export async function findSimilarBills(params: {
   top_k?: number
 }): Promise<SimilarBill[]> {
   return apiFetch<SimilarBill[]>('/similarity/bills/similar', params)
+}
+
+// --- Chat & Assistant Interfaces ---
+
+export interface ChatMessage {
+  id?: number;
+  session_id: string;
+  role: 'user' | 'assistant' | 'system';
+  message: string;
+  created_at?: string;
+}
+
+export interface ChatSession {
+  id: string;
+  user_id?: string;
+  session_title: string;
+  created_at: string;
+  updated_at: string;
+  messages: ChatMessage[];
+}
+
+export interface UploadedDocument {
+  id: number;
+  session_id: string;
+  file_name: string;
+  file_type: string;
+  uploaded_at: string;
+}
+
+export interface AiChatResponse {
+  answer: string;
+  reasoning?: string;
+  tools_used: string[];
+}
+
+// --- Chat & Assistant Endpoints ---
+
+export async function createChatSession(payload: { user_id?: string; session_title?: string }) {
+  return apiFetch<ChatSession>('/ai/chat/session', undefined, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function getChatSessions() {
+  return apiFetch<ChatSession[]>('/ai/chat/sessions');
+}
+
+export async function getChatHistory(sessionId: string) {
+  return apiFetch<ChatSession>(`/ai/chat/history/${sessionId}`);
+}
+
+export async function uploadDocument(sessionId: string, file: File) {
+  const formData = new FormData();
+  formData.append('session_id', sessionId);
+  formData.append('file', file);
+
+  let base = API_BASE;
+  if (base.endsWith('/api')) {
+    base = base.slice(0, -4);
+  }
+  const url = `${base}/ai/chat/upload`.replace(/\/\//g, '/').replace(':/', '://');
+  
+  const res = await fetch(url, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Failed to upload document');
+  return res.json() as Promise<UploadedDocument>;
+}
+
+export async function sendChatMessage(payload: { session_id: string; message: string }) {
+  return apiFetch<AiChatResponse>('/ai/chat/message', undefined, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function deleteChatSession(sessionId: string) {
+  return apiFetch<{ status: string; message: string }>(`/ai/chat/session/${sessionId}`, undefined, {
+    method: 'DELETE'
+  });
 }

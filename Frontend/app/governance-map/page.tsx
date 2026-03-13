@@ -1,415 +1,157 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { X, ZoomIn, ZoomOut, RotateCcw, Network, FileText, Wallet, Target, Lightbulb } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Info, ZoomIn, ZoomOut, RotateCcw, X } from 'lucide-react'
+import { getGovernanceMapData, type GovernanceMapData } from '@/lib/api'
 
-// Dynamically import ForceGraph3D to avoid SSR issues
-const ForceGraph3D = dynamic(() => import('react-force-graph-3d'), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-full bg-black/90 rounded-xl">
-      <div className="text-white/60 flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-white/30 border-t-white/80 rounded-full animate-spin" />
-        <span>Loading visualization...</span>
-      </div>
-    </div>
-  ),
-})
-
-// Node type definitions
-interface GraphNode {
-  id: string
-  name: string
-  type: 'promise' | 'policy' | 'budget' | 'program'
-  description?: string
-  year?: number
-  status?: string
-  sector?: string
-  amount?: string
-}
-
-interface GraphLink {
-  source: string
-  target: string
-}
-
-interface GraphData {
-  nodes: GraphNode[]
-  links: GraphLink[]
-}
-
-import { getGovernanceMapData } from '@/lib/api'
-
-// Node color mapping
-const nodeColors: Record<string, string> = {
-  promise: '#3b82f6',  // blue
-  policy: '#8b5cf6',   // purple
-  budget: '#22c55e',   // green
-  program: '#f97316',  // orange
-}
-
-const nodeLabels: Record<string, string> = {
-  promise: 'Promise',
-  policy: 'Policy',
-  budget: 'Budget',
-  program: 'Program',
-}
-
-const nodeIcons: Record<string, typeof Lightbulb> = {
-  promise: Lightbulb,
-  policy: FileText,
-  budget: Wallet,
-  program: Target,
-}
+// Force Graph 3D must be imported dynamically for Next.js SSR
+const ForceGraph3D = dynamic(() => import('react-force-graph-3d'), { ssr: false })
 
 export default function GovernanceMapPage() {
-  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null)
-  const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null)
-  const fgRef = useRef<any>(null)
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [graphData, setGraphData] = useState<GraphData | null>(null)
+  const [graphData, setGraphData] = useState<GovernanceMapData | null>(null)
+  const [selectedNode, setSelectedNode] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadData() {
       try {
         const data = await getGovernanceMapData()
-        setGraphData(data as unknown as GraphData)
+        setGraphData(data)
       } catch (error) {
-        console.error("Failed to load map data:", error)
+        console.error('Failed to load graph data:', error)
+      } finally {
+        setLoading(false)
       }
     }
     loadData()
   }, [])
 
-  // Update dimensions on mount and resize
-  useEffect(() => {
-    const updateDimensions = () => {
-      if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight,
-        })
-      }
-    }
+  const nodeColors: Record<string, string> = {
+    promise: '#3b82f6', // blue-500
+    policy: '#a855f7', // purple-500
+    budget: '#22c55e', // green-500
+    program: '#f97316', // orange-500
+  }
 
-    updateDimensions()
-    window.addEventListener('resize', updateDimensions)
-    return () => window.removeEventListener('resize', updateDimensions)
-  }, [])
-
-  const handleNodeClick = useCallback((node: GraphNode) => {
-    setSelectedNode(node)
-    // Focus on node
-    if (fgRef.current) {
-      const distance = 200
-      const distRatio = 1 + distance / Math.hypot(node.x || 0, node.y || 0, node.z || 0)
-      fgRef.current.cameraPosition(
-        { x: (node.x || 0) * distRatio, y: (node.y || 0) * distRatio, z: (node.z || 0) * distRatio },
-        node,
-        1000
-      )
-    }
-  }, [])
-
-  const handleNodeHover = useCallback((node: GraphNode | null) => {
-    setHoveredNode(node)
-  }, [])
-
-  const resetCamera = useCallback(() => {
-    if (fgRef.current) {
-      fgRef.current.cameraPosition({ x: 0, y: 0, z: 500 }, { x: 0, y: 0, z: 0 }, 1000)
-    }
-  }, [])
-
-  const zoomIn = useCallback(() => {
-    if (fgRef.current) {
-      const currentPos = fgRef.current.cameraPosition()
-      fgRef.current.cameraPosition(
-        { x: currentPos.x * 0.7, y: currentPos.y * 0.7, z: currentPos.z * 0.7 },
-        null,
-        500
-      )
-    }
-  }, [])
-
-  const zoomOut = useCallback(() => {
-    if (fgRef.current) {
-      const currentPos = fgRef.current.cameraPosition()
-      fgRef.current.cameraPosition(
-        { x: currentPos.x * 1.4, y: currentPos.y * 1.4, z: currentPos.z * 1.4 },
-        null,
-        500
-      )
-    }
-  }, [])
+  const legendItems = [
+    { label: 'Promise', color: 'bg-blue-500' },
+    { label: 'Policy', color: 'bg-purple-500' },
+    { label: 'Budget', color: 'bg-green-500' },
+    { label: 'Program', color: 'bg-orange-500' },
+  ]
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="p-4 md:p-8">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Network className="h-6 w-6 text-primary" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Governance Intelligence Map
-            </h1>
+    <div className="flex flex-col h-full bg-slate-950 text-slate-50 overflow-hidden relative">
+      {/* --- Header --- */}
+      <div className="p-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-md z-10">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight mb-2">Governance Intelligence Map</h1>
+            <p className="text-slate-400 max-w-2xl">
+              Explore the 3D interconnected network of manifesto promises, legislative policies, budgetary allocations, and implementation programs.
+            </p>
           </div>
-          <p className="text-muted-foreground max-w-2xl">
-            Explore relationships between promises, policies, budgets, and implementation programs. 
-            Click on nodes to view details, drag to rotate, and scroll to zoom.
-          </p>
+          <div className="flex gap-2">
+            {legendItems.map((item) => (
+              <Badge key={item.label} variant="outline" className="bg-slate-900 border-slate-700 text-slate-300">
+                <span className={`w-2 h-2 rounded-full ${item.color} mr-2`} />
+                {item.label}
+              </Badge>
+            ))}
+          </div>
         </div>
+      </div>
 
-        {/* Legend */}
-        <Card className="p-4 mb-6 border border-border">
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="text-sm font-medium text-muted-foreground">Legend:</span>
-            {Object.entries(nodeColors).map(([type, color]) => {
-              const Icon = nodeIcons[type]
-              return (
-                <div key={type} className="flex items-center gap-2">
-                  <div 
-                    className="w-4 h-4 rounded-full shadow-lg"
-                    style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}60` }}
-                  />
-                  <Icon className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-foreground">{nodeLabels[type]}</span>
+      {/* --- Main Viz Area --- */}
+      <div className="flex-1 relative">
+        {loading ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-950 z-20">
+            <div className="text-center">
+              <div className="animate-pulse mb-4">
+                <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full animate-ping" />
                 </div>
-              )
-            })}
-          </div>
-        </Card>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Visualization Container */}
-          <div className="lg:col-span-2">
-            <Card className="relative overflow-hidden border border-border bg-black rounded-xl shadow-lg">
-              {/* Controls */}
-              <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={zoomIn}
-                  className="bg-white/10 hover:bg-white/20 text-white border-0"
-                >
-                  <ZoomIn className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={zoomOut}
-                  className="bg-white/10 hover:bg-white/20 text-white border-0"
-                >
-                  <ZoomOut className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={resetCamera}
-                  className="bg-white/10 hover:bg-white/20 text-white border-0"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </Button>
               </div>
-
-              {/* Hover Tooltip */}
-              {hoveredNode && !selectedNode && (
-                <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                  <Card className="p-3 bg-black/80 border-white/20 text-white backdrop-blur-sm">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: nodeColors[hoveredNode.type] }}
-                      />
-                      <span className="text-xs uppercase tracking-wide text-white/60">
-                        {nodeLabels[hoveredNode.type]}
-                      </span>
-                    </div>
-                    <p className="text-sm font-medium">{hoveredNode.name}</p>
-                  </Card>
-                </div>
-              )}
-
-              {/* Graph Container */}
-              <div ref={containerRef} className="h-[600px] w-full">
-                {graphData ? (
-                  <ForceGraph3D
-                    ref={fgRef}
-                    graphData={graphData}
-                    width={dimensions.width}
-                    height={dimensions.height}
-                    backgroundColor="#000000"
-                    nodeLabel={(node: GraphNode) => `${nodeLabels[node.type]}: ${node.name}`}
-                    nodeColor={(node: GraphNode) => nodeColors[node.type]}
-                    nodeRelSize={8}
-                    nodeOpacity={0.9}
-                    linkColor={() => 'rgba(255, 255, 255, 0.2)'}
-                    linkWidth={2}
-                    linkOpacity={0.6}
-                    linkDirectionalParticles={2}
-                    linkDirectionalParticleSpeed={0.005}
-                    linkDirectionalParticleWidth={2}
-                    linkDirectionalParticleColor={() => 'rgba(255, 255, 255, 0.8)'}
-                    onNodeClick={handleNodeClick}
-                    onNodeHover={handleNodeHover}
-                    cooldownTicks={100}
-                    enableNodeDrag={true}
-                    enableNavigationControls={true}
-                    showNavInfo={false}
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-white/50">
-                    Loading graph data...
-                  </div>
-                )}
-              </div>
-            </Card>
+              <p className="text-slate-400 font-medium">Initializing Neural Governance Graph...</p>
+            </div>
           </div>
+        ) : (
+          <div className="w-full h-full">
+             {graphData && (
+              <ForceGraph3D
+                graphData={graphData}
+                backgroundColor="#020617"
+                nodeLabel={(node: any) => `<div class="bg-slate-900 border border-slate-700 p-2 rounded-lg shadow-xl"><b class="text-blue-400">${node.type.toUpperCase()}</b><br/>${node.name}</div>`}
+                nodeColor={(node: any) => nodeColors[node.type] || '#ffffff'}
+                nodeRelSize={6}
+                nodeOpacity={0.9}
+                linkWidth={1}
+                linkColor={() => '#475569'}
+                linkDirectionalParticles={2}
+                linkDirectionalParticleSpeed={0.005}
+                linkDirectionalParticleWidth={1.5}
+                onNodeClick={(node: any) => setSelectedNode(node)}
+                cooldownTicks={100}
+              />
+             )}
+          </div>
+        )}
 
-          {/* Side Panel */}
-          <div className="lg:col-span-1">
-            <Card className="p-6 border border-border sticky top-24 min-h-[600px]">
-              {selectedNode ? (
-                <div className="space-y-6">
-                  {/* Header */}
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-4 h-4 rounded-full shadow-lg shrink-0"
-                        style={{ 
-                          backgroundColor: nodeColors[selectedNode.type],
-                          boxShadow: `0 0 12px ${nodeColors[selectedNode.type]}80`
-                        }}
-                      />
-                      <Badge 
-                        className="text-xs font-medium"
-                        style={{ 
-                          backgroundColor: `${nodeColors[selectedNode.type]}20`,
-                          color: nodeColors[selectedNode.type],
-                          borderColor: `${nodeColors[selectedNode.type]}40`
-                        }}
-                      >
-                        {nodeLabels[selectedNode.type]}
-                      </Badge>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSelectedNode(null)}
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  {/* Title */}
-                  <h2 className="text-xl font-semibold text-foreground leading-tight">
-                    {selectedNode.name}
-                  </h2>
-
-                  {/* Details */}
-                  <div className="space-y-4">
-                    {selectedNode.description && (
-                      <div>
-                        <h3 className="text-sm font-medium text-muted-foreground mb-2">Description</h3>
-                        <p className="text-sm text-foreground leading-relaxed">
-                          {selectedNode.description}
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-2 gap-4">
-                      {selectedNode.year && (
-                        <div>
-                          <h3 className="text-sm font-medium text-muted-foreground mb-1">Year</h3>
-                          <p className="text-sm font-medium text-foreground">{selectedNode.year}</p>
-                        </div>
-                      )}
-                      {selectedNode.status && (
-                        <div>
-                          <h3 className="text-sm font-medium text-muted-foreground mb-1">Status</h3>
-                          <Badge variant="outline" className="text-xs">
-                            {selectedNode.status}
-                          </Badge>
-                        </div>
-                      )}
-                      {selectedNode.sector && (
-                        <div>
-                          <h3 className="text-sm font-medium text-muted-foreground mb-1">Sector</h3>
-                          <p className="text-sm font-medium text-foreground">{selectedNode.sector}</p>
-                        </div>
-                      )}
-                      {selectedNode.amount && (
-                        <div>
-                          <h3 className="text-sm font-medium text-muted-foreground mb-1">Amount</h3>
-                          <p className="text-sm font-medium text-foreground">{selectedNode.amount}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Related Nodes */}
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-3">Connected Nodes</h3>
-                    <div className="space-y-2">
-                      {graphData && graphData.links
-                        .filter((link: any) => 
-                          (link.source.id || link.source) === selectedNode.id || 
-                          (link.target.id || link.target) === selectedNode.id
-                        )
-                        .map((link: any, idx) => {
-                          const srcId = typeof link.source === 'object' ? link.source.id : link.source;
-                          const tgtId = typeof link.target === 'object' ? link.target.id : link.target;
-                          const connectedId = srcId === selectedNode.id ? tgtId : srcId;
-                          const connectedNode = graphData.nodes.find(n => n.id === connectedId)
-                          if (!connectedNode) return null
-                          return (
-                            <button
-                              key={idx}
-                              onClick={() => handleNodeClick(connectedNode)}
-                              className="w-full flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-left"
-                            >
-                              <div 
-                                className="w-3 h-3 rounded-full shrink-0"
-                                style={{ backgroundColor: nodeColors[connectedNode.type] }}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-foreground truncate">
-                                  {connectedNode.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {nodeLabels[connectedNode.type]}
-                                </p>
-                              </div>
-                            </button>
-                          )
-                        })}
-                    </div>
-                  </div>
+        {/* --- Side Panel --- */}
+        {selectedNode && (
+          <div className="absolute top-8 right-8 w-96 animate-in slide-in-from-right duration-300 z-30">
+            <Card className="bg-slate-900/90 border-slate-700 text-slate-50 shadow-2xl backdrop-blur-md">
+              <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                <div>
+                  <Badge className={`mb-2 ${
+                    selectedNode.type === 'promise' ? 'bg-blue-600' :
+                    selectedNode.type === 'policy' ? 'bg-purple-600' :
+                    selectedNode.type === 'budget' ? 'bg-green-600' : 'bg-orange-600'
+                  }`}>
+                    {selectedNode.type.toUpperCase()}
+                  </Badge>
+                  <CardTitle className="text-xl font-bold leading-tight">{selectedNode.name}</CardTitle>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center">
-                  <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
-                    <Network className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-medium text-foreground mb-2">
-                    Select a Node
-                  </h3>
-                  <p className="text-sm text-muted-foreground max-w-xs">
-                    Click on any node in the graph to view detailed information about promises, policies, budgets, or programs.
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setSelectedNode(null)}
+                  className="text-slate-400 hover:text-slate-50 hover:bg-slate-800"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Intelligence Detail</label>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    {selectedNode.details || "Linking data for this node is being processed by the intelligence engine."}
                   </p>
                 </div>
-              )}
+                <div className="pt-4 border-t border-slate-800">
+                  <Button className="w-full bg-slate-800 hover:bg-slate-700 text-slate-50 border-slate-600">
+                    <Info className="mr-2 h-4 w-4" />
+                    Deep Dive Analytics
+                  </Button>
+                </div>
+              </CardContent>
             </Card>
           </div>
+        )}
+
+        {/* --- Bottom Controls Overlay --- */}
+        <div className="absolute bottom-8 left-8 flex flex-col gap-2 z-10">
+          <div className="bg-slate-900/80 border border-slate-800 p-2 rounded-xl flex flex-col gap-1 backdrop-blur-sm">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-50"><ZoomIn className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-50"><ZoomOut className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-50" onClick={() => window.location.reload()}><RotateCcw className="h-4 w-4" /></Button>
+          </div>
+          <p className="text-[10px] text-slate-500 font-medium">USE MOUSE TO ROTATE / SCROLL TO ZOOM</p>
         </div>
       </div>
     </div>

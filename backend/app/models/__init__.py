@@ -1,12 +1,14 @@
 from app.models.election_cycle import ElectionCycle
 from app.models.sector import Sector
 from app.models.promise import Promise
-from app.models.policy import Policy
+from app.models.policy import Policy, PolicyMapping
 from app.models.bill import Bill
 from app.models.budget import BudgetAllocation
 from app.models.timeline_event import TimelineEvent
 from app.models.mapping import PromisePolicyMapping
 from app.models.bill_timeline import BillTimeline
+from app.models.chat import ChatSession, ChatMessage, UploadedDocument, DocumentChunk
+from app.models.debate import BillDebate, DebateSentiment
 
 __all__ = [
     "ElectionCycle",
@@ -18,4 +20,11 @@ __all__ = [
     "TimelineEvent",
     "PromisePolicyMapping",
     "BillTimeline",
+    "PolicyMapping",
+    "ChatSession",
+    "ChatMessage",
+    "UploadedDocument",
+    "DocumentChunk",
+    "BillDebate",
+    "DebateSentiment"
 ]
