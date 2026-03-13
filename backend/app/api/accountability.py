@@ -19,6 +19,9 @@ from app.models import Promise, Policy, BudgetAllocation, Sector, PromisePolicyM
 
 router = APIRouter()
 
+CACHE = {}
+
+
 
 @router.get("/summary")
 def get_accountability_summary(db: Session = Depends(get_db)):
@@ -36,6 +39,9 @@ def get_accountability_summary(db: Session = Depends(get_db)):
         "bills_implemented": 22
       }
     """
+    if "summary" in CACHE:
+        return CACHE["summary"]
+
     total_promises = db.query(func.count(Promise.id)).scalar() or 0
     promises_with_policy = (
         db.query(func.count(func.distinct(PromisePolicyMapping.promise_id))).scalar() or 0
@@ -60,7 +66,7 @@ def get_accountability_summary(db: Session = Depends(get_db)):
           .scalar() or 0
     )
 
-    return {
+    result = {
         "total_promises":        total_promises,
         "promises_with_policy":  promises_with_policy,
         "promises_fulfilled":    fulfilled,
@@ -71,6 +77,9 @@ def get_accountability_summary(db: Session = Depends(get_db)):
         "bills_passed":          bills_passed,
         "bills_implemented":     bills_implemented,
     }
+    
+    CACHE["summary"] = result
+    return result
 
 
 @router.get("/sectors")
@@ -93,6 +102,9 @@ def get_sector_accountability(db: Session = Depends(get_db)):
         ...
       ]
     """
+    if "sectors" in CACHE:
+        return CACHE["sectors"]
+
     sectors = db.query(Sector).all()
     results = []
 
@@ -152,7 +164,9 @@ def get_sector_accountability(db: Session = Depends(get_db)):
             "accountability_score":     accountability_score,
         })
 
-    return sorted(results, key=lambda r: r["accountability_score"], reverse=True)
+    sorted_results = sorted(results, key=lambda r: r["accountability_score"], reverse=True)
+    CACHE["sectors"] = sorted_results
+    return sorted_results
 
 
 @router.get("/gaps")
@@ -177,6 +191,10 @@ def get_accountability_gaps(
         ...
       ]
     """
+    cache_key = f"gaps_{limit}"
+    if cache_key in CACHE:
+        return CACHE[cache_key]
+
     # Promises that have at least one policy mapping
     mapped_promise_ids = {
         row[0] for row in db.query(PromisePolicyMapping.promise_id).all()
@@ -202,4 +220,5 @@ def get_accountability_gaps(
         if p.id not in mapped_promise_ids and p.sector_id not in funded_sector_ids
     ]
 
-    return gaps[:limit]
+    CACHE[cache_key] = gaps[:limit]
+    return CACHE[cache_key]

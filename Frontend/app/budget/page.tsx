@@ -344,15 +344,7 @@ export default function BudgetAnalysisPage() {
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={trendData}>
-                      <defs>
-                        {distributionData.map((d, i) => (
-                          <linearGradient key={i} id={`color-${d.name.replace(/\s+/g, '-')}`} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={d.color} stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor={d.color} stopOpacity={0}/>
-                          </linearGradient>
-                        ))}
-                      </defs>
+                    <LineChart data={trendData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                       <XAxis 
                         dataKey="year" 
@@ -365,26 +357,27 @@ export default function BudgetAnalysisPage() {
                         axisLine={false} 
                         tickLine={false} 
                         tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}}
-                        tickFormatter={(v) => `₹${v/1000}k`}
+                        tickFormatter={(v) => `₹${v >= 100000 ? (v/100000).toFixed(1) + 'L' : (v/1000).toFixed(0) + 'K'}`}
                       />
                       <Tooltip 
-                        contentStyle={{borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '1rem'}}
-                        itemStyle={{fontWeight: 900, fontSize: '13px'}}
-                        formatter={(value: number) => [`₹${(value).toLocaleString()} Cr`, 'Allocation']}
+                        contentStyle={{borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '1.5rem'}}
+                        itemStyle={{fontWeight: 900, fontSize: '13px', paddingTop: '4px', paddingBottom: '4px'}}
+                        labelStyle={{fontWeight: 900, fontSize: '16px', color: '#0f172a', marginBottom: '8px', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px'}}
+                        formatter={(value: number, name: string) => [`₹${(value).toLocaleString()} Cr`, name]}
                       />
                       {distributionData.map((d) => (
-                        <Area 
+                        <Line 
                           key={d.name} 
                           type="monotone" 
                           dataKey={d.name} 
                           stroke={d.color} 
-                          strokeWidth={4}
-                          fillOpacity={1} 
-                          fill={`url(#color-${d.name.replace(/\s+/g, '-')})`} 
+                          strokeWidth={2.5}
+                          dot={false}
+                          activeDot={{ r: 6, strokeWidth: 0 }}
                           animationDuration={1500}
                         />
                       ))}
-                    </AreaChart>
+                    </LineChart>
                   </ResponsiveContainer>
                 )}
               </div>

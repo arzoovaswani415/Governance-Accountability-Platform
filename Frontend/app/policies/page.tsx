@@ -182,6 +182,7 @@ export default function PoliciesPage() {
         <DialogContent className="sm:max-w-[1400px] w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden custom-scrollbar p-0 gap-0 border-none rounded-3xl shadow-2xl bg-white [&>button]:hidden">
           {isDetailLoading || !selectedPolicy ? (
             <div className="p-20 text-center">
+              <DialogTitle className="sr-only">Loading Policy Data</DialogTitle>
               <span className="text-sm font-bold text-slate-400 animate-pulse">Retrieving Policy Artifacts...</span>
             </div>
           ) : (

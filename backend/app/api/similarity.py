@@ -25,6 +25,14 @@ from app.models import Policy, Bill
 
 router = APIRouter()
 
+_POLICY_CORPUS_CACHE = None
+_POLICY_EMBEDDINGS_CACHE = None
+_POLICY_COUNT_CACHE = 0
+
+_BILL_CORPUS_CACHE = None
+_BILL_EMBEDDINGS_CACHE = None
+_BILL_COUNT_CACHE = 0
+
 # ── Cached model loader ───────────────────────────────────────────────────
 @lru_cache(maxsize=1)
 def _get_model() -> SentenceTransformer:
@@ -70,12 +78,18 @@ def find_similar_policies(
             detail="Provide at least one of: policy_id, query",
         )
 
+    global _POLICY_CORPUS_CACHE, _POLICY_EMBEDDINGS_CACHE, _POLICY_COUNT_CACHE
+
     all_policies = db.query(Policy).all()
     if not all_policies:
         return []
 
-    corpus = _build_policy_corpus(all_policies)
-    corpus_embeddings = _encode(corpus)
+    if _POLICY_EMBEDDINGS_CACHE is None or len(all_policies) != _POLICY_COUNT_CACHE:
+        _POLICY_CORPUS_CACHE = _build_policy_corpus(all_policies)
+        _POLICY_EMBEDDINGS_CACHE = _encode(_POLICY_CORPUS_CACHE)
+        _POLICY_COUNT_CACHE = len(all_policies)
+
+    corpus_embeddings = _POLICY_EMBEDDINGS_CACHE
 
     # Build the query embedding
     if policy_id:
@@ -147,15 +161,21 @@ def find_similar_bills(
             detail="Provide at least one of: bill_id, query",
         )
 
+    global _BILL_CORPUS_CACHE, _BILL_EMBEDDINGS_CACHE, _BILL_COUNT_CACHE
+
     all_bills = db.query(Bill).all()
     if not all_bills:
         return []
 
-    corpus = [
-        f"{b.name}. {b.description or ''} {b.ministry or ''}".strip()
-        for b in all_bills
-    ]
-    corpus_embeddings = _encode(corpus)
+    if _BILL_EMBEDDINGS_CACHE is None or len(all_bills) != _BILL_COUNT_CACHE:
+        _BILL_CORPUS_CACHE = [
+            f"{b.name}. {b.description or ''} {b.ministry or ''}".strip()
+            for b in all_bills
+        ]
+        _BILL_EMBEDDINGS_CACHE = _encode(_BILL_CORPUS_CACHE)
+        _BILL_COUNT_CACHE = len(all_bills)
+
+    corpus_embeddings = _BILL_EMBEDDINGS_CACHE
 
     if bill_id:
         source_bill = db.query(Bill).filter(Bill.id == bill_id).first()

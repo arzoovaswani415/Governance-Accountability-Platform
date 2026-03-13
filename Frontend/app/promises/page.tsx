@@ -156,6 +156,7 @@ export default function PromisesPage() {
         <DialogContent className="sm:max-w-[1400px] w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden custom-scrollbar p-0 gap-0 border-none rounded-3xl shadow-2xl bg-white [&>button]:hidden">
           {isDetailLoading || !selectedPromise ? (
             <div className="p-20 text-center">
+              <DialogTitle className="sr-only">Loading Promise Data</DialogTitle>
               <span className="text-sm font-bold text-slate-400 animate-pulse">Syncing Tracker Data...</span>
             </div>
           ) : (
@@ -177,7 +178,7 @@ export default function PromisesPage() {
                            {getStatusLabel(selectedPromise.status)}
                         </Badge>
                       </div>
-                      <h2 className="text-xl font-black text-white leading-tight pr-12">{selectedPromise.text}</h2>
+                      <DialogTitle className="text-xl font-black text-white leading-tight pr-12">{selectedPromise.text}</DialogTitle>
                    </div>
                 </div>
 

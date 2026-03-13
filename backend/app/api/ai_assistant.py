@@ -92,16 +92,15 @@ def _build_context(question: str, sector: str | None, election_cycle: str | None
 
 def _generate_ai_response(question: str, context: str) -> str:
     try:
-        import google.generativeai as genai
+        from google import genai as genai_new
         from app.config import settings
         if not settings.GEMINI_API_KEY or settings.GEMINI_API_KEY == "your_gemini_api_key_here":
             raise ValueError("Gemini API key not configured")
             
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        client = genai_new.Client(api_key=settings.GEMINI_API_KEY)
 
         prompt = f"""You are a governance intelligence assistant. Answer the user's question based ONLY on the provided governance data.\n\nGOVERNANCE DATA:\n{context}\n\nUSER QUESTION: {question}\n\nProvide a clear, structured response that:\n1. Directly answers the question\n2. References specific promises, policies, or budget data\n3. Highlights any gaps or notable findings\n4. Keeps the response concise (3-5 paragraphs max)\n\nIf the data doesn't contain enough information to fully answer, say so honestly."""
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
         return response.text
     except Exception as e:
         import logging
@@ -113,9 +112,34 @@ def _fallback_response(question: str, context: str) -> str:
     promise_lines = [l for l in lines if l.startswith("Promise")]
     policy_lines = [l for l in lines if l.startswith("Policy")]
     budget_lines = [l for l in lines if l.startswith("Budget")]
+    event_lines = [l for l in lines if l.startswith("Event")]
 
-    response = f"Based on the governance data available:\n\n• Found {len(promise_lines)} related promises\n• Found {len(policy_lines)} related policies\n• Found {len(budget_lines)} budget records\n\nNote: For deeper AI analysis, configure the GEMINI_API_KEY in your .env file."
-    return response
+    parts = [f"## Governance Intelligence Report\n\nBased on your query: **\"{question}\"**, here is the relevant data from our governance database:\n"]
+
+    if promise_lines:
+        parts.append(f"### 📋 Related Manifesto Promises ({len(promise_lines)})\n")
+        for line in promise_lines[:5]:
+            parts.append(f"- {line}\n")
+
+    if policy_lines:
+        parts.append(f"\n### 📜 Related Policies ({len(policy_lines)})\n")
+        for line in policy_lines[:5]:
+            parts.append(f"- {line}\n")
+
+    if budget_lines:
+        parts.append(f"\n### 💰 Budget Allocations ({len(budget_lines)})\n")
+        for line in budget_lines[:5]:
+            parts.append(f"- {line}\n")
+
+    if event_lines:
+        parts.append(f"\n### 📅 Recent Timeline Events ({len(event_lines)})\n")
+        for line in event_lines[:5]:
+            parts.append(f"- {line}\n")
+
+    if not any([promise_lines, policy_lines, budget_lines, event_lines]):
+        parts.append("No directly matching governance data was found for this query. Try searching for a specific sector like Healthcare, Education, or Infrastructure.\n")
+
+    return "\n".join(parts)
 
 @router.post("/ask", response_model=AIResponse)
 def ask_ai_assistant(payload: AIQuestion, db: Session = Depends(get_db)):
@@ -291,19 +315,18 @@ INSTRUCTIONS:
 
     answer = "Error generating response."
     try:
-        import google.generativeai as genai
+        from google import genai as genai_new
         from app.config import settings
 
         if settings.GEMINI_API_KEY and settings.GEMINI_API_KEY != "your_gemini_api_key_here":
-            genai.configure(api_key=settings.GEMINI_API_KEY)
-            model = genai.GenerativeModel("gemini-2.5-flash")
-            response = model.generate_content(prompt)
+            client = genai_new.Client(api_key=settings.GEMINI_API_KEY)
+            response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
             answer = response.text
         else:
-            answer = "The LLM is currently unplugged. Please configure GEMINI_API_KEY to activate multi-turn RAG chat."
+            answer = _fallback_response(payload.message, gov_context or doc_context)
     except Exception as e:
         logging.error(f"Chat Gemini Error: {e}")
-        answer = "I apologize, but I encountered an error connecting to the intelligence backend."
+        answer = _fallback_response(payload.message, gov_context or doc_context)
 
     # 6. Store Assistant msg
     assistant_msg = ChatMessage(session_id=payload.session_id, role="assistant", message=answer)

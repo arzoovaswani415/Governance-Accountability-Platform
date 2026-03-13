@@ -53,6 +53,8 @@ export interface TimelineEvent {
   year: number
   policy_id: number | null
   policy_name?: string | null
+  promise_text?: string | null
+  sector?: string | null
 }
 
 export interface BudgetTrend {

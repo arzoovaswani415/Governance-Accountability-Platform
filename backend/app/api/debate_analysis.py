@@ -7,16 +7,21 @@ router = APIRouter()
 # Path to the dataset
 DATASET_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "debate_analysis.json")
 
+CACHE = {}
+
 @router.get("/{bill_id}")
 async def get_debate_analysis(bill_id: int):
-    """Load the dataset and return the debate analysis for a specific bill_id."""
+    """Load the dataset from cache and return the debate analysis for a specific bill_id."""
     if not os.path.exists(DATASET_PATH):
         raise HTTPException(status_code=404, detail="Debate dataset not found. Please run the generator script.")
     
     try:
-        with open(DATASET_PATH, "r") as f:
-            dataset = json.load(f)
-            
+        if "dataset" not in CACHE:
+            with open(DATASET_PATH, "r") as f:
+                CACHE["dataset"] = json.load(f)
+                
+        dataset = CACHE["dataset"]
+        
         # Find the bill in the dataset
         for item in dataset:
             if item.get("bill_id") == bill_id:

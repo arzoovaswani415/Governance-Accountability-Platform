@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@plugin "@tailwindcss/typography";
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
@@ -312,4 +311,9 @@
   height: 1px;
   background: linear-gradient(to right, transparent, var(--border), transparent);
   margin: 1.5rem 0;
+}
+
+/* Hide Next.js Development Indicator */
+nextjs-portal {
+  display: none !important;
 }

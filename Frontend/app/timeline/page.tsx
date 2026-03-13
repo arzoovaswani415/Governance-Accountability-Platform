@@ -7,6 +7,7 @@ import { MessageSquare, GitBranch } from 'lucide-react'
 import { FilterBar } from '@/components/filters/filter-bar'
 import { useLocalFilters, policyStages } from '@/components/filters/filter-context'
 import { PolicyLifecycleTimeline, TimelineLegend } from '@/components/policy-lifecycle-timeline'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   BarChart,
   Bar,
@@ -140,7 +141,7 @@ export default function TimelinePage() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8 bg-background">
+    <div className="min-h-screen p-4 md:p-8 relative">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold tracking-tight">Legislative Timeline</h1>
@@ -149,8 +150,8 @@ export default function TimelinePage() {
         </p>
       </div>
 
-      {/* Modern Filter Bar - Sticky */}
-      <div className="sticky top-16 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-4 mb-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      {/* Modern Filter Bar */}
+      <div className="-mx-4 md:-mx-8 px-4 md:px-8 py-4 mb-4">
         <Card className="p-4 bg-card/95 border border-border shadow-sm">
           <FilterBar
             searchQuery={filters.searchQuery}
@@ -173,9 +174,18 @@ export default function TimelinePage() {
         </Card>
       </div>
 
-      {/* Main Content - Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Left Panel - Timeline List */}
+      {/* Main Content - Tabbable Layout */}
+      <Tabs defaultValue="timeline" className="w-full">
+        <div className="flex justify-start mb-6 -mt-2">
+          <TabsList className="bg-muted/50 p-1">
+            <TabsTrigger value="timeline" className="px-6">Detailed Timeline</TabsTrigger>
+            <TabsTrigger value="analytics" className="px-6">Legislative Analytics</TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="timeline" className="mt-0 outline-none">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            {/* Left Panel - Timeline List */}
         <div className="lg:col-span-1">
           <div className="max-h-[calc(100vh-280px)] overflow-y-auto space-y-4 pr-2">
             {filtered.length === 0 ? (
@@ -217,23 +227,25 @@ export default function TimelinePage() {
              </Card>
           ) : (
              <>
-                {/* Section 1: Promise to Policy Mapping */}
-                <Card className="p-7 border border-border shadow-sm">
-                  <h2 className="text-xl font-bold mb-5">Promise to Policy Mapping</h2>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Manifesto Promise</p>
-                      <p className="text-base font-semibold text-foreground">{selectedTimeline.promise}</p>
-                    </div>
-                    <div className="flex justify-center py-2">
-                      <GitBranch className="h-6 w-6 text-primary rotate-90" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Related Policy</p>
-                      <p className="text-base font-semibold text-foreground">{selectedTimeline.policy}</p>
-                    </div>
-                  </div>
-                </Card>
+                 {/* Section 1: Promise to Policy Mapping */}
+                 {selectedTimeline.promise !== 'General Promise' && (
+                   <Card className="p-7 border border-border shadow-sm">
+                     <h2 className="text-xl font-bold mb-5">Promise to Policy Mapping</h2>
+                     <div className="space-y-4">
+                       <div>
+                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Manifesto Promise</p>
+                         <p className="text-base font-semibold text-foreground">{selectedTimeline.promise}</p>
+                       </div>
+                       <div className="flex justify-center py-2">
+                         <GitBranch className="h-6 w-6 text-primary rotate-90" />
+                       </div>
+                       <div>
+                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Related Policy</p>
+                         <p className="text-base font-semibold text-foreground">{selectedTimeline.policy}</p>
+                       </div>
+                     </div>
+                   </Card>
+                 )}
 
                 {/* Section 2: Policy Evolution Timeline */}
                 <Card className="p-7 border border-border shadow-sm">
@@ -250,10 +262,12 @@ export default function TimelinePage() {
              </>
           )}
         </div>
-      </div>
+          </div>
+        </TabsContent>
 
-      {/* Bottom Section - Analytics */}
-      <div className="space-y-6">
+        <TabsContent value="analytics" className="mt-0 outline-none">
+          {/* Bottom Section - Analytics */}
+          <div className="space-y-6">
         {/* Section 3: Legislative Activity Chart */}
         <Card className="p-7 border border-border shadow-sm">
           <h2 className="text-xl font-bold mb-6">Legislative Activity Over Time</h2>
@@ -324,7 +338,9 @@ export default function TimelinePage() {
             </div>
           </Card>
         )}
-      </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

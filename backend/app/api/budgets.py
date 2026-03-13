@@ -7,6 +7,8 @@ from app.models import BudgetAllocation, Sector, Promise
 
 router = APIRouter()
 
+CACHE = {}
+
 
 @router.get("/by-sector")
 def get_budget_by_sector(
@@ -73,6 +75,9 @@ def get_promise_budget_alignment(
     db: Session = Depends(get_db),
 ):
     """Identify funding gaps — sectors with promises but low/no budget growth."""
+    if "alignment" in CACHE:
+        return CACHE["alignment"]
+
     sectors = db.query(Sector).all()
     result = []
 
@@ -112,4 +117,5 @@ def get_promise_budget_alignment(
             }
         )
 
+    CACHE["alignment"] = result
     return result

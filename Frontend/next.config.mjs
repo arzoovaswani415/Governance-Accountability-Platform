@@ -17,6 +17,10 @@ const nextConfig = {
   experimental: {
     allowedDevOrigins: ['http://192.168.1.16', 'http://localhost:3000'],
   },
+  devIndicators: {
+    appIsrStatus: false,
+    buildActivity: false,
+  },
 }
 
 export default nextConfig
